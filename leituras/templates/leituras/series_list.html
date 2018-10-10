@@ -1,0 +1,34 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Documento sem título</title>
+<link href="../../static/leituras/style.css" rel="stylesheet" type="text/css">
+{%load static%}
+<link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
+</head>
+<body>
+<section class="book">
+	<h1>Lista de Séries de livro</h1>
+	<p>Q. de series salvas: {{series.count}}</p>
+	<table class="book_table">
+<!--	Heading-->
+		<tr>
+			<td>Nome</td>
+			<td>Autor</td>
+			<td>Q. Livros</td>
+		</tr>
+		
+<!--	Content	-->
+		{%for s in series%}
+		<tr>
+			<td><a href="{%url 'biblio:series_det' s.pk%}">{{s.titulo}}</a></td>
+			<td>{{s.autor}}</td>
+			<td>{{s.get_livros.count}}</td>
+			
+		</tr>
+		{%endfor%}
+	</table>
+</section>
+</body>
+</html>

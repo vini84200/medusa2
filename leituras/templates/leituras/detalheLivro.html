@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Livro {{book.titulo}}</title>
+    <link href="../../static/leituras/style.css" rel="stylesheet" type="text/css">
+{%load static%}
+	<link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
+</head>
+<body>
+<a href="{%url 'biblio:index'%}">Pagina inicial</a>
+<section class="book_detail">
+	<h1>{{book.titulo}}</h1>
+	<p>Cód.: {{book.pk}}</p>
+	<p>ISBN: {{book.isbn}}</p>
+	<p>Autor: {{book.autor}}</p>
+	<p>Paginas: {{book.paginas}}</p>
+	<p>Editora: {{book.editora}}</p>
+	{%if book.serie%}
+	<p>Serie: {{book.serie}}</p>
+	{%if book.nSerie != 0%}
+	<p>Volume: {{book.nSerie}}</p>
+	{%endif%}
+	{%endif%}<p/>
+	<a class="book" href="{%url 'biblio:leitura_add' book.pk%}">Criar uma nova leitura</a>
+</section>
+{%if leituras%}
+<section class="book">
+	<h1>Lista de leituras atribuidas a este livro </h1>
+	<table class = "book_table">
+<!--	HEADING-->
+		<tr>
+			<td>Status</td>
+			<td>Data de inicio</td>
+			<td>(%)</td>
+			<td></td>
+			<td>Data de ultima atualização</td>
+			<td>Leitor</td>
+			<td></td>
+		</tr>
+<!--	Conteudo-->
+	{%for l in leituras%}
+		<tr>
+			<td>{{l.status}}</td>
+			{%if l.is_iniciado%}
+			<td>{{l.get_data_inicio}}</td>
+			<td>{{l.get_porcentagem_leitura|floatformat}} %</td>
+			<td>{{l.get_last_pagina}}/{{l.livro.paginas}}</td>
+			<td>{{l.get_last_leitura.data}}</td>
+			
+			{%else%}
+			<td></td>
+			<td></td><td></td>
+			<td></td>
+			{%endif%}
+			<td>{{l.leitor}}</td>
+			<td><a href="{%url 'biblio:leitura_detalhes' l.id%}">Acessar</a></td>
+		</tr>
+	{%endfor%}
+	</table>
+</section>
+{%endif%}
+</body>
+</html>
