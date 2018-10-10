@@ -2,7 +2,9 @@ from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.template import loader
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from .models import Livro, Leitura, Serie
+
 
 
 # TODO: adicionar algum destaque para livros em leitura na lista de livros;
@@ -26,18 +28,18 @@ def livro_detalhes(request, livro_id):
     return render(request, 'leituras/detalheLivro.html', {'book': book, 'leituras': book.leitura_set.order_by('data')})
 
 # Leitura:
-
+@login_required
 def leituras_list(request):
     list_readings = get_list_or_404(Leitura)
     return render(request, 'leituras/listLeituras.html', {'leituras': list_readings})
 
-
+@login_required
 def leitura_detalhes(request, leitura_id):
     leitura = get_object_or_404(Leitura, pk=leitura_id)
     atualizacoes = leitura.leitura_update_set.order_by('-data')
     return render(request, 'leituras/leitura.html', {'leitura': leitura, 'list_atualizacoes': atualizacoes})
 
-
+@login_required
 def leitura_add_view(request, livro_id):
     if not request.user.is_authenticated:
         return HttpResponse("Você precisa estar logado para criar uma leitura.")
@@ -45,32 +47,32 @@ def leitura_add_view(request, livro_id):
     leitura.save()
     return HttpResponseRedirect(reverse('biblio:leitura_detalhes', args=(leitura.pk,)))
 
-
+@login_required
 def leitura_iniciar(request, leitura_id):
     leitura = get_object_or_404(Leitura, pk=leitura_id)
     leitura.iniciar_leitura()
     return HttpResponseRedirect(reverse('biblio:leitura_detalhes', args=(leitura.pk,)))
 
-
+@login_required
 def leitura_atualizar_post(request, leitura_id):
     leitura = get_object_or_404(Leitura, pk=leitura_id)
     pagina = request.POST['pagina']
     leitura.atualizar_leitura(int(pagina))
     return HttpResponseRedirect(reverse('biblio:leitura_detalhes', args=(leitura.pk,)))
 
-
+@login_required
 def leitura_finalizar(request, leitura_id):
     leitura = get_object_or_404(Leitura, pk=leitura_id)
     leitura.finaliza_leitura()
     return HttpResponseRedirect(reverse('biblio:leitura_detalhes', args=(leitura.pk,)))
 
-
+@login_required
 def leitura_abandona(request, leitura_id):
     leitura = get_object_or_404(Leitura, pk=leitura_id)
     leitura.abandonar_leitura()
     return HttpResponseRedirect(reverse('biblio:leitura_detalhes', args=(leitura.pk,)))
 
-
+@login_required
 def leitura_apagar(request, leitura_id):
     leitura = get_object_or_404(Leitura, pk=leitura_id)
     leitura.delete()
