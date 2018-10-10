@@ -5,9 +5,6 @@ from . import views
 app_name = 'biblio'
 urlpatterns = [
     path('', views.index, name='index'),
-
-    path('accounts/login/',                    auth_views.LoginView.as_view()),
-
     path('livro/<int:livro_id>',               views.livro_detalhes, name='livro_detalhes'),
     # Leituras
     path('leituras',                           views.leituras_list,          name='list_leituras'),
