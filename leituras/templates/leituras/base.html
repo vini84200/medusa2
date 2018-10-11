@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{%block title%}}Titulo{%endblock%}</title>
+    <link href="../../static/leituras/style.css" rel="stylesheet" type="text/css">
+    {%load static%}
+    <link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
+</head>
+<body>
+<a href="{%url 'biblio:index'%}">Pagina inicial</a>
+<a href="{%url 'biblio:list_leituras'%}"> Ir para leituras</a>
+<a href="{%url 'biblio:series_list'%}"> Ir para series</a>
+{%block content%}
+{%endblock%}
+</body>
+</html>

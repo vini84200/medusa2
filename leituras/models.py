@@ -46,15 +46,19 @@ class Livro(models.Model):
     editora = models.ForeignKey(Editora, on_delete=models.CASCADE,null=True, blank=True)
     serie = models.ForeignKey(Serie, on_delete=models.DO_NOTHING, null=True, default=None, blank=True)
     nSerie = models.IntegerField(null=True, default=0) ## Em 0, não possui um numero especifico, como um extra da série
+    lido = models.BooleanField(default=False)
+
     def __str__(self):
         return self.titulo + ", por " + self.autor.__str__()
 
     def get_leituras(self):
         return self.leitura_set.order_by('-data')
 
+    def set_lido(self, lido):
+        self.lido = lido
+
     class Meta:
         ordering =['autor','serie','nSerie','titulo']
-
 
 
 class Leitura(models.Model):

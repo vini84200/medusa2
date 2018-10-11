@@ -1,15 +1,6 @@
-﻿<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Documento sem título</title>
-<link href="../../static/leituras/style.css" rel="stylesheet" type="text/css">
-{%load static%}
-<link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
-</head>
-
-<body>
-<a href="{%url 'biblio:index'%}">Pagina inicial</a>
+﻿{%extends 'leituras/base.html'%}
+{%block title%}Leitura do livro {{leitura.livro|title}}{%endblock%}
+{%block content%}
 <section class="book">
 		<h1>Leitura do livro<strong> <em><a href="{% url 'biblio:livro_detalhes' leitura.livro.pk  %}">
 		
@@ -57,3 +48,4 @@
 </section>
 </body>
 </html>
+{%endblock%}

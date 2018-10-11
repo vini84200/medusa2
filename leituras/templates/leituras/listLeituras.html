@@ -1,21 +1,6 @@
-﻿<!DOCTYPE html>
-<html lang="pt-br">
-<!--
-Dados necessarios:
-    list_leituras => Lista de todos os livros cadastrados no sistema.
-
--->
-<head>
-    <meta charset="UTF-8">
-    <title>Listagem de leituras</title>
-<link href="../../static/leituras/style.css" rel="stylesheet" type="text/css">
-{%load static%}
-<link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
-</head>
-<body>
-
-<a href="{%url 'biblio:index'%}">Pagina inicial</a>
-
+﻿{%extends 'leituras/base.html'%}
+{%block title%}Listagem de leituras{%endblock%}
+{%block content%}
 <section class="book">
 	<h1>Lista de leituras  </h1>
   <table class = "book_table">
@@ -53,6 +38,4 @@ Dados necessarios:
 	{%endfor%}
   </table>
 </section>
-
-</body>
-</html>
+{%endblock%}

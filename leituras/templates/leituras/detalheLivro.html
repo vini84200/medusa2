@@ -1,14 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Livro {{book.titulo}}</title>
-    <link href="../../static/leituras/style.css" rel="stylesheet" type="text/css">
-{%load static%}
-	<link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
-</head>
-<body>
-<a href="{%url 'biblio:index'%}">Pagina inicial</a>
+{%extends 'leituras/base.html'%}
+{%block title%}Livro {{book.titulo}}{%endblock%}
+{%block content%}
 <section class="book_detail">
 	<h1>{{book.titulo}}</h1>
 	<p>Cód.: {{book.pk}}</p>
@@ -47,7 +39,7 @@
 			<td>{{l.get_porcentagem_leitura|floatformat}} %</td>
 			<td>{{l.get_last_pagina}}/{{l.livro.paginas}}</td>
 			<td>{{l.get_last_leitura.data}}</td>
-			
+
 			{%else%}
 			<td></td>
 			<td></td><td></td>
@@ -60,5 +52,4 @@
 	</table>
 </section>
 {%endif%}
-</body>
-</html>
+{%endblock%}

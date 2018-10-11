@@ -1,25 +1,6 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<!--
-Dados necessarios:
-    list_books => Lista de todos os livros cadastrados no sistema.
-
--->
-<head>
-    <meta charset="UTF-8">
-    <title>Listagem de livros</title>
-<link href="../../static/leituras/style.css" rel="stylesheet" type="text/css">
-{%load static%}
-<link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
-</head>
-<body>
-<section>
-    <a href="{%url 'biblio:list_leituras'%}"> Ir para leituras</a>
-    <a href="{%url 'biblio:series_list'%}"> Ir para series</a>
-</section>
-<section class="book">
-	
-</section>
+{%extends 'leituras/base.html'%}
+{%block title%}Listagem de livros{%endblock%}
+{%block content%}
 <section class="book">
     <h1>Lista de Livros</h1>
     <p>  São {{list_books.count}} livros registados no sistemas</p>
@@ -49,5 +30,4 @@ Dados necessarios:
     {%endif%}
     
 </section>
-</body>
-</html>
+{%endblock%}
