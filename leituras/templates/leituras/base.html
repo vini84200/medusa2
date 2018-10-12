@@ -8,9 +8,21 @@
     <link href="{%static 'leituras/style.css'%}" rel="stylesheet" type="text/css">
 </head>
 <body>
-<a href="{%url 'biblio:index'%}">Pagina inicial</a>
-<a href="{%url 'biblio:list_leituras'%}"> Ir para leituras</a>
-<a href="{%url 'biblio:series_list'%}"> Ir para series</a>
+<div class="topnav">
+    <a href="{%url 'biblio:index'%}">Pagina inicial</a>
+    <a href="{%url 'biblio:list_leituras'%}"> Ir para leituras</a>
+    <a href="{%url 'biblio:series_list'%}"> Ir para series</a>
+    <div class="login-container">
+        {% if user.is_authenticated %}
+        <span>Bem vindo, {{ user.get_username }}. <a href="{%url 'logout'%}"> Logout</a></span>
+        {% else %}
+        <span>Você não esta logado. <a href="{%url 'login'%}">Entrar</a></span>
+        {% endif %}
+
+    </div>
+</div>
+
+
 {%block content%}
 {%endblock%}
 </body>

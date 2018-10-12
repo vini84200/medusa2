@@ -11,7 +11,6 @@ class Editora(models.Model):
         ordering =['nome']
 
 
-
 class Autor(models.Model):
     nome = models.CharField(max_length=200)
     sobrenome = models.CharField(max_length=200)
