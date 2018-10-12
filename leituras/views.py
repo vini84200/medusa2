@@ -30,7 +30,7 @@ def livro_detalhes(request, livro_id):
 # Leitura:
 @login_required
 def leituras_list(request):
-    list_readings = get_list_or_404(Leitura)
+    list_readings = Leitura.objects.filter(leitor=request.user)
     return render(request, 'leituras/listLeituras.html', {'leituras': list_readings})
 
 @login_required
