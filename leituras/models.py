@@ -67,8 +67,8 @@ class Leitura(models.Model):
     dataUpdate = models.DateTimeField('Data em que a leitura foi atualizada', auto_now=True)
     leitor = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True)
 
-    possTipos = (('IN', 'Iniciada'), ('LD', 'Em leitura'), ('FN', 'Finalizada'), ('AB', 'abadonada'))
-    tipo = models.CharField(max_length=2, choices=possTipos, default='IN')
+    # possTipos = (('IN', 'Iniciada'), ('LD', 'Em leitura'), ('FN', 'Finalizada'), ('AB', 'abadonada'))
+    # tipo = models.CharField(max_length=2, choices=possTipos, default='IN')
 
     def __str__(self):
         return self.livro.__str__()
@@ -100,7 +100,7 @@ class Leitura(models.Model):
     def iniciar_leitura(self):
         l = Leitura_Update(tipo = 'IN', leitura=self, pagina=1)
         l.save()
-        self.tipo = 'IN'
+        #self.tipo = 'IN'
         return l
 
     def atualizar_leitura(self, pagina):
@@ -108,24 +108,24 @@ class Leitura(models.Model):
         # Fixme: se você adicionar uma atualização depois de terminar ele aceita
         if(pagina >= self.livro.paginas):
              l = Leitura_Update(tipo='FN', leitura=self, pagina=self.livro.paginas)
-             self.tipo = 'FN'
+             #self.tipo = 'FN'
         else:
             if(pagina >= self.get_last_pagina() ):
                 l = Leitura_Update(tipo='LD', leitura=self, pagina=pagina)
-                self.tipo = 'LD'
+                #self.tipo = 'LD'
             else:
                 l= Leitura_Update(tipo='LD', leitura=self, pagina = self.get_last_pagina())
-                self.tipo = 'LD'
+                #self.tipo = 'LD'
         l.save()
         return l;
 
     def finaliza_leitura(self):
         l = Leitura_Update(tipo='FN', leitura=self, pagina=self.livro.paginas)
-        self.tipo = 'FN'
+        #self.tipo = 'FN'
 
     def abandonar_leitura(self, pagina):
         l = Leitura_Update(tipo='AB', leitura=self, pagina=self.livro.paginas)
-        self.tipo = 'AB'
+        #self.tipo = 'AB'
 
 
 class Leitura_Update(models.Model):
