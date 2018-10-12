@@ -129,3 +129,8 @@ class Leitura_Update(models.Model):
         return self.leitura.livro.__str__ + ", Pagina " + self.pagina.__str__()
     def get_tipo(self):
         return self.get_tipo_display()
+
+
+class Biblioteca(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    livros = models.ManyToManyField(Livro)
