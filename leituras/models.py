@@ -143,3 +143,10 @@ class Leitura_Update(models.Model):
 class Biblioteca(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     livros = models.ManyToManyField(Livro)
+    name = models.CharField(max_length=70)
+
+    def add_livro(self, livro):
+        self.livros.add(livro)
+
+    def __str__(self):
+        return self.name.__str__()

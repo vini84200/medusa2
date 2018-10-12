@@ -1,0 +1,36 @@
+{%extends 'leituras/base.html'%}
+{%block title%}
+{{biblio.name}}
+{%endblock%}
+{%block content%}
+<section class="book">
+    <h1>{{biblio.name}}</h1>
+    <em>de {{biblio.user.username}}</em>
+    {%if list_books %}
+    <table class="book_table">
+        <tr class="list_heading">
+            <th>Titulo</th>
+            <th>Isbn</th>
+            <th>Autor</th>
+            <th>Páginas</th>
+            <th>Editora</th>
+            <th>Serie</th>
+            <th> Ord. Serie</th>
+        </tr>
+        {%for book in list_books%}
+        <tr>
+            <th><a href="{%url 'biblio:livro_detalhes' book.id%}">{{book.titulo}}</a></th>
+            <th>{{book.isbn}}</th>
+            <th>{{book.autor}}</th>
+            <th>{{book.paginas}}</th>
+            <th>{{book.editora}}</th>
+            <th>{%if book.serie%}{{book.serie}}{%endif%}
+            </th>
+            <th>{{book.nSerie}}</th>
+        </tr>
+        {%endfor%}
+    </table>
+    {%endif%}
+</section>
+
+{%endblock%}

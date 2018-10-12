@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllow
 from django.template import loader
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Livro, Leitura, Serie
+from .models import Livro, Leitura, Serie, Biblioteca
 
 
 
@@ -86,3 +86,28 @@ def series_list(request):
 def series_det(request, series_id):
     serie = get_object_or_404(Serie, pk=series_id)
     return render(request, 'leituras/serie.html', {'serie':serie,'livros': serie.livro_set.all()})
+
+
+@login_required
+def perfil(request):
+    bibliotecas = Biblioteca.objects.filter(user=request.user)
+    return render(request, 'leituras/perfil.html',
+                  {'biblios': bibliotecas,
+                   })
+
+
+@login_required
+def add_biblioteca(request):
+    name = request.POST['name']
+    bib = Biblioteca(name=name, user=request.user)
+    bib.save()
+    return HttpResponseRedirect(reverse('biblio:exibe_biblioteca', args=(bib.pk,)))
+
+
+@login_required
+def exibe_biblioteca(request, biblioteca_id):
+    biblio = get_object_or_404(Biblioteca, pk=biblioteca_id)
+    return render(request, 'leituras/biblioteca.html',
+                  {'biblio': biblio,
+                   'list_books': biblio.livros.all(),
+                   })

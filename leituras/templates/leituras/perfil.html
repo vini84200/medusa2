@@ -1,0 +1,28 @@
+{%extends 'leituras/base.html'%}
+{%block title%}
+Perfil de {{user.username}}
+{%endblock%}
+{%block content%}
+<section class="book">
+    <h1>{{user.username}}</h1>
+    <p>{{user.first_name}} {{user.last_name}}</p>
+    <h3>Bibliotecas</h3>
+    <form action="{%url 'biblio:add_biblioteca'%}" method="post">
+        {% csrf_token %}
+        <fieldset>
+            <legend>Criar nova biblioteca</legend>
+            <label for="name">Nome:</label>
+            <input type="text" id="name" name="name">
+            <input type="submit" value="Criar">
+        </fieldset>
+    </form>
+    <ul>
+        {%for b in biblios%}
+        <li>
+            <a href="{%url 'biblio:exibe_biblioteca' b.pk%}">{{b.name}}</a>
+        </li>
+        {%endfor%}
+    </ul>
+</section>
+
+{%endblock%}
