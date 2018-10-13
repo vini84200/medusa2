@@ -25,7 +25,10 @@ def index(request):
 
 def livro_detalhes(request, livro_id):
     book = get_object_or_404(Livro, pk=livro_id)
-    return render(request, 'leituras/detalheLivro.html', {'book': book, 'leituras': book.leitura_set.order_by('data')})
+    if request.user.is_authenticated:
+        return render(request, 'leituras/detalheLivro.html', {'book': book, 'leituras': book.leitura_set.
+                      filter(leitor=request.user).order_by('data')})
+    return render(request, 'leituras/detalheLivro.html', {'book': book, 'leituras': None})
 
 # Leitura:
 @login_required
