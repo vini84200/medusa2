@@ -1,0 +1,24 @@
+#lista_presenca{
+	background-color: black;
+	color: white;
+	font-family: Baskerville, "Palatino Linotype", Palatino, "Century Schoolbook L", "Times New Roman", "serif";
+}
+.names{
+	column-width: 180px;
+	font-size: 20px;
+}
+.names li{
+	list-style-type: none;
+}
+
+.presenca_presente{
+	color: white;
+}
+.presenca_ausente{
+	color: lightcoral;
+}
+.info {
+	margin-top: 12px;
+	color: yellow;
+	font-size: 20px;
+}

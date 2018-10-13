@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, get_list_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseForbidden
 from django.template import loader
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -110,7 +110,9 @@ def add_biblioteca(request):
 @login_required
 def exibe_biblioteca(request, biblioteca_id):
     biblio = get_object_or_404(Biblioteca, pk=biblioteca_id)
-    return render(request, 'leituras/biblioteca.html',
+    if biblio.user == request.user:
+        return render(request, 'leituras/biblioteca.html',
                   {'biblio': biblio,
                    'list_books': biblio.livros.all(),
                    })
+    return HttpResponseForbidden()

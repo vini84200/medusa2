@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['medusa2.herokuapp.com','localhost']
 
 INSTALLED_APPS = [
     'leituras.apps.LeiturasConfig',
+    'voting.apps.VotingConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
