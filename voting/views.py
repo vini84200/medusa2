@@ -24,7 +24,7 @@ def presenca_painel(request):
     })
 
 
-@login_required()
+@login_required
 def registrar_presenca(request, sessao):
     s = get_object_or_404(Sessao, pk=sessao)
     for c in request.user.cadeira_set.all():
@@ -32,7 +32,7 @@ def registrar_presenca(request, sessao):
     return HttpResponseRedirect(reverse('voting:home'))
 
 
-@login_required()
+@login_required
 def loged_home(request):
     return render(request, 'voting/home.html', {
         'user': request.user,
