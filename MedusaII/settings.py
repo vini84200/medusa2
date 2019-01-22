@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['medusa2.herokuapp.com','localhost']
+ALLOWED_HOSTS = ['medusa2.herokuapp.com','localhost','127.0.0.1','*']
 
 
 # Application definition
