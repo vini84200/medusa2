@@ -8,7 +8,7 @@
     <link href="{%static 'voting/style.css'%}" rel="stylesheet" type="text/css">
 </head>
 <body id='lista_presenca'>
-<h1>Relação de presença da Sessão nº {{sessao.pk}} da {{casa}} na data {{sessao.data}}</h1>
+<h1>Relação de presença da Sessão nº {{sessao.pk}} da {{casa}} no {{sessao.data.day}}</h1>
 <div class="listagem">
     <div class="names">
         {%for cadeira in cadeiras%}
