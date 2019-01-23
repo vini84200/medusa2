@@ -13,7 +13,7 @@
     <div class="names">
         {%for cadeira in cadeiras%}
         {%if cadeira.user != None%}
-        <li class="presenca_{%if cadeira.user in presentes%}presente{%else%}ausente{%endif%}">
+        <li class="presenca_{%if cadeira.user in presentes%}presente{%else%}ausente{%endif%}" id="{{cadeira.id}}">
             {{cadeira.user.first_name}} {{cadeira.user.last_name}}
         </li>
         {%endif%}

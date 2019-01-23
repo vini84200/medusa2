@@ -7,9 +7,11 @@ from channels.db import database_sync_to_async
 class PainelPresencaConsumer(AsyncConsumer):
     async def websocket_connect(self, event):
         print("connected", event)
-        await self.send({
-            "type":"websocket.accept"
-        })
+        #await self.send({
+        #    "type":"websocket.accept"
+        #})
+        self.accept()
+
 
     async def websocket_receive(self, event):
         print("Received ", event)
