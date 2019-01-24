@@ -54,6 +54,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'MedusaII.urls'
 ASGI_APPLICATION = "MedusaII.routing.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('192.168.99.100', 6379)],
+        },
+    },
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
