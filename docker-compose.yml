@@ -1,14 +1,38 @@
-version: '3'
+version: '3.3'
 
 services:
   web:
-    image: vini84200/medusa2:0.1.7
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    image: vini84200/medusa2:0.1.8
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/MedusaII
+      - .:/webapps
     ports:
       - "8000:8000"
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
     networks:
       - webnet
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "/home/docker/data:/data"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    command: redis-server --appendonly yes
+    networks:
+      - webnet
+
 networks:
   webnet:
