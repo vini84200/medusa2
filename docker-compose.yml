@@ -2,7 +2,8 @@ version: '3.3'
 
 services:
   web:
-    image: vini84200/medusa2:0.1.8
+#    image: vini84200/medusa2:0.1.8
+    build: .
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/webapps
