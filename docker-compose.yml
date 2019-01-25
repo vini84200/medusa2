@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  web:
+    image: vini84200/medusa2:0.1.7
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/MedusaII
+    ports:
+      - "8000:8000"
+    networks:
+      - webnet
+networks:
+  webnet:
