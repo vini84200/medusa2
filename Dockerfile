@@ -3,8 +3,6 @@ ENV PYTHONUNBUFFERED 1
 RUN mkdir /medusaii
 WORKDIR /medusaii
 # Installing OS Dependencies
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-libsqlite3-devd
 RUN pip install -U pip setuptools
 COPY requirements.txt /medusaii/
 COPY requirements-dev.txt /medusaii/
