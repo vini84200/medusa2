@@ -31,7 +31,7 @@ services:
     deploy:
       placement:
         constraints: [node.role == manager]
-    command: redis-server --appendonly yes
+    command: echo oi && redis-server --appendonly yes
     networks:
       - webnet
 
