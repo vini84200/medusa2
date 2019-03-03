@@ -18,7 +18,7 @@ class Autor(models.Model):
     # nome+", "+sobrenome
 
     def __str__(self):
-        return self.sobrenome + ", " + self.nome
+        return self.sobrenome.__str__() + ", " + self.nome.__str__()
 
     class Meta:
         ordering =['sobrenome','nome']
@@ -71,7 +71,7 @@ class Leitura(models.Model):
     # tipo = models.CharField(max_length=2, choices=possTipos, default='IN')
 
     def __str__(self):
-        return self.livro.__str__()
+        return "Leitura de " + self.livro.__str__()
     def is_iniciado(self):
         if (self.leitura_update_set.order_by('data').last() == None):
             return False
@@ -130,7 +130,7 @@ class Leitura(models.Model):
 
 class Leitura_Update(models.Model):
     leitura = models.ForeignKey(Leitura, on_delete=models.CASCADE)
-    possTipos = (('IN', 'Iniciada'),('LD','Em leitura'), ('FN', 'Finalizada'),('AB','abadonada'))
+    possTipos = (('IN', 'Iniciada'),('LD','Em leitura'), ('FN', 'Finalizada'),('AB','Abadonada'))
     tipo = models.CharField(max_length=2, choices=possTipos, default='IN')
     pagina = models.IntegerField()
     data = models.DateTimeField('Data da atualização', default=timezone.now)

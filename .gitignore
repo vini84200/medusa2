@@ -6,3 +6,4 @@
 .vEnv
 *pyc
 .env
+/htmlcov/
