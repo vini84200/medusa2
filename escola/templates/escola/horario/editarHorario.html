@@ -1,0 +1,49 @@
+{% extends "../base.html" %}
+
+
+{% block conteudo %}
+{# turnos , DIAS_DA_SEMANA , DIAS_DA_SEMANA_N, ta[dia][turno.cod]#}
+<table>
+  <tr>
+      <th></th>
+      {%for d in DIAS_DA_SEMANA%}
+         <th>
+          {{d}}
+          </th>
+      {%endfor%}
+      
+  </tr>
+   {% for turno in turnos %}
+    <tr>
+        <th>{{turno.nome}}</th>
+        {%for dia in DIAS_DA_SEMANA_N%}
+        <th>
+            {%if dia == edit_dia and turno.cod == edit_turno%}
+                <form action="" method="post">
+                    {%csrf_token%}
+                    {{formset.management_form}}
+                    <table>
+                        {%for form in formset%}
+                            {{form.as_table}}
+                        {%endfor%}
+                    </table>
+                    <input type="submit" value="Enviar">
+                </form>
+            {%else%}
+
+                {%if ta.dia.turno%}
+                    {#Horario do TurnoAula#}
+                    {%for p in ta.dia.turno.periodo_set%}
+                        {{p.num}} = {{p.materia}}
+                    {%endfor%}
+                {%else%}
+                    Não há um horario cadastrado para esse horario.
+                {%endif%}
+            {%endif%}
+        </th>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+</table>
+
+{%endblock%}

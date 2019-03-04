@@ -46,3 +46,9 @@ class AlunoCreateForm(forms.Form):
             raise ValidationError(_("Por favor, salve a chamada com um numero positivo."))
 
         return data
+
+
+class PeriodoForm(ModelForm):
+    class Meta:
+        model = Periodo
+        fields = ['materia']

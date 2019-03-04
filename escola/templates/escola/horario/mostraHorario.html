@@ -1,0 +1,46 @@
+{% extends "../base.html" %}
+
+
+{% block conteudo %}
+{# turnos , DIAS_DA_SEMANA , DIAS_DA_SEMANA_N, ta[dia][turno.cod]#}
+<table>
+  <tr>
+      <th></th>
+      {%for d in DIAS_DA_SEMANA%}
+         <th>
+          {{d}}
+          </th>
+      {%endfor%}
+      
+  </tr>
+   {% for turno in turnos %}
+    <tr>
+        <th>{{turno.nome}}</th>
+        {%for dia in DIAS_DA_SEMANA_N%}
+        <th>
+           {%with forloop.parentloop.counter as outer%}
+           {%with forloop.counter as inner%}
+           {{outer}} a {{inner}} e {{ta}}
+            {%if ta.outer.inner%}
+                {#Horario do TurnoAula#}
+                {%for p in ta.2.1.periodo_set.all%}
+                    {{p.num}} = {{p.materia}}<br />
+                {%endfor%}
+                {%if perms.escola.editar_horario%}
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}">EDITAR</a>
+                {%endif%}
+            {%else%}
+                Não há um horario cadastrado para esse horario.
+                {%if perms.escola.editar_horario%}
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}">EDITAR</a>
+                {%endif%}
+            {%endif%}
+            {%endwith%}
+            {%endwith%}
+        </th>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+</table>
+
+{%endblock%}
