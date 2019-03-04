@@ -24,6 +24,28 @@ class Turma(models.Model):
                        ('can_populate_turma', "Pode popular turmas"),)
 
 
+class CargoTurma(models.Model):
+    nome = models.CharField(max_length=50)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    ocupante = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    CODS_ESPECIAIS = (
+        (0, 'Não especifico'),
+        (1, 'Lider'),
+        (2, 'Vice-lider'),
+        (3, 'Suplente'),
+        (4, 'Tesoureiro'),
+        (5, 'Prof. Regente'),
+    )
+    cod_especial = models.PositiveSmallIntegerField(choices=CODS_ESPECIAIS)
+    ativo = models.BooleanField(default=True)
+
+    class Meta:
+        permissions = (('can_add_cargo', "Pode criar Cargo"),
+                       ('can_edit_cargo', "Pode editar Cargo"),
+                       ('can_delete_cargo', "Pode deletar Cargo"),
+                       ('can_designar_cargo', "Pode designar alguem para o cargo"),)
+
+
 class Professor(models.Model):
     user = models.OneToOneField(User, related_name='professor', on_delete=models.CASCADE)
 
@@ -35,11 +57,11 @@ class MateriaDaTurma(models.Model):
 
 
 class Aluno(models.Model):
-    chamada = models.PositiveSmallIntegerField()
+    chamada = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
     nome = models.CharField(max_length=70)
     user = models.OneToOneField(User, related_name='aluno', on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.DO_NOTHING)
-    is_lider = models.BooleanField(default=False)
+
 
 class ProvaBase(models.Model):
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
