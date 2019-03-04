@@ -288,10 +288,10 @@ def ver_horario(request, turma_pk):
             if len(a) > 0:
                 if not dia in ta:
                     ta[dia] = dict()
-                print(f"{dia} = {turno.cod} ++ {a[0]}")
+                print(f"{dia} = {turno} ++ {a[0]}")
                 ta[dia][turno.cod] = a[0]
     print(ta)
-    return render(request, 'escola/horario/mostraHorario.html', context={'turnos':turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N':DIAS_DA_SEMANA_N, 'ta':ta, 'turma_pk':turma_pk})
+    return render(request, 'escola/horario/mostraHorario.html', context={'turnos':turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N':DIAS_DA_SEMANA_N, 'ta':ta, 'turma_pk':turma_pk, 'range': range(1, 6)})
 
 
 
@@ -332,11 +332,19 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
                     ta[dia][turno.cod] = a[0]
         if(turno_cod in ta and dia_cod in ta[turno_cod]):
             ini = []
-            for periodo in ta[turno_cod][dia_cod].periodo_set:
+            for periodo in ta[turno_cod][dia_cod].periodo_set.all():
                 ini.append({'materia':periodo.materia})
             formset = PeriodoFormSet(initial=ini)
         else:
             formset = PeriodoFormSet()
     return render(request, 'escola/horario/editarHorario.html',
                       context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
-                               'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset':formset})
+                               'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset':formset, 'range': range(1, 6), 'turma_pk':turma_pk})
+
+
+def edit_aluno():
+    return None
+
+
+def delete_aluno():
+    return None

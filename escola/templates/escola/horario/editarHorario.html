@@ -31,14 +31,17 @@
                 </form>
             {%else%}
 
-                {%if ta.dia.turno%}
-                    {#Horario do TurnoAula#}
-                    {%for p in ta.dia.turno.periodo_set%}
-                        {{p.num}} = {{p.materia}}
-                    {%endfor%}
-                {%else%}
-                    Não há um horario cadastrado para esse horario.
+                {%dia_teste turno dia ta as verdade%}
+            {%if verdade%}
+                {%for p in range%}
+                    {%get_p turno dia p ta%} <br/>
+                {%endfor%}
+                {%if perms.escola.editar_horario%}
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}">EDITAR</a>
                 {%endif%}
+            {%else%}
+                Não há um horario cadastrado para esse horario
+            {%endif%}
             {%endif%}
         </th>
         {%endfor%}

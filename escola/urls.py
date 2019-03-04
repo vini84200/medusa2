@@ -16,6 +16,8 @@ urlpatterns = [
     path('turmas/cargos/delete/<int:pk>', views.delete_cargo, name='delete-cargo'),
     path('turma/<int:turma_pk>/alunos', views.list_alunos, name='list-alunos'),
     path('turma/<int:pk_turma>/alunos/add', views.add_aluno, name='add-aluno'),
+    path('/turmas/aluno/<int:aluno_pk>/edit', views.edit_aluno, name='edit-aluno'),
+    path('/turmas/aluno/<int:aluno_pk>/delete', views.delete_aluno, name='delete-aluno'),
     path('turma/<int:turma_pk>/horario', views.ver_horario, name='show-horario'),
     path('turma/<int:turma_pk>/horario/edit/<int:turno_cod>/<int:dia_cod>', views.alterar_horario, name='alterar-horario')
 ]
