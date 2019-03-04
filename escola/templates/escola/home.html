@@ -1,0 +1,24 @@
+{% extends "escola/base.html" %}
+
+
+{% block title %} Home {% endblock %}
+
+
+{% block conteudo %}
+
+{% if request.user.profile_escola.is_aluno%}
+<article>
+    <h2>Horario:</h2>
+    Não implementado
+</article>
+<article>
+    <h2>Proximas tarefas</h2>
+    Não implementado
+</article>
+<article>
+    <h2>Proximas Provas:</h2>
+    Não Implementado
+</article>
+{%endif%}
+
+{% endblock %}

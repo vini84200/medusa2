@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  {% load static %}
+  <head>
+    <!-- Title -->
+    <title>
+      {% block title %}Sistema Escola{% endblock %}
+    </title>
+
+    <!-- Favicon -->
+
+    <!-- Arquivos CSS -->
+
+
+    <!-- Bloco de Estilos -->
+    {% block styles %}{% endblock %}
+  </head>
+
+  <body>
+    
+    <nav>
+        <a href="{% url 'escola:index' %}">Home</a>|
+    </nav>
+      
+    <!-- Bloco de conteúdo -->
+    {% block conteudo %}{% endblock %}
+
+    <!-- Bloco de scripts -->
+    {% block scripts %}{% endblock %}
+
+    <!-- Scripts.js -->
+    
+  </body>
+</html>
