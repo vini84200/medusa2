@@ -29,6 +29,7 @@ def username_present(username):
 def index(request):
     context = {'request': request}
     if request.user.profile_escola.is_aluno:
+        # HORARIO
         turma_pk = request.user.aluno.turma.pk
         horario = get_object_or_404(Horario, turma_id=turma_pk)
         turnos = Turno.objects.all().order_by('cod')
@@ -51,6 +52,12 @@ def index(request):
 
         context.update({'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
                     'ta': ta, 'turma_pk': turma_pk, 'range': range(1, 6)})
+        # TAREFAS
+        tarefas = Tarefa.objects.filter(turma__pk=turma_pk, deadline__gte=datetime.date.today()).order_by('deadline')
+        tarefas_c = []
+        for tarefa in tarefas:
+            tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
+        context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 
     return render(request, 'escola/home.html', context=context)
 
@@ -143,7 +150,7 @@ def add_cargo(request, pk_turma):
 
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
-        form = CargoForm(request.POST)
+        form = CargoForm(request.POST, turma=get_object_or_404(Turma, pk=pk_turma))
 
         # Check if the form is valid:
         if form.is_valid():
@@ -163,7 +170,7 @@ def add_cargo(request, pk_turma):
     else:
         proposed_ativo = True
         proposed_cod_especial = 0
-        form = CargoForm(initial={'ativo': proposed_ativo, 'cod_especial': proposed_cod_especial})
+        form = CargoForm(initial={'ativo': proposed_ativo, 'cod_especial': proposed_cod_especial}, turma=get_object_or_404(Turma, pk=pk_turma))
 
     context = {
         'form': form,
@@ -185,7 +192,7 @@ def edit_cargo(request, pk):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
-        form = CargoForm(request.POST)
+        form = CargoForm(request.POST, turma = cargo.turma)
 
         # Check if the form is valid:
         if form.is_valid():
@@ -203,7 +210,7 @@ def edit_cargo(request, pk):
         # If this is a GET (or any other method) create the default form.
     else:
         form = CargoForm(initial={'nome': cargo.nome, 'turma': cargo.turma, 'ocupante': cargo.ocupante,
-                                  'cod_especial': cargo.cod_especial, 'ativo': cargo.ativo})
+                                  'cod_especial': cargo.cod_especial, 'ativo': cargo.ativo}, turma = cargo.turma)
 
     context = {
         'form': form,
@@ -328,8 +335,11 @@ def ver_horario(request, turma_pk):
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)
     PeriodoFormSet = formset_factory(PeriodoForm, extra=5, max_num=5)
+    data = request.POST or None
+    formset = PeriodoFormSet(data=data)
+    for form in formset:
+        form.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=horario.turma)
     if request.method == 'POST':
-        formset = PeriodoFormSet(request.POST)
         if formset.is_valid():
             n = 1
             for form in formset:
@@ -363,8 +373,9 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
             for periodo in ta[turno_cod][dia_cod].periodo_set.all():
                 ini.append({'materia': periodo.materia})
             formset = PeriodoFormSet(initial=ini)
-        else:
-            formset = PeriodoFormSet()
+            for form in formset:
+                form.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=horario.turma)
+
     return render(request, 'escola/horario/editarHorario.html',
                   context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
                            'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset': formset,
@@ -521,3 +532,75 @@ def delete_materia(request,turma_pk, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
     materia.delete()
     return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
+
+
+def add_tarefa(request, turma_pk):
+    turma = get_object_or_404(Turma, pk=turma_pk)
+    if request.method == 'POST':
+        form = TarefaForm(turma, request.POST)
+        if form.is_valid():
+            tarefa =Tarefa()
+            tarefa.titulo = form.cleaned_data['titulo']
+            tarefa.turma = turma
+            tarefa.materia = form.cleaned_data['materia']
+            tarefa.tipo = form.cleaned_data['tipo']
+            tarefa.descricao = form.cleaned_data['descricao']
+            tarefa.deadline = form.cleaned_data['deadline']
+            tarefa.save()
+            return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
+    else:
+        form = TarefaForm(turma=turma)
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'escola/tarefas/formTarefa.html', context=context)
+
+
+def list_tarefa(request, turma_pk):
+    tarefas = Tarefa.objects.filter(turma__pk = turma_pk)
+    if request.user.profile_escola.is_aluno:
+        tarefas_c = []
+        for tarefa in tarefas:
+            tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
+        return render(request, 'escola/tarefas/listTarefasParaAluno.html', context={'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+    else:
+        return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas})
+
+
+def edit_tarefa(request, tarefa_pk):
+    tarefa = get_object_or_404(Tarefa, pk = tarefa_pk)
+    turma = tarefa.turma
+    if request.method == 'POST':
+        form = TarefaForm(turma, request.POST)
+        if form.is_valid():
+            tarefa.titulo = form.cleaned_data['titulo']
+            tarefa.turma = turma
+            tarefa.materia = form.cleaned_data['materia']
+            tarefa.tipo = form.cleaned_data['tipo']
+            tarefa.descricao = form.cleaned_data['descricao']
+            tarefa.deadline = form.cleaned_data['deadline']
+            tarefa.save()
+            return HttpResponseRedirect(reverse('escola:list-materias', args=[turma.pk]))
+    else:
+        form = TarefaForm(turma=turma,initial={'titulo': tarefa.titulo, 'materia': tarefa.materia, 'tipo': tarefa.tipo,
+                                               'descricao':tarefa.descricao, 'deadline':tarefa.deadline})
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'escola/tarefas/formTarefa.html', context=context)
+
+
+def delete_tarefa(request, tarefa_pk):
+    tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
+    tarefa.delete()
+    return HttpResponseRedirect(reverse('escola:index'))
+
+
+def concluir_tarefa(request, tarefa_pk):
+    tarefa: Tarefa = get_object_or_404(Tarefa,pk= tarefa_pk)
+    conclusao = tarefa.get_completacao(request.user.aluno)
+    conclusao.completo = not conclusao.completo
+    conclusao.save()
+    return HttpResponseRedirect(reverse('escola:index'))

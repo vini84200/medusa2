@@ -48,7 +48,44 @@
 </article>
 <article>
     <h2>Proximas tarefas</h2>
-    Não implementado
+    {%if perms.escola.can_add_tarefa%}
+        <a href="{% url 'escola:add-tarefa' turma.pk %}">Adicionar Tarefa</a>
+    {%endif%}
+
+    <table>
+    <tr>
+        <th>Titulo</th>
+        <th>Materia</th>
+        <th>Tipo</th>
+        <th>Descrição</th>
+        <th>Data de Entrega</th>
+        <th>Concluido</th>
+        <th>Marcar como concluido</th>
+        {%if perms.escola.can_edit_cargo%}
+        <th></th>
+        {%endif%}
+        {%if perms.escola.can_delete_cargo%}
+        <th></th>
+        {%endif%}
+    </tr>
+    {%for tarefa in tarefas%}
+        <tr>
+            <th>{{tarefa.0.titulo}}</th>
+            <th>{{tarefa.0.materia}}</th>
+            <th>{{tarefa.0.get_tipo_display}}</th>
+            <th>{{tarefa.0.descricao|truncatechars:30}}</th>
+            <th>{{tarefa.0.deadline}}</th>
+            <th>{{tarefa.1.completo|yesno:"Sim,Não,Hmmm:("}}</th>
+            <th><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}">CONCLUIR</a></th>
+            {%if perms.escola.can_edit_cargo%}
+            <th><a href="{% url 'escola:edit-tarefa' tarefa.0.pk %}">EDIT</a></th>
+            {%endif%}
+            {%if perms.escola.can_delete_cargo%}
+            <th><a href="{% url 'escola:delete-tarefa' tarefa.0.pk %}">DELETE</a></th>
+            {%endif%}
+        </tr>
+    {%endfor%}
+    </table>
 </article>
 <article>
     <h2>Proximas Provas:</h2>

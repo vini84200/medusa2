@@ -32,6 +32,10 @@ class CargoForm(ModelForm):
         model = CargoTurma
         fields = ['nome', 'ocupante', 'cod_especial', 'ativo', ]
 
+    def __init__(self, turma, *args, **kwargs):
+        super(CargoForm, self).__init__(*args, **kwargs)
+        self.fields['ocupante'].queryset = User.objects.filter(aluno__turma=turma)
+
 
 class AlunoCreateForm(forms.Form):
     num_chamada = forms.IntegerField()
@@ -64,3 +68,13 @@ class MateriaForm(ModelForm):
     class Meta:
         model = MateriaDaTurma
         fields = ['nome', 'professor', 'abreviacao']
+
+
+class TarefaForm(ModelForm):
+    class Meta:
+        model = Tarefa
+        exclude = ('turma',)
+
+    def __init__(self, turma, *args, **kwargs):
+        super(TarefaForm, self).__init__(*args, **kwargs)
+        self.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=turma)

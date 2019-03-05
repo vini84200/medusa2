@@ -170,3 +170,38 @@ class Periodo(models.Model):
     @property
     def turno_cod(self):
         return self.turnoAula.turno.cod
+
+
+class Tarefa(models.Model):
+    titulo = models.CharField(max_length=60)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
+    TIPOS =(
+        (1,'Tema'),
+        (2,'Trabalho'),
+        (3,'Pesquisa'),
+        (4,'Redação'),
+    )
+    tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
+    descricao = models.TextField()
+    deadline = models.DateField(verbose_name='Data limite')
+
+    def get_completacao(self, aluno:Aluno):
+        completo = self.tarefacompletacao_set.filter(aluno=aluno)
+        if len(completo) > 0:
+            return completo[0]
+        else:
+            completo = TarefaCompletacao(tarefa=self, aluno=aluno)
+            completo.save()
+            return completo
+
+
+class TarefaCompletacao(models.Model):
+    tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
+    completo = models.BooleanField(default=False)
+
+
+class TarefaComentario(models.Model):
+    tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
+

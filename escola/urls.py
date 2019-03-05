@@ -34,5 +34,10 @@ urlpatterns = [
     path('turma/<int:turma_pk>/materias', views.list_materias, name='list-materias'),
     path('turma/<int:turma_pk>/materia/<int:materia_pk>/edit', views.edit_materia, name='edit-materia'),
     path('turma/<int:turma_pk>/materia/<int:materia_pk>/delete', views.delete_materia, name='delete-materia'),
-    #
+    # tarefa
+    path('turma/<int:turma_pk>/tarefas/add', views.add_tarefa, name='add-tarefa'),
+    path('turma/<int:turma_pk>/tarefas', views.list_tarefa, name='list-tarefa'),
+    path('turma/tarefa/<int:tarefa_pk>/edit', views.edit_tarefa, name='edit-tarefa'),
+    path('turma/tarefa/<int:tarefa_pk>/delete', views.delete_tarefa, name='delete-tarefa'),
+    path('turma/tarefa/<int:tarefa_pk>/concluir', views.concluir_tarefa, name='concluir-tarefa')
 ]

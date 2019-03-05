@@ -1,0 +1,40 @@
+{% extends "../base.html" %}
+
+{%block conteudo%}
+
+<h1>Listagem de tarefas da turma {{turma.numero}}</h1>
+{%if perms.escola.can_add_tarefa%}
+    <a href="{% url 'escola:add-tarefa' turma.pk %}">Adicionar Tarefa</a>
+{%endif%}
+
+<table>
+<tr>
+    <th>Titulo</th>
+    <th>Materia</th>
+    <th>Tipo</th>
+    <th>Descrição</th>
+    <th>Data de Entrega:</th>
+    {%if perms.escola.can_edit_cargo%}
+    <th></th>
+    {%endif%}
+    {%if perms.escola.can_delete_cargo%}
+    <th></th>
+    {%endif%}
+</tr>
+{%for tarefa in tarefas%}
+<tr>
+    <th>{{tarefa.titulo}}</th>
+    <th>{{tarefa.materia}}</th>
+    <th>{{tarefa.get_tipo_display}}</th>
+    <th>{{tarefa.descricao|truncatechars:30}}</th>
+    <th>{{tarefa.deadline}}</th>
+    {%if perms.escola.can_edit_cargo%}
+    <th><a href="{% url 'escola:edit-tarefa' tarefa.pk %}">EDIT</a></th>
+    {%endif%}
+    {%if perms.escola.can_delete_cargo%}
+    <th><a href="{% url 'escola:delete-tarefa' tarefa.pk %}">DELETE</a></th>
+    {%endif%}
+</tr>
+{%endfor%}
+</table>
+{%endblock%}
