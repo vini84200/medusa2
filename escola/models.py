@@ -204,4 +204,7 @@ class TarefaCompletacao(models.Model):
 
 class TarefaComentario(models.Model):
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    texto = models.TextField()
+    parent = models.ForeignKey('self',on_delete=models.CASCADE, blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)

@@ -78,3 +78,9 @@ class TarefaForm(ModelForm):
     def __init__(self, turma, *args, **kwargs):
         super(TarefaForm, self).__init__(*args, **kwargs)
         self.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=turma)
+
+
+class ComentarioTarefaForm(ModelForm):
+    class Meta:
+        model = TarefaComentario
+        fields = ['texto', ]

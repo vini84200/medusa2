@@ -39,5 +39,6 @@ urlpatterns = [
     path('turma/<int:turma_pk>/tarefas', views.list_tarefa, name='list-tarefa'),
     path('turma/tarefa/<int:tarefa_pk>/edit', views.edit_tarefa, name='edit-tarefa'),
     path('turma/tarefa/<int:tarefa_pk>/delete', views.delete_tarefa, name='delete-tarefa'),
-    path('turma/tarefa/<int:tarefa_pk>/concluir', views.concluir_tarefa, name='concluir-tarefa')
+    path('turma/tarefa/<int:tarefa_pk>/concluir', views.concluir_tarefa, name='concluir-tarefa'),
+    path('turma/tarefa/<int:tarefa_pk>', views.detalhes_tarefa, name='detalhes-tarefa'),
 ]

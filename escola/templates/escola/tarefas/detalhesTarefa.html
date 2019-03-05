@@ -1,0 +1,25 @@
+{% extends "../base.html" %}
+
+{% block conteudo %}
+<h2>Tarefa: {{tarefa.titulo}}</h2>
+Materia: {{tarefa.materia}}
+Tipo: {{tarefa.get_tipo_display}}
+Turma:{{tarefa.turma}}
+<h3>Prazo: {{tarefa.deadline}}</h3>
+Completado:{{completacao.completa|yesno:'Sim,Não'}}
+<h4>Detalhes:</h4>
+{{tarefa.descricao}}<br/>
+<hr>
+<form action="" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Enviar">
+</form>
+{%for comentario in comentarios%}
+    <strong>{{comentario.user.username}}:<br/></strong>
+{{comentario.texto}}<br/>
+<em>{{comentario.created_on}}</em><br/><br/>
+{%endfor%}
+{%endblock%}
