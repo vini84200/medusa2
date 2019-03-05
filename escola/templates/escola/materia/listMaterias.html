@@ -1,0 +1,38 @@
+{% extends "../base.html" %}
+
+{%block conteudo%}
+
+<h1>Listagem de Cargos da turma {{turma.numero}}</h1>
+{%if perms.escola.can_add_materia%}
+    <a href="{% url 'escola:add-materia' turma.pk %}">Adicionar Cargo</a>
+{%endif%}
+
+<table>
+<tr>
+    <th>Nome</th>
+    <th>Ocupante</th>
+    <th>Ativo</th>
+    <th>cod. Especial</th>
+    {%if perms.escola.can_edit_cargo%}
+    <th></th>
+    {%endif%}
+    {%if perms.escola.can_delete_cargo%}
+    <th></th>
+    {%endif%}
+</tr>
+{%for cargo in cargos%}
+<tr>
+    <th>{{cargo.nome}}</th>
+    <th>{{cargo.ocupante.username}}</th>
+    <th>{{cargo.ativo}}</th>
+    <th>{{cargo.cod_especial}}</th>
+    {%if perms.escola.can_edit_cargo%}
+    <th><a href="{% url 'escola:edit-cargo' cargo.pk %}">EDIT</a></th>
+    {%endif%}
+    {%if perms.escola.can_delete_cargo%}
+    <th><a href="{% url 'escola:delete-cargo' cargo.pk %}">DELETE</a></th>
+    {%endif%}
+</tr>
+{%endfor%}
+</table>
+{%endblock%}

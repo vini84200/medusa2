@@ -52,3 +52,15 @@ class PeriodoForm(ModelForm):
     class Meta:
         model = Periodo
         fields = ['materia']
+
+
+class ProfessorCreateForm(forms.Form):
+    nome = forms.CharField()
+    username = forms.CharField(help_text="Deixe em branco para geração automatica.", required=False)
+    senha = forms.CharField(help_text="Deixe em branco para aleatorio.", required=False)
+
+
+class MateriaForm(ModelForm):
+    class Meta:
+        model = MateriaDaTurma
+        fields = ['nome', 'professor', 'abreviacao']

@@ -1,0 +1,34 @@
+{% extends "../base.html" %}
+
+{%block conteudo%}
+
+<h1>Listagem de Professores</h1>
+{%if perms.escola.can_add_professores%}
+    <a href="{% url 'escola:add-professor' %}">Adicionar Professor</a>
+{%endif%}
+
+<table>
+<tr>
+    <th>Nome de Usuario</th>
+    <th>Nome</th>
+    {%if perms.escola.can_edit_professor%}
+    <th></th>
+    {%endif%}
+    {%if perms.escola.can_delete_professor%}
+    <th></th>
+    {%endif%}
+</tr>
+{%for prof in professores%}
+<tr>
+    <th>{{prof.user.username}}</th>
+    <th>{{prof.nome}}</th>
+    {%if perms.escola.can_edit_professor%}
+    <th><a href="{% url 'escola:edit-profesor' prof.pk %}">EDIT</a></th>
+    {%endif%}
+    {%if perms.escola.can_delete_professor%}
+    <th><a href="{% url 'escola:delete-professor' prof.pk %}">DELETE</a></th>
+    {%endif%}
+</tr>
+{%endfor%}
+</table>
+{%endblock%}

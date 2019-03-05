@@ -64,6 +64,7 @@ class MateriaDaTurma(models.Model):
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    abreviacao = models.CharField(max_length=5)
 
     def __str__(self):
         return self.nome

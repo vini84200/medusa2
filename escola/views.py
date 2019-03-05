@@ -62,7 +62,7 @@ def add_turma(request):
 
     return render(request, 'escola/turma/criarForm.html', context)
 
-
+@is_user_escola
 def list_turmas(request):
     turmas = Turma.objects.all()
     return render(request, 'escola/turma/listaTurmas.html', context={'turmas': turmas})
@@ -194,7 +194,7 @@ def delete_cargo(request, pk):
     return HttpResponseRedirect(reverse('escola:list-cargos', args=[turmapk]))
 
 
-@permission_required('escola.can_add_cargo')
+@permission_required('escola.can_add_aluno')
 def add_aluno(request, pk_turma):
     if request.method == 'POST':
 
@@ -263,12 +263,14 @@ def add_aluno(request, pk_turma):
     return render(request, 'escola/alunos/formAlunosCreate.html', context)
 
 
+@is_user_escola
 def list_alunos(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
     alunos = Aluno.objects.filter(turma=turma)
     return render(request, 'escola/alunos/listAlunosPerTurma.html', context={'alunos': alunos, 'turma': turma})
 
 
+@is_user_escola
 def ver_horario(request, turma_pk):
     print("Vendo horario.")
     horario = get_object_or_404(Horario, turma_id=turma_pk)
@@ -295,7 +297,8 @@ def ver_horario(request, turma_pk):
 
 
 
-
+@is_user_escola
+@permission_required('escola.editar_horario')
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)
     PeriodoFormSet = formset_factory(PeriodoForm, extra=5, max_num=5)
@@ -343,8 +346,142 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
 
 
 def edit_aluno():
+    # TODO: Implement edit aluno
     return None
 
 
 def delete_aluno():
+    # TODO: Implement delete aluno
+    return None
+
+
+@permission_required('escola.can_add_professor')
+def add_professor(request):
+
+    if request.method == 'POST':
+
+        # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
+        # Create a form instance and populate it with data from the request (binding):
+        form = ProfessorCreateForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            nome: str = form.cleaned_data['nome']
+            username = form.cleaned_data['username']
+            # Gera username a partir do Nome
+            if not username:
+                # Cria a base do username a partir do primeiro nome
+                username = nome.split(' ')[0].lower() + "."
+                # Adiciona as iniciais depois do ponto
+                for n in nome.split(' '):
+                    if n[0]:
+                        username += n[0].lower()
+
+                # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
+                a = 0
+                usernameTeste = username
+                while username_present(usernameTeste):
+                    a += 1
+                    usernameTeste = username + a.__str__()
+                username = usernameTeste
+
+            senha = form.cleaned_data['senha']
+            # Verifica se uma senha foi especificada.
+            # Caso não, gera uma.
+            if not senha:
+                senha = BaseUserManager().make_random_password(length=8,
+                                                               allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
+
+            user = User.objects.create_user(username, password=senha)
+            user.first_name = nome.split(" ")[0]
+            user.last_name = nome.split(" ")[-1]
+            user.save()
+            profile = Profile(user=user, is_aluno=False, is_professor=True)
+            profile.save()
+            professor = Professor()
+            professor.user = user
+            professor.nome = nome
+            professor.save()
+            # redirect to a new URL:
+            if form.cleaned_data['senha']:
+                return HttpResponseRedirect(reverse('list-professores'))
+            else:
+                return HttpResponse(f"OK! Usuario criado. Username:{username} e senha:{senha} <br/> "
+                                    f"Quando logar, lebrar de alterar a senha.")
+
+        # If this is a GET (or any other method) create the default form.
+    else:
+        form = ProfessorCreateForm()
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'escola/professor/formProfessorCreate.html', context)
+
+@is_user_escola
+def list_professores(request):
+    professores = Professor.objects.all()
+    return render(request, 'escola/professor/listProfessores.html', context={'professores': professores})
+
+
+def edit_professor():
+    # TODO Implement edit professor
+    return None
+
+
+def delete_professor():
+    # TODO implement delete professor
+    return None
+
+
+def add_materia(request, turma_pk):
+    if request.method == 'POST':
+        form = MateriaForm(request.POST)
+        if form.is_valid():
+            materia = MateriaDaTurma()
+            materia.nome = form.cleaned_data['nome']
+            materia.turma = get_object_or_404(Turma, pk=turma_pk)
+            materia.professor = form.cleaned_data['professor']
+            materia.abreviacao = form.cleaned_data['abreviacao']
+            materia.save()
+    else:
+        form = MateriaForm()
+
+    context = {
+        'form':form,
+    }
+    return render(request, 'escola/materia/formMateria.html', context=context)
+
+
+def list_materias(request, turma_pk):
+    materias = MateriaDaTurma.objects.filter(turma= get_object_or_404(Turma, pk=turma_pk))
+    return render(request, 'escola/turma/listaTurmas.html', context={'turmas': turmas})
+
+    return None
+
+
+def edit_materia(request, turma_pk, materia_pk):
+    if request.method == 'POST':
+        form = MateriaForm(request.POST)
+        if form.is_valid():
+            materia = MateriaDaTurma()
+            materia.nome = form.cleaned_data['nome']
+            materia.turma = get_object_or_404(Turma, pk=turma_pk)
+            materia.professor = form.cleaned_data['professor']
+            materia.abreviacao = form.cleaned_data['abreviacao']
+            materia.save()
+    else:
+
+        form = MateriaForm(get_object_or_404(MateriaDaTurma, pk=materia_pk))
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'escola/materia/formMateria.html', context=context)
+
+
+def delete_materia():
+    # TODO implement delete materia
     return None
