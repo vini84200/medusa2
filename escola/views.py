@@ -581,7 +581,7 @@ def edit_tarefa(request, tarefa_pk):
             tarefa.descricao = form.cleaned_data['descricao']
             tarefa.deadline = form.cleaned_data['deadline']
             tarefa.save()
-            return HttpResponseRedirect(reverse('escola:list-materias', args=[turma.pk]))
+            return HttpResponseRedirect(reverse('escola:list-tarefas', args=[turma.pk]))
     else:
         form = TarefaForm(turma=turma,initial={'titulo': tarefa.titulo, 'materia': tarefa.materia, 'tipo': tarefa.tipo,
                                                'descricao':tarefa.descricao, 'deadline':tarefa.deadline})
@@ -604,3 +604,39 @@ def concluir_tarefa(request, tarefa_pk):
     conclusao.completo = not conclusao.completo
     conclusao.save()
     return HttpResponseRedirect(reverse('escola:index'))
+
+
+def detalhes_tarefa(request, tarefa_pk):
+    tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
+    turma = tarefa.turma
+    comentarios = TarefaComentario.objects.filter(tarefa=tarefa).order_by('-created_on')
+    completacao = None
+    if request.user.profile_escola.is_aluno:
+        completacao = tarefa.get_completacao(request.user.aluno)
+    print('testando post')
+    print(request.method)
+    if request.method == 'POST':
+        print('POSTing')
+        form = ComentarioTarefaForm(request.POST)
+        print('FORMado')
+        if form.is_valid():
+            print("Valido")
+            comentario = TarefaComentario()
+            comentario.tarefa = tarefa
+            comentario.user = request.user
+            comentario.texto = form.cleaned_data['texto']
+            comentario.save()
+            print('ja salvo')
+            # TODO: enviar msg para o professor, {e outros?}
+            return HttpResponseRedirect(reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
+        print('n valido :(')
+    else:
+        form = ComentarioTarefaForm()
+
+    context = {
+        'form': form,
+        'tarefa':tarefa,
+        'comentarios': comentarios,
+        'completacao': completacao,
+    }
+    return render(request, 'escola/tarefas/detalhesTarefa.html', context=context)
