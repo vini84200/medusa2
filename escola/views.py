@@ -27,7 +27,32 @@ def username_present(username):
 @login_required
 @is_user_escola
 def index(request):
-    return render(request, 'escola/home.html', context={'request': request})
+    context = {'request': request}
+    if request.user.profile_escola.is_aluno:
+        turma_pk = request.user.aluno.turma.pk
+        horario = get_object_or_404(Horario, turma_id=turma_pk)
+        turnos = Turno.objects.all().order_by('cod')
+        DIAS_DA_SEMANA = ['Domingo',
+                          'Segunda-feira',
+                          'Terça-feira',
+                          'Quarta-feira',
+                          'Quinta-feira',
+                          'Sexta-feira',
+                          'Sabado', ]
+        DIAS_DA_SEMANA_N = range(1, 8)
+        ta = {}
+        for turno in turnos:
+            for dia in DIAS_DA_SEMANA_N:
+                a = TurnoAula.objects.filter(turno=turno, diaDaSemana=dia, horario=horario)
+                if len(a) > 0:
+                    if not dia in ta:
+                        ta[dia] = dict()
+                    ta[dia][turno.cod] = a[0]
+
+        context.update({'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
+                    'ta': ta, 'turma_pk': turma_pk, 'range': range(1, 6)})
+
+    return render(request, 'escola/home.html', context=context)
 
 
 @permission_required('escola.can_add_turma')
@@ -45,7 +70,7 @@ def add_turma(request):
             t.numero = form.cleaned_data['numero']
             t.ano = form.cleaned_data['ano']
             t.save()
-            hor = Horario(turma = t)
+            hor = Horario(turma=t)
             hor.save()
 
             # redirect to a new URL:
@@ -61,6 +86,7 @@ def add_turma(request):
     }
 
     return render(request, 'escola/turma/criarForm.html', context)
+
 
 @is_user_escola
 def list_turmas(request):
@@ -266,13 +292,12 @@ def add_aluno(request, pk_turma):
 @is_user_escola
 def list_alunos(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
-    alunos = Aluno.objects.filter(turma=turma)
+    alunos = Aluno.objects.filter(turma=turma).order_by('chamada')
     return render(request, 'escola/alunos/listAlunosPerTurma.html', context={'alunos': alunos, 'turma': turma})
 
 
 @is_user_escola
 def ver_horario(request, turma_pk):
-    print("Vendo horario.")
     horario = get_object_or_404(Horario, turma_id=turma_pk)
     turnos = Turno.objects.all().order_by('cod')
     DIAS_DA_SEMANA = ['Domingo',
@@ -281,8 +306,8 @@ def ver_horario(request, turma_pk):
                       'Quarta-feira',
                       'Quinta-feira',
                       'Sexta-feira',
-                      'Sabado',]
-    DIAS_DA_SEMANA_N = range(1,8)
+                      'Sabado', ]
+    DIAS_DA_SEMANA_N = range(1, 8)
     ta = {}
     for turno in turnos:
         for dia in DIAS_DA_SEMANA_N:
@@ -290,11 +315,12 @@ def ver_horario(request, turma_pk):
             if len(a) > 0:
                 if not dia in ta:
                     ta[dia] = dict()
-                print(f"{dia} = {turno} ++ {a[0]}")
                 ta[dia][turno.cod] = a[0]
-    print(ta)
-    return render(request, 'escola/horario/mostraHorario.html', context={'turnos':turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N':DIAS_DA_SEMANA_N, 'ta':ta, 'turma_pk':turma_pk, 'range': range(1, 6)})
 
+    context = {'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
+               'ta': ta, 'turma_pk': turma_pk, 'range': range(1, 6)}
+
+    return render(request, 'escola/horario/mostraHorario.html', context=context)
 
 
 @is_user_escola
@@ -315,7 +341,6 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     else:
         # Visual
 
-
         turnos = Turno.objects.all().order_by('cod')
         DIAS_DA_SEMANA = ['Domingo',
                           'Segunda-feira',
@@ -333,31 +358,33 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
                     if not dia in ta:
                         ta[dia] = dict()
                     ta[dia][turno.cod] = a[0]
-        if(turno_cod in ta and dia_cod in ta[turno_cod]):
+        if (turno_cod in ta and dia_cod in ta[turno_cod]):
             ini = []
             for periodo in ta[turno_cod][dia_cod].periodo_set.all():
-                ini.append({'materia':periodo.materia})
+                ini.append({'materia': periodo.materia})
             formset = PeriodoFormSet(initial=ini)
         else:
             formset = PeriodoFormSet()
     return render(request, 'escola/horario/editarHorario.html',
-                      context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
-                               'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset':formset, 'range': range(1, 6), 'turma_pk':turma_pk})
+                  context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
+                           'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset': formset,
+                           'range': range(1, 6), 'turma_pk': turma_pk})
 
 
 def edit_aluno():
     # TODO: Implement edit aluno
     return None
 
-
-def delete_aluno():
-    # TODO: Implement delete aluno
-    return None
+@permission_required('escola.can_delete_aluno')
+def delete_aluno(request, aluno_pk):
+    aluno = get_object_or_404(Aluno, pk=aluno_pk)
+    turma = aluno.turma
+    aluno.delete()
+    return HttpResponseRedirect(reverse('list-alunos', args=[turma.pk]))
 
 
 @permission_required('escola.can_add_professor')
 def add_professor(request):
-
     if request.method == 'POST':
 
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
@@ -420,22 +447,27 @@ def add_professor(request):
 
     return render(request, 'escola/professor/formProfessorCreate.html', context)
 
+
 @is_user_escola
 def list_professores(request):
     professores = Professor.objects.all()
     return render(request, 'escola/professor/listProfessores.html', context={'professores': professores})
 
 
+@permission_required("escola.can_edit_professor")
 def edit_professor():
     # TODO Implement edit professor
     return None
 
 
-def delete_professor():
-    # TODO implement delete professor
-    return None
+@permission_required('escola.can_delete_professor')
+def delete_professor(request, pk):
+    prof = get_object_or_404(Professor, pk=pk)
+    prof.delete()
+    return HttpResponseRedirect(reverse('escola:list-professores'))
 
 
+@permission_required('escola.can_add_materia')
 def add_materia(request, turma_pk):
     if request.method == 'POST':
         form = MateriaForm(request.POST)
@@ -446,22 +478,24 @@ def add_materia(request, turma_pk):
             materia.professor = form.cleaned_data['professor']
             materia.abreviacao = form.cleaned_data['abreviacao']
             materia.save()
+            return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
         form = MateriaForm()
 
     context = {
-        'form':form,
+        'form': form,
     }
     return render(request, 'escola/materia/formMateria.html', context=context)
 
 
+@is_user_escola
 def list_materias(request, turma_pk):
-    materias = MateriaDaTurma.objects.filter(turma= get_object_or_404(Turma, pk=turma_pk))
-    return render(request, 'escola/turma/listaTurmas.html', context={'turmas': turmas})
+    turma = get_object_or_404(Turma, pk=turma_pk)
+    materias = MateriaDaTurma.objects.filter(turma= turma)
+    return render(request, 'escola/materia/listMaterias.html', context={'materias': materias, 'turma': turma})
 
-    return None
 
-
+@permission_required('escola.can_edit_materia')
 def edit_materia(request, turma_pk, materia_pk):
     if request.method == 'POST':
         form = MateriaForm(request.POST)
@@ -482,6 +516,8 @@ def edit_materia(request, turma_pk, materia_pk):
     return render(request, 'escola/materia/formMateria.html', context=context)
 
 
-def delete_materia():
-    # TODO implement delete materia
-    return None
+@permission_required('can_delete_materia')
+def delete_materia(request,turma_pk, materia_pk):
+    materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
+    materia.delete()
+    return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))

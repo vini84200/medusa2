@@ -13,6 +13,9 @@
     <th>Numero</th>
     <th>Ano</th>
     <th>Cargos</th>
+    <th>Alunos</th>
+    <th>Materias</th>
+    <th>Horario</th>
     {%if perms.escola.can_edit_turma%}
     <th></th>
     {%endif%}
@@ -28,6 +31,9 @@
     <th>{{turma.numero}}</th>
     <th>{{turma.ano}}</th>
     <th><a href="{% url 'escola:list-cargos' turma.pk %}">CARGOS</a></th>
+    <th><a href="{% url 'escola:list-alunos' turma.pk %}">ALUNOS</a></th>
+    <th><a href="{% url 'escola:list-materias' turma.pk %}">MATERIAS</a></th>
+    <th><a href="{% url 'escola:show-horario' turma.pk %}">HORARIO</a></th>
     {%if perms.escola.can_edit_turma%}
     <th><a href="{% url 'escola:edit-turma' turma.pk %}">EDIT</a></th>
     {%endif%}

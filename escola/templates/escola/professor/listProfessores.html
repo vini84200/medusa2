@@ -23,7 +23,7 @@
     <th>{{prof.user.username}}</th>
     <th>{{prof.nome}}</th>
     {%if perms.escola.can_edit_professor%}
-    <th><a href="{% url 'escola:edit-profesor' prof.pk %}">EDIT</a></th>
+    <th><a href="{% url 'escola:edit-professor' prof.pk %}">EDIT</a></th>
     {%endif%}
     {%if perms.escola.can_delete_professor%}
     <th><a href="{% url 'escola:delete-professor' prof.pk %}">DELETE</a></th>

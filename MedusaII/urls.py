@@ -21,5 +21,6 @@ urlpatterns = [
     path('l/',include('leituras.urls')),
     path('vc/', include('voting.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('escola/', include('escola.urls'))
+    path('escola/', include('escola.urls')),
+    path('',include('escola.urls'))
 ]
