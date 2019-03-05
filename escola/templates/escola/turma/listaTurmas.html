@@ -5,7 +5,10 @@
 
 <h1>Listagem de turmas</h1>
 {%if perms.escola.can_add_turma%}
-    <a href="{% url 'escola:add-turma' %}">Adicionar Turma</a>
+    <a href="{% url 'escola:add-turma' %}">Adicionar Turma</a>|
+{%endif%}
+{%if perms.escola.can_add_turma%}
+    <a href="{% url 'escola:populate-alunos' %}">Adicionar Lista de Alunos</a>
 {%endif%}
 
 <table>
@@ -22,9 +25,6 @@
     {%if perms.escola.can_delete_turma%}
     <th></th>
     {%endif%}
-    {%if perms.escola.can_populate_turma%}
-    <th></th>
-    {%endif%}
 </tr>
 {%for turma in turmas%}
 <tr>
@@ -39,9 +39,6 @@
     {%endif%}
     {%if perms.escola.can_delete_turma%}
     <th><a href="{% url 'escola:delete-turma' turma.pk %}">DELETE</a></th>
-    {%endif%}
-    {%if perms.escola.can_populate_turma%}
-    <th><a href="{% url 'escola:populate-turma' turma.pk %}">POPULATE</a></th>
     {%endif%}
 </tr>
 {%endfor%}

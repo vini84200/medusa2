@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Alunos para impressão</title>
+    <style>
+        .todos{
+        column-count: 3;
+        }
+       .individual{
+        break-inside: avoid-column;
+        }
+    </style>
+</head>
+<body>
+<div class="todos">
+{%for aluno in usuarios%}
+
+<div class="individual">
+    Site: https://medusa2.herokuapp.com<br/>
+    Nome de usuario:{{aluno.0}}<br/>
+    Senha:{{aluno.1}}<br/>
+    Lembre-se de alterar a senha, assim que fizer o primeiro login.
+    <hr/><br/>
+</div>
+{% endfor %}
+</div>
+</body>
+</html>

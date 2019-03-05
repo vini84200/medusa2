@@ -140,8 +140,64 @@ def delete_turma(request, pk):
 
 
 @permission_required('escola.can_populate_turma')
-def populate_turma(request, pk):
-    return None
+def populate_alunos(request):
+    AlunosFormSet = formset_factory(AlunoCreateFormOutLabel, extra=35, max_num=40)
+    formset = AlunosFormSet(data = request.POST or None)
+    if request.method == "POST":
+        usuarios = []
+        if formset.is_valid():
+            for form in formset:
+                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+                if 'nome' in form.cleaned_data:
+                    nome: str = form.cleaned_data['nome']
+                    username = form.cleaned_data['username']
+                    # Gera username a partir do Nome
+                    if not username:
+                        # Cria a base do username a partir do primeiro nome
+                        username = nome.split(' ')[0].lower() + "."
+                        # Adiciona as iniciais depois do ponto
+                        for n in nome.split(' '):
+                            if n[0]:
+                                username += n[0].lower()
+
+                        # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
+                        a = 0
+                        usernameTeste = username
+                        while username_present(usernameTeste):
+                            a += 1
+                            usernameTeste = username + a.__str__()
+                        username = usernameTeste
+
+                    senha = form.cleaned_data['senha']
+                    # Verifica se uma senha foi especificada.
+                    # Caso não, gera uma.
+                    if not senha:
+                        senha = BaseUserManager().make_random_password(length=8,
+                                                                       allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
+
+                    user = User.objects.create_user(username, password=senha)
+                    user.first_name = nome.split(" ")[0]
+                    user.last_name = nome.split(" ")[-1]
+                    user.save()
+                    profile = Profile(user=user, is_aluno=True, is_professor=False)
+                    profile.save()
+                    aluno = Aluno()
+                    aluno.chamada = form.cleaned_data['num_chamada']
+                    aluno.nome = nome
+                    aluno.user = user
+                    turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
+                    aluno.turma = turma
+                    aluno.save()
+                    usuarios.append((username, senha))
+
+            return render(request, 'escola/alunos/alunosList.html', context={'usuarios':usuarios})
+
+    context = {
+        'formset': formset
+    }
+    return render(request, 'escola/alunos/formPopulateAlunos.html', context)
+
+
 
 
 @permission_required('escola.can_add_cargo')
@@ -281,8 +337,7 @@ def add_aluno(request, pk_turma):
             if form.cleaned_data['senha']:
                 return HttpResponseRedirect(reverse('list-alunos', args=[turma.pk]))
             else:
-                return HttpResponse(f"OK! Usuario criado. Username:{username} e senha:{senha} <br/> "
-                                    f"Quando logar, lebrar de alterar a senha.")
+                return render(request, 'escola/alunos/alunosList.html',context={'usuarios': [(username, senha, ), ]})
 
         # If this is a GET (or any other method) create the default form.
     else:
@@ -391,7 +446,7 @@ def delete_aluno(request, aluno_pk):
     aluno = get_object_or_404(Aluno, pk=aluno_pk)
     turma = aluno.turma
     aluno.delete()
-    return HttpResponseRedirect(reverse('list-alunos', args=[turma.pk]))
+    return HttpResponseRedirect(reverse('escola:list-alunos', args=[turma.pk]))
 
 
 @permission_required('escola.can_add_professor')
@@ -445,8 +500,7 @@ def add_professor(request):
             if form.cleaned_data['senha']:
                 return HttpResponseRedirect(reverse('list-professores'))
             else:
-                return HttpResponse(f"OK! Usuario criado. Username:{username} e senha:{senha} <br/> "
-                                    f"Quando logar, lebrar de alterar a senha.")
+                return render(request, 'escola/alunos/alunosList.html',context={'usuarios': [(username, senha, ), ]})
 
         # If this is a GET (or any other method) create the default form.
     else:

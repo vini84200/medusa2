@@ -52,6 +52,21 @@ class AlunoCreateForm(forms.Form):
         return data
 
 
+class AlunoCreateFormOutLabel(forms.Form):
+    num_chamada = forms.IntegerField(label='')
+    nome = forms.CharField(label='')
+    username = forms.CharField(label='', required=False)
+    senha = forms.CharField(label='', required=False)
+    turma = forms.IntegerField(label='')
+
+    def clean_num_chamada(self):
+        data = self.cleaned_data['num_chamada']
+        if data <= 0:
+            raise ValidationError(_("Por favor, salve a chamada com um numero positivo."))
+
+        return data
+
+
 class PeriodoForm(ModelForm):
     class Meta:
         model = Periodo

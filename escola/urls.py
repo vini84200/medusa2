@@ -10,7 +10,7 @@ urlpatterns = [
     path('turmas/add/', views.add_turma, name='add-turma'),
     path('turmas/edit/<int:pk>', views.edit_turma, name='edit-turma'),
     path('turmas/delete/<int:pk>', views.delete_turma, name='delete-turma'),
-    path('turmas/populate/<int:pk>', views.populate_turma, name='populate-turma'),
+    path('alunos/populate/', views.populate_alunos, name='populate-alunos'),
     # cargos
     path('turmas/<int:pk_turma>/cargos', views.list_cargos , name='list-cargos'),
     path('turmas/<int:pk_turma>/cargos/add', views.add_cargo, name='add-cargo'),
