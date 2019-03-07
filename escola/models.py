@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 
 # Create your models here.
@@ -8,7 +8,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, related_name='profile_escola', on_delete=models.CASCADE)
     is_aluno = models.BooleanField('student status', default=False)
     is_professor = models.BooleanField('teacher status', default=False)
-
+    bio = models.TextField(blank=True, null=True)
+    cor = models.CharField(max_length=12, blank=True, null=True)
     def __str__(self):
         return f"Profile de {self.user.__str__()}"
 
@@ -25,6 +26,60 @@ class Turma(models.Model):
 
     def __str__(self):
         return f"Turma {self.numero}"
+
+    def is_lider(self, user: User):
+        lider = self.get_lider()
+        if lider is None:
+            return False
+        elif lider == user:
+            return True
+        else:
+            return False
+
+    def is_regente(self, user: User):
+        regente = self.get_regente()
+        if regente is None:
+            return False
+        elif regente == user:
+            return True
+        else:
+            return False
+
+    def is_user_especial(self, user: User):
+        cargos = self.get_cargo_especial_list()
+        if len(cargos) == 0:
+            return False
+        else:
+            i = 0
+            while i < len(cargos) and not cargos[i].ocupante == user:
+                i = i + 1
+            if i < len(cargos):
+                return False
+            else:
+                return True
+
+    def get_lider_list(self):
+        return self.cargoturma_set.filter(cod_especial=1)
+
+    def get_lider(self):
+        if self.get_lider_list().exists():
+            return self.get_lider_list()[0].ocupante
+        else:
+            return None
+
+    def get_regente_list(self):
+        return self.cargoturma_set.filter(cod_especial=5)
+
+    def get_regente(self):
+        if self.get_regente_list().exists():
+            return self.get_regente_list()[0].ocupante
+        else:
+            return None
+
+    def get_cargo_especial_list(self):
+        return self.cargoturma_set.all()
+
+
 
 
 class CargoTurma(models.Model):

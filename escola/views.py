@@ -1,16 +1,14 @@
 import datetime
 
-from django.shortcuts import render, get_object_or_404, get_list_or_404
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed, HttpResponseForbidden
-from django.template import loader
-from django.urls import reverse
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.base_user import BaseUserManager
-from .models import *
-from .forms import *
+from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import formset_factory
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+
 from .decorators import *
+from .forms import *
 
 
 #   HELPERS
@@ -19,6 +17,10 @@ def username_present(username):
         return True
 
     return False
+
+
+def fun_perm_or_group(perm: str, group):
+    return lambda u: u.has_perm(perm) or u in group
 
 
 #   VIEWS:
@@ -46,12 +48,12 @@ def index(request):
             for dia in DIAS_DA_SEMANA_N:
                 a = TurnoAula.objects.filter(turno=turno, diaDaSemana=dia, horario=horario)
                 if len(a) > 0:
-                    if not dia in ta:
+                    if dia not in ta:
                         ta[dia] = dict()
                     ta[dia][turno.cod] = a[0]
 
         context.update({'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
-                    'ta': ta, 'turma_pk': turma_pk, 'range': range(1, 6)})
+                        'ta': ta, 'turma_pk': turma_pk, 'range': range(1, 6)})
         # TAREFAS
         tarefas = Tarefa.objects.filter(turma__pk=turma_pk, deadline__gte=datetime.date.today()).order_by('deadline')
         tarefas_c = []
@@ -142,7 +144,7 @@ def delete_turma(request, pk):
 @permission_required('escola.can_populate_turma')
 def populate_alunos(request):
     AlunosFormSet = formset_factory(AlunoCreateFormOutLabel, extra=35, max_num=40)
-    formset = AlunosFormSet(data = request.POST or None)
+    formset = AlunosFormSet(data=request.POST or None)
     if request.method == "POST":
         usuarios = []
         if formset.is_valid():
@@ -190,7 +192,7 @@ def populate_alunos(request):
                     aluno.save()
                     usuarios.append((username, senha))
 
-            return render(request, 'escola/alunos/alunosList.html', context={'usuarios':usuarios})
+            return render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
 
     context = {
         'formset': formset
@@ -198,35 +200,34 @@ def populate_alunos(request):
     return render(request, 'escola/alunos/formPopulateAlunos.html', context)
 
 
-
-
 @permission_required('escola.can_add_cargo')
-def add_cargo(request, pk_turma):
+def add_cargo(request, turma_pk):
     if request.method == 'POST':
 
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
-        form = CargoForm(request.POST, turma=get_object_or_404(Turma, pk=pk_turma))
+        form = CargoForm(get_object_or_404(Turma, pk=turma_pk), request.POST)
 
         # Check if the form is valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             cargo = CargoTurma()
             cargo.nome = form.cleaned_data['nome']
-            cargo.turma = get_object_or_404(Turma, pk=pk_turma)
+            cargo.turma = get_object_or_404(Turma, pk=turma_pk)
             cargo.cod_especial = form.cleaned_data['cod_especial']
             cargo.ativo = form.cleaned_data['ativo']
             cargo.ocupante = form.cleaned_data['ocupante']
             cargo.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('escola:list-cargos', args=[pk_turma]))
+            return HttpResponseRedirect(reverse('escola:list-cargos', args=[turma_pk]))
 
         # If this is a GET (or any other method) create the default form.
     else:
         proposed_ativo = True
         proposed_cod_especial = 0
-        form = CargoForm(initial={'ativo': proposed_ativo, 'cod_especial': proposed_cod_especial}, turma=get_object_or_404(Turma, pk=pk_turma))
+        form = CargoForm(initial={'ativo': proposed_ativo, 'cod_especial': proposed_cod_especial},
+                         turma=get_object_or_404(Turma, pk=turma_pk))
 
     context = {
         'form': form,
@@ -248,7 +249,7 @@ def edit_cargo(request, pk):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
-        form = CargoForm(request.POST, turma = cargo.turma)
+        form = CargoForm(request.POST, turma=cargo.turma)
 
         # Check if the form is valid:
         if form.is_valid():
@@ -266,7 +267,7 @@ def edit_cargo(request, pk):
         # If this is a GET (or any other method) create the default form.
     else:
         form = CargoForm(initial={'nome': cargo.nome, 'turma': cargo.turma, 'ocupante': cargo.ocupante,
-                                  'cod_especial': cargo.cod_especial, 'ativo': cargo.ativo}, turma = cargo.turma)
+                                  'cod_especial': cargo.cod_especial, 'ativo': cargo.ativo}, turma=cargo.turma)
 
     context = {
         'form': form,
@@ -275,7 +276,7 @@ def edit_cargo(request, pk):
     return render(request, 'escola/cargos/formCargos.html', context)
 
 
-@permission_required('escola.can_edit_cargo')
+@permission_required('escola.can_delete_cargo')
 def delete_cargo(request, pk):
     a = get_object_or_404(CargoTurma, pk=pk)
     turmapk = a.turma.pk
@@ -283,65 +284,69 @@ def delete_cargo(request, pk):
     return HttpResponseRedirect(reverse('escola:list-cargos', args=[turmapk]))
 
 
-@permission_required('escola.can_add_aluno')
-def add_aluno(request, pk_turma):
+@user_has_perm_or_turma_cargo('escola.can_add_aluno', lider=False, alter_qualquer=True)
+def add_aluno(request, turma_pk, qualquer=False):
     if request.method == 'POST':
-
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
         form = AlunoCreateForm(request.POST)
 
         # Check if the form is valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            nome: str = form.cleaned_data['nome']
-            username = form.cleaned_data['username']
-            # Gera username a partir do Nome
-            if not username:
-                # Cria a base do username a partir do primeiro nome
-                username = nome.split(' ')[0].lower() + "."
-                # Adiciona as iniciais depois do ponto
-                for n in nome.split(' '):
-                    if n[0]:
-                        username += n[0].lower()
-
-                # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
-                a = 0
-                usernameTeste = username
-                while username_present(usernameTeste):
-                    a += 1
-                    usernameTeste = username + a.__str__()
-                username = usernameTeste
-
-            senha = form.cleaned_data['senha']
-            # Verifica se uma senha foi especificada.
-            # Caso não, gera uma.
-            if not senha:
-                senha = BaseUserManager().make_random_password(length=8,
-                                                               allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
-
-            user = User.objects.create_user(username, password=senha)
-            user.first_name = nome.split(" ")[0]
-            user.last_name = nome.split(" ")[-1]
-            user.save()
-            profile = Profile(user=user, is_aluno=True, is_professor=False)
-            profile.save()
-            aluno = Aluno()
-            aluno.chamada = form.cleaned_data['num_chamada']
-            aluno.nome = nome
-            aluno.user = user
             turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
-            aluno.turma = turma
-            aluno.save()
-            # redirect to a new URL:
-            if form.cleaned_data['senha']:
-                return HttpResponseRedirect(reverse('list-alunos', args=[turma.pk]))
+            if qualquer or turma.pk == turma_pk:
+                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+                nome: str = form.cleaned_data['nome']
+                username = form.cleaned_data['username']
+                # Gera username a partir do Nome
+                if not username:
+                    # Cria a base do username a partir do primeiro nome
+                    username = nome.split(' ')[0].lower() + "."
+                    # Adiciona as iniciais depois do ponto
+                    for n in nome.split(' '):
+                        if n[0]:
+                            username += n[0].lower()
+
+                    # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
+                    a = 0
+                    usernameTeste = username
+                    while username_present(usernameTeste):
+                        a += 1
+                        usernameTeste = username + a.__str__()
+                    username = usernameTeste
+
+                senha = form.cleaned_data['senha']
+                # Verifica se uma senha foi especificada.
+                # Caso não, gera uma.
+                if not senha:
+                    senha = BaseUserManager().make_random_password(length=8,
+                                                                   allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
+
+                user = User.objects.create_user(username, password=senha)
+                user.first_name = nome.split(" ")[0]
+                user.last_name = nome.split(" ")[-1]
+                user.save()
+                profile = Profile(user=user, is_aluno=True, is_professor=False)
+                profile.save()
+                aluno = Aluno()
+                aluno.chamada = form.cleaned_data['num_chamada']
+                aluno.nome = nome
+                aluno.user = user
+
+                aluno.turma = turma
+                aluno.save()
+                # redirect to a new URL:
+                if form.cleaned_data['senha']:
+                    return HttpResponseRedirect(reverse('list-alunos', args=[turma.pk]))
+                else:
+                    return render(request, 'escola/alunos/alunosList.html',
+                                  context={'usuarios': [(username, senha,), ]})
             else:
-                return render(request, 'escola/alunos/alunosList.html',context={'usuarios': [(username, senha, ), ]})
+                raise PermissionDenied
 
         # If this is a GET (or any other method) create the default form.
     else:
-        proposed_turma = get_object_or_404(Turma, pk=pk_turma).numero
+        proposed_turma = get_object_or_404(Turma, pk=turma_pk).numero
         form = AlunoCreateForm(initial={'turma': proposed_turma})
 
     context = {
@@ -386,7 +391,7 @@ def ver_horario(request, turma_pk):
 
 
 @is_user_escola
-@permission_required('escola.editar_horario')
+@user_has_perm_or_turma_cargo('escola.editar_horario')
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)
     PeriodoFormSet = formset_factory(PeriodoForm, extra=5, max_num=5)
@@ -437,9 +442,11 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
                            'range': range(1, 6), 'turma_pk': turma_pk})
 
 
+@permission_required('escola.edit_aluno')
 def edit_aluno():
     # TODO: Implement edit aluno
-    return None
+    raise NotImplementedError
+
 
 @permission_required('escola.can_delete_aluno')
 def delete_aluno(request, aluno_pk):
@@ -500,7 +507,7 @@ def add_professor(request):
             if form.cleaned_data['senha']:
                 return HttpResponseRedirect(reverse('list-professores'))
             else:
-                return render(request, 'escola/alunos/alunosList.html',context={'usuarios': [(username, senha, ), ]})
+                return render(request, 'escola/alunos/alunosList.html', context={'usuarios': [(username, senha,), ]})
 
         # If this is a GET (or any other method) create the default form.
     else:
@@ -522,7 +529,7 @@ def list_professores(request):
 @permission_required("escola.can_edit_professor")
 def edit_professor():
     # TODO Implement edit professor
-    return None
+    raise NotImplementedError
 
 
 @permission_required('escola.can_delete_professor')
@@ -532,7 +539,8 @@ def delete_professor(request, pk):
     return HttpResponseRedirect(reverse('escola:list-professores'))
 
 
-@permission_required('escola.can_add_materia')
+# @permission_required('escola.can_add_materia')
+@user_has_perm_or_turma_cargo('escola.can_add_materia')
 def add_materia(request, turma_pk):
     if request.method == 'POST':
         form = MateriaForm(request.POST)
@@ -556,11 +564,12 @@ def add_materia(request, turma_pk):
 @is_user_escola
 def list_materias(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
-    materias = MateriaDaTurma.objects.filter(turma= turma)
+    materias = MateriaDaTurma.objects.filter(turma=turma)
     return render(request, 'escola/materia/listMaterias.html', context={'materias': materias, 'turma': turma})
 
 
-@permission_required('escola.can_edit_materia')
+# @permission_required('escola.can_edit_materia')
+@user_has_perm_or_turma_cargo('escola.can_edit_materia')
 def edit_materia(request, turma_pk, materia_pk):
     if request.method == 'POST':
         form = MateriaForm(request.POST)
@@ -581,19 +590,20 @@ def edit_materia(request, turma_pk, materia_pk):
     return render(request, 'escola/materia/formMateria.html', context=context)
 
 
-@permission_required('can_delete_materia')
-def delete_materia(request,turma_pk, materia_pk):
+@user_has_perm_or_turma_cargo('escola.can_delete_materia')
+def delete_materia(request, turma_pk, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
     materia.delete()
     return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
 
 
+@user_has_perm_or_turma_cargo('escola.can_add_tarefa')
 def add_tarefa(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
     if request.method == 'POST':
         form = TarefaForm(turma, request.POST)
         if form.is_valid():
-            tarefa =Tarefa()
+            tarefa = Tarefa()
             tarefa.titulo = form.cleaned_data['titulo']
             tarefa.turma = turma
             tarefa.materia = form.cleaned_data['materia']
@@ -612,18 +622,20 @@ def add_tarefa(request, turma_pk):
 
 
 def list_tarefa(request, turma_pk):
-    tarefas = Tarefa.objects.filter(turma__pk = turma_pk)
+    tarefas = Tarefa.objects.filter(turma__pk=turma_pk)
     if request.user.profile_escola.is_aluno:
         tarefas_c = []
         for tarefa in tarefas:
             tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
-        return render(request, 'escola/tarefas/listTarefasParaAluno.html', context={'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+        return render(request, 'escola/tarefas/listTarefasParaAluno.html',
+                      context={'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
     else:
         return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas})
 
 
+@user_has_perm_or_turma_cargo('escola.can_edit_tarefa')
 def edit_tarefa(request, tarefa_pk):
-    tarefa = get_object_or_404(Tarefa, pk = tarefa_pk)
+    tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     turma = tarefa.turma
     if request.method == 'POST':
         form = TarefaForm(turma, request.POST)
@@ -637,8 +649,8 @@ def edit_tarefa(request, tarefa_pk):
             tarefa.save()
             return HttpResponseRedirect(reverse('escola:list-tarefas', args=[turma.pk]))
     else:
-        form = TarefaForm(turma=turma,initial={'titulo': tarefa.titulo, 'materia': tarefa.materia, 'tipo': tarefa.tipo,
-                                               'descricao':tarefa.descricao, 'deadline':tarefa.deadline})
+        form = TarefaForm(turma=turma, initial={'titulo': tarefa.titulo, 'materia': tarefa.materia, 'tipo': tarefa.tipo,
+                                                'descricao': tarefa.descricao, 'deadline': tarefa.deadline})
 
     context = {
         'form': form,
@@ -646,6 +658,7 @@ def edit_tarefa(request, tarefa_pk):
     return render(request, 'escola/tarefas/formTarefa.html', context=context)
 
 
+@user_has_perm_or_turma_cargo('escola.can_delete_tarefa')
 def delete_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     tarefa.delete()
@@ -653,7 +666,7 @@ def delete_tarefa(request, tarefa_pk):
 
 
 def concluir_tarefa(request, tarefa_pk):
-    tarefa: Tarefa = get_object_or_404(Tarefa,pk= tarefa_pk)
+    tarefa: Tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     conclusao = tarefa.get_completacao(request.user.aluno)
     conclusao.completo = not conclusao.completo
     conclusao.save()
@@ -667,29 +680,22 @@ def detalhes_tarefa(request, tarefa_pk):
     completacao = None
     if request.user.profile_escola.is_aluno:
         completacao = tarefa.get_completacao(request.user.aluno)
-    print('testando post')
-    print(request.method)
     if request.method == 'POST':
-        print('POSTing')
         form = ComentarioTarefaForm(request.POST)
-        print('FORMado')
         if form.is_valid():
-            print("Valido")
             comentario = TarefaComentario()
             comentario.tarefa = tarefa
             comentario.user = request.user
             comentario.texto = form.cleaned_data['texto']
             comentario.save()
-            print('ja salvo')
             # TODO: enviar msg para o professor, {e outros?}
             return HttpResponseRedirect(reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
-        print('n valido :(')
     else:
         form = ComentarioTarefaForm()
 
     context = {
         'form': form,
-        'tarefa':tarefa,
+        'tarefa': tarefa,
         'comentarios': comentarios,
         'completacao': completacao,
     }

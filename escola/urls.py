@@ -1,5 +1,5 @@
 from django.urls import path
-from django.contrib.auth import views as auth_views
+
 from . import views
 
 app_name = 'escola'
@@ -18,7 +18,7 @@ urlpatterns = [
     path('turmas/cargos/delete/<int:pk>', views.delete_cargo, name='delete-cargo'),
     # alunos
     path('turma/<int:turma_pk>/alunos', views.list_alunos, name='list-alunos'),
-    path('turma/<int:pk_turma>/alunos/add', views.add_aluno, name='add-aluno'),
+    path('turma/<int:turma_pk>/alunos/add', views.add_aluno, name='add-aluno'),
     path('turmas/aluno/<int:aluno_pk>/edit', views.edit_aluno, name='edit-aluno'),
     path('turmas/aluno/<int:aluno_pk>/delete', views.delete_aluno, name='delete-aluno'),
     # horario
