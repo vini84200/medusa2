@@ -101,7 +101,7 @@ class CargoTurma(models.Model):
         permissions = (('can_add_cargo', "Pode criar Cargo"),
                        ('can_edit_cargo', "Pode editar Cargo"),
                        ('can_delete_cargo', "Pode deletar Cargo"),
-                       ('can_designar_cargo', "Pode designar alguem para o cargo"),)
+                       ('can_designar_cargo', "Pode designar alguem para o cargo"),)  # Não usado, depricated?
 
     def __str__(self):
         return f"Cargo {self.nome} da turma {self.turma.numero}"
@@ -114,6 +114,11 @@ class Professor(models.Model):
     def __str__(self):
         return self.nome
 
+    class Meta:
+        permissions = (('can_add_professor', 'Pode adicionar um novo Professor'),
+                       ('can_edit_professor', 'Pode editar um professor'),
+                       ('can_delete_professor', 'Pode deletar um professor'),)
+
 
 class MateriaDaTurma(models.Model):
     nome = models.CharField(max_length=50)
@@ -124,6 +129,10 @@ class MateriaDaTurma(models.Model):
     def __str__(self):
         return self.nome
 
+    permissions = (('can_add_materia', 'Pode adicionar uma novo Materia geral'),
+                   ('can_edit_materia', 'Pode editar uma materia'),
+                   ('can_delete_materia', 'Pode deletar uma materia'),)
+
 
 class Aluno(models.Model):
     chamada = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
@@ -133,6 +142,10 @@ class Aluno(models.Model):
 
     def __str__(self):
         return self.nome
+
+    permissions = (('can_add_aluno', 'Pode adicionar um novo aluno.'),
+                   ('edit_aluno', 'Pode editar um aluno.'),
+                   ('can_delete_aluno', 'Pode deletar um aluno.'),)
 
 
 class ProvaBase(models.Model):
@@ -167,6 +180,8 @@ class Horario(models.Model):
             per = Periodo(turnoAula=turno_aula, num=num)
             per.save()
             return per
+
+    permissions = (('editar_horario', 'Pode Editar o horario de qualquer turma.'),)
 
 
 class Turno(models.Model):
@@ -249,6 +264,10 @@ class Tarefa(models.Model):
             completo = TarefaCompletacao(tarefa=self, aluno=aluno)
             completo.save()
             return completo
+
+    permissions = (('can_add_tarefa', 'Pode adicionar uma nova tarefa.'),
+                   ('can_edit_tarefa', 'Pode editar uma tarefa.'),
+                   ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
 
 
 class TarefaCompletacao(models.Model):

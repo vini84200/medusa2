@@ -597,7 +597,7 @@ def delete_materia(request, turma_pk, materia_pk):
     return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
 
 
-@user_has_perm_or_turma_cargo('escola.can_add_tarefa')
+@user_has_perm_or_turma_cargo('escola.can_add_tarefa', cargo_geral=True)
 def add_tarefa(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
     if request.method == 'POST':
