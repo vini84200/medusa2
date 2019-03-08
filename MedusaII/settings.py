@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'leituras.apps.LeiturasConfig',
     'voting.apps.VotingConfig',
     'escola.apps.EscolaConfig',
+    'django_prometheus',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -50,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 ROOT_URLCONF = 'MedusaII.urls'
@@ -76,17 +79,22 @@ WSGI_APPLICATION = 'MedusaII.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-#DATABASES = {
+
+default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
+default_dbengine = 'django_prometheus.db.backends.sqlite3',
+# DATABASES = {
+#     'default': {
+#         'ENGINE': config('DATABASE_ENGINE', default_dbengine),
+#         'NAME': config('DATABASE_URL', default=default_dburl, cast=dburl),
+#     }
+# }
+# DATABASES = {
 #    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
+#        'ENGINE': 'django_prometheus.db.backends.sqlite3',
 #        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #    }
 #}
-
-
-default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
-
-DATABASES = { 'default': config('DATABASE_URL', default=default_dburl, cast=dburl), }
+DATABASES = {'default': config('DATABASE_URL', default=default_dburl, cast=dburl), }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

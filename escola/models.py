@@ -1,10 +1,11 @@
 from django.contrib.auth.models import User
 from django.db import models
-
+from django_prometheus.models import ExportModelOperationsMixin
 
 # Create your models here.
 
-class Profile(models.Model):
+
+class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
     user = models.OneToOneField(User, related_name='profile_escola', on_delete=models.CASCADE)
     is_aluno = models.BooleanField('student status', default=False)
     is_professor = models.BooleanField('teacher status', default=False)
@@ -14,7 +15,7 @@ class Profile(models.Model):
         return f"Profile de {self.user.__str__()}"
 
 
-class Turma(models.Model):
+class Turma(models.Model, ExportModelOperationsMixin('Turma')):
     numero = models.IntegerField()
     ano = models.IntegerField()
 
@@ -82,7 +83,7 @@ class Turma(models.Model):
 
 
 
-class CargoTurma(models.Model):
+class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
     nome = models.CharField(max_length=50)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     ocupante = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -107,7 +108,7 @@ class CargoTurma(models.Model):
         return f"Cargo {self.nome} da turma {self.turma.numero}"
 
 
-class Professor(models.Model):
+class Professor(models.Model, ExportModelOperationsMixin('Professor')):
     user = models.OneToOneField(User, related_name='professor', on_delete=models.CASCADE)
     nome = models.CharField(max_length=70)
 
@@ -120,7 +121,7 @@ class Professor(models.Model):
                        ('can_delete_professor', 'Pode deletar um professor'),)
 
 
-class MateriaDaTurma(models.Model):
+class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
@@ -134,7 +135,7 @@ class MateriaDaTurma(models.Model):
                    ('can_delete_materia', 'Pode deletar uma materia'),)
 
 
-class Aluno(models.Model):
+class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
     chamada = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
     nome = models.CharField(max_length=70)
     user = models.OneToOneField(User, related_name='aluno', on_delete=models.CASCADE)
@@ -159,7 +160,7 @@ class ProvaAplicada(models.Model):
     nota = models.FloatField(null=True, blank=True)
 
 
-class Horario(models.Model):
+class Horario(models.Model, ExportModelOperationsMixin('Horario')):
     turma = models.OneToOneField(Turma, related_name='horario', on_delete=models.CASCADE)
 
     def get_turno_aula_or_create(self, dia, turno_a):
@@ -172,7 +173,7 @@ class Horario(models.Model):
             return turno
 
     def get_periodo_or_create(self, dia, turno:int, num):
-        turno_aula = self.get_turno_aula_or_create(dia, Turno.get_turno_by_cod(turno))
+        turno_aula = self.get_turno_ausla_or_create(dia, Turno.get_turno_by_cod(turno))
         per = turno_aula.periodo_set.filter(num=num)
         if per:
             return per[0]
@@ -184,7 +185,7 @@ class Horario(models.Model):
     permissions = (('editar_horario', 'Pode Editar o horario de qualquer turma.'),)
 
 
-class Turno(models.Model):
+class Turno(models.Model, ExportModelOperationsMixin('Turno')):
     nome = models.CharField(max_length=30)
     cod = models.PositiveSmallIntegerField()
     horaInicio = models.TimeField()
@@ -208,7 +209,7 @@ class Turno(models.Model):
         return Turno.objects.filter(cod = cod)[0]
 
 
-class TurnoAula(models.Model):
+class TurnoAula(models.Model, ExportModelOperationsMixin('TurnoAula')):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     horario = models.ForeignKey(Horario, on_delete=models.CASCADE)
     DIAS_DA_SEMANA = (
@@ -224,7 +225,7 @@ class TurnoAula(models.Model):
     turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
 
-class Periodo(models.Model):
+class Periodo(models.Model, ExportModelOperationsMixin('Periodo')):
     num = models.PositiveSmallIntegerField()
     turnoAula = models.ForeignKey(TurnoAula, on_delete=models.CASCADE)
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
@@ -242,7 +243,7 @@ class Periodo(models.Model):
         return self.turnoAula.turno.cod
 
 
-class Tarefa(models.Model):
+class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     titulo = models.CharField(max_length=60)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
@@ -270,13 +271,13 @@ class Tarefa(models.Model):
                    ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
 
 
-class TarefaCompletacao(models.Model):
+class TarefaCompletacao(models.Model, ExportModelOperationsMixin('TarefaCompletação')):
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
     completo = models.BooleanField(default=False)
 
 
-class TarefaComentario(models.Model):
+class TarefaComentario(models.Model, ExportModelOperationsMixin('TarefaComentario')):
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     texto = models.TextField()
