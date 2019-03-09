@@ -688,7 +688,15 @@ def detalhes_tarefa(request, tarefa_pk):
             comentario.user = request.user
             comentario.texto = form.cleaned_data['texto']
             comentario.save()
-            # TODO: enviar msg para o professor, {e outros?}
+            # Cria notificação para o professor
+            # TODO: Criar botão de seguir, e adicionar as notificações aqui
+            notificacao_professor = Notificacao(user=tarefa.materia.professor.user,
+                                                title=f"Novo Comentario na tarefa {tarefa.titulo}, "
+                                                f"{turma}", msg=f"{comentario.user.username.title()} comentou na "
+                                                f"tarefa {tarefa.titulo}: \n"
+                                                f"  {comentario.texto}",
+                                                link=reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
+            notificacao_professor.save()
             return HttpResponseRedirect(reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
     else:
         form = ComentarioTarefaForm()

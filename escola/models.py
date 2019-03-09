@@ -11,6 +11,23 @@ class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
     is_professor = models.BooleanField('teacher status', default=False)
     bio = models.TextField(blank=True, null=True)
     cor = models.CharField(max_length=12, blank=True, null=True)
+
+    @property
+    def template_data(self):
+        context = {
+            'notificacoes': self.get_unread_notifications(),
+            'notificacao_count': len(self.get_unread_notifications()),
+        }
+        return context
+
+    def get_unread_notifications(self):
+        return self.user.notificacao_set.filter(visualizado=False).order_by('dataCriado')
+
+    def read_all_notifications(self):
+        for n in self.get_unread_notifications():
+            n.visualizado = True
+            n.save()
+
     def __str__(self):
         return f"Profile de {self.user.__str__()}"
 
@@ -79,8 +96,6 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
 
     def get_cargo_especial_list(self):
         return self.cargoturma_set.all()
-
-
 
 
 class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
@@ -168,11 +183,11 @@ class Horario(models.Model, ExportModelOperationsMixin('Horario')):
         if turno:
             return turno[0]
         else:
-            turno = TurnoAula(turma = self.turma, horario = self, diaDaSemana=dia, turno= turno_a)
+            turno = TurnoAula(turma=self.turma, horario=self, diaDaSemana=dia, turno=turno_a)
             turno.save()
             return turno
 
-    def get_periodo_or_create(self, dia, turno:int, num):
+    def get_periodo_or_create(self, dia, turno: int, num):
         turno_aula = self.get_turno_ausla_or_create(dia, Turno.get_turno_by_cod(turno))
         per = turno_aula.periodo_set.filter(num=num)
         if per:
@@ -283,3 +298,14 @@ class TarefaComentario(models.Model, ExportModelOperationsMixin('TarefaComentari
     texto = models.TextField()
     parent = models.ForeignKey('self',on_delete=models.CASCADE, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
+
+
+class Notificacao(models.Model, ExportModelOperationsMixin('Alerta')):
+    """Notificação para os usuarios, campos obrigatorios: user, title, msg; Campos Livres: link"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    visualizado = models.BooleanField(default=False)
+    dataCriado = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=20)
+    msg = models.TextField()
+    link = models.URLField(blank=True, null=True)
+
