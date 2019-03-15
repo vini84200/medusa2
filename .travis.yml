@@ -10,5 +10,6 @@ services:
   - redis-server
 install:
   - pip install -r requirements.txt
+  - cat "class Mixin(object):pass" >> .vEnv/Lib/site-packages/django_prometheus/models.py
 script:
   - pytest
