@@ -6,3 +6,8 @@ pytz==2018.5
 static3==0.7.0
 virtualenv==16.0.0
 django-prometheus==1.0.15
+django-model-utils==3.1.2
+pytest==4.2.0
+pytest-cov==2.6.1
+pytest-django==3.4.7
+mixer==6.1.3

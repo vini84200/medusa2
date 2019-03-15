@@ -6,6 +6,22 @@
 
 {% block conteudo %}
 
+{%if user.profile_escola.template_data.notificacao_count > 0 %}
+
+<article>
+    <h2>Notificações</h2>
+
+    {% for noti in user.profile_escola.template_data.notificacoes%}
+        {% if noti.link%} <a href="{{noti.link}}">{%endif%}
+        <h3>{{noti.title}}</h3>
+        <p>{{noti.msg}}</p>
+    {% if noti.link%} </a>{%endif%}
+    {%endfor%}
+    {{ user.profile_escola.read_all_notifications}}
+</article>
+{%endif%}
+
+
 {% if request.user.profile_escola.is_aluno%}
 <article>
     <h2>Horario:</h2>

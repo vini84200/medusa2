@@ -3,10 +3,10 @@ import datetime
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import formset_factory
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-
+from django.core.mail import send_mail, mail_admins, mail_managers
 from .decorators import *
 from .forms import *
 
@@ -191,8 +191,9 @@ def populate_alunos(request):
                     aluno.turma = turma
                     aluno.save()
                     usuarios.append((username, senha))
-
-            return render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
+            response = render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
+            mail_managers("Lista de Senhas para uma nova popuação de usarios, imprima", response.content)
+            return response
 
     context = {
         'formset': formset
@@ -611,6 +612,9 @@ def add_tarefa(request, turma_pk):
             tarefa.descricao = form.cleaned_data['descricao']
             tarefa.deadline = form.cleaned_data['deadline']
             tarefa.save()
+            seg = tarefa.get_seguidor_manager()
+            seg.adicionar_seguidor(request.user)
+            seg.adicionar_seguidor(tarefa.materia.professor.user)
             return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
         form = TarefaForm(turma=turma)
@@ -688,7 +692,19 @@ def detalhes_tarefa(request, tarefa_pk):
             comentario.user = request.user
             comentario.texto = form.cleaned_data['texto']
             comentario.save()
-            # TODO: enviar msg para o professor, {e outros?}
+            # Cria notificação para o professor
+            # TODO: Criar botão de seguir, e adicionar as notificações aqui
+            # notificacao_professor = Notificacao(user=tarefa.materia.professor.user,
+            #                                     title=f"Novo Comentario na tarefa {tarefa.titulo}, "
+            #                                     f"{turma}", msg=f"{comentario.user.username.title()} comentou na "
+            #     f"tarefa {tarefa.titulo}: \n"
+            #     f"  {comentario.texto}",
+            #                                     link=reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
+            # notificacao_professor.save()
+            tarefa.get_seguidor_manager().comunicar_todos(title=f"Novo Comentario na tarefa {tarefa.titulo}, "
+                                                                f"{turma}", msg=f"{comentario.user.username.title()} comentou na "
+                                                                f"tarefa {tarefa.titulo}: \n"
+                                                                f"  {comentario.texto}")
             return HttpResponseRedirect(reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
     else:
         form = ComentarioTarefaForm()
@@ -700,3 +716,14 @@ def detalhes_tarefa(request, tarefa_pk):
         'completacao': completacao,
     }
     return render(request, 'escola/tarefas/detalhesTarefa.html', context=context)
+
+
+def sobre(request):
+    return render(request, 'escola/sobre.html')
+
+
+@login_required()
+def seguir_manager(request, pk):
+    seguidor = SeguidorManager.objects.get(pk=pk)
+    seguidor.adicionar_seguidor(request.user)
+    return HttpResponseRedirect(request.GET.get('next', reverse()))

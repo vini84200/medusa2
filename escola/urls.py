@@ -41,4 +41,6 @@ urlpatterns = [
     path('turma/tarefa/<int:tarefa_pk>/delete', views.delete_tarefa, name='delete-tarefa'),
     path('turma/tarefa/<int:tarefa_pk>/concluir', views.concluir_tarefa, name='concluir-tarefa'),
     path('turma/tarefa/<int:tarefa_pk>', views.detalhes_tarefa, name='detalhes-tarefa'),
+    # Seguir
+    path('seguir/<int:pk>', views.seguir_manager, name='seguir'),
 ]
