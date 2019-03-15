@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
-
+from django.urls import reverse
+from model_utils.managers import InheritanceManager
 # Create your models here.
 
 
@@ -96,6 +97,25 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
 
     def get_cargo_especial_list(self):
         return self.cargoturma_set.all()
+
+
+class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager')):
+    link = models.URLField(null=True, blank=True)
+    seguidores = models.ManyToManyField(User)
+
+    def is_seguidor(self, user):
+        return user in self.seguidores
+
+    def adicionar_seguidor(self, user):
+        self.seguidores.add(user)
+        self.save()
+
+    def comunicar_todos(self, title, msg):
+        for seguidor in self.seguidores:
+            noti = Notificacao(seguidor, title, msg)
+            if self.link:
+                noti.link = self.link
+            noti.save()
 
 
 class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
@@ -262,7 +282,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     titulo = models.CharField(max_length=60)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
-    TIPOS =(
+    TIPOS = (
         (1,'Tema'),
         (2,'Trabalho'),
         (3,'Pesquisa'),
@@ -271,6 +291,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
     descricao = models.TextField()
     deadline = models.DateField(verbose_name='Data limite')
+    manager_seguidor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def get_completacao(self, aluno:Aluno):
         completo = self.tarefacompletacao_set.filter(aluno=aluno)
@@ -280,6 +301,16 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
             completo = TarefaCompletacao(tarefa=self, aluno=aluno)
             completo.save()
             return completo
+
+    def get_seguidor_manager(self):
+        if self.manager_seguidor:
+            return self.manager_seguidor
+        else:
+            m = SeguidorManager(link=reverse('detalhes-tarefa', args=[self.pk, ]))
+            m.save()
+            self.manager_seguidor = m
+            self.save()
+            return self.manager_seguidor
 
     permissions = (('can_add_tarefa', 'Pode adicionar uma nova tarefa.'),
                    ('can_edit_tarefa', 'Pode editar uma tarefa.'),
@@ -309,3 +340,51 @@ class Notificacao(models.Model, ExportModelOperationsMixin('Alerta')):
     msg = models.TextField()
     link = models.URLField(blank=True, null=True)
 
+# class Conteudo(models.Model):
+#     materias = models.ManyToManyField(MateriaDaTurma)
+#     nome = models.CharField(max_length=50)
+#     serie = models.IntegerField() # 1 => 1 fundamente, 10=> 1º Medio, 20, 30
+#     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+#
+# class CaixaBase(models.Model, ExportModelOperationsMixin('CaixaBase')):
+#     objects = InheritanceManager()
+#     nome = 'Classe Base'
+#     pode_usar = False
+#     min_w = 0
+#     min_h = 0
+#     max_h = 4
+#     max_w = 3
+#
+#     config_url = ''
+#
+#     pos_x = models.IntegerField()
+#     pos_y = models.IntegerField()
+#
+#     def return_html(self):
+#         return 'Não implementado - Usando metodo da CaixaBase'
+#
+#
+# # class ConteudosCaixa(CaixaBase):
+# #     min_h = 2
+# #     min_w = 1
+# #     max_w = 2
+# #     pode_usar = True
+# #     nome = 'Box de Conteudos'
+# #
+# #     conteudos = models.ManyToManyField(Conteudo)
+# #
+# #     def return_html(self):
+# #         return 'Ainda não implementado - Listará Conteudos'
+#
+# class TestCaixa(CaixaBase):
+#     min_h = 2
+#     min_w = 1
+#     max_w = 2
+#     pode_usar = True
+#     nome = 'Box de Teste - Se você encontrar está entre em contato'
+#
+#     text = models.TextField()
+#
+#     def return_html(self):
+#         return 'Box de Teste - Se você encontrar está entre em contato </br>' \
+#                ''

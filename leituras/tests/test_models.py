@@ -1,9 +1,12 @@
 import pytest
 from mixer.backend.django import mixer
+
 pytestmark = pytest.mark.django_db
+
 
 class TestEditora:
     sch = 'leituras.Editora'
+
     def test_init(self):
         """Testa se uma instancia foi criada."""
         obj = mixer.blend(self.sch)
@@ -11,8 +14,9 @@ class TestEditora:
 
     def test_string(self):
         """Testa se o __str__() retorna valor correto"""
-        obj = mixer.blend(self.sch, nome = "Parabolias")
+        obj = mixer.blend(self.sch, nome="Parabolias")
         assert obj.__str__() is "Parabolias"
+
 
 class TestAutor:
     sch = 'leituras.Autor'
@@ -27,6 +31,7 @@ class TestAutor:
         obj = mixer.blend(self.sch, nome="Nomezinho", sobrenome="Das Laranjeiras")
         print(obj.__str__())
         assert obj.__str__() == "Das Laranjeiras, Nomezinho"
+
 
 class TestSerie:
     sch = 'leituras.Serie'
@@ -48,12 +53,13 @@ class TestSerie:
 
     def test_get_livros_varios(self):
         """Testa a função get_livros(), com diversos livros"""
-        #TODO: VERIFICAR SE OS LIVROS ESTÃO REALMENTE APARECENDO
+        # TODO: VERIFICAR SE OS LIVROS ESTÃO REALMENTE APARECENDO
 
         obj = mixer.blend(self.sch)
-        l1 = mixer.blend("leituras.Livro", serie = obj)
-        l2 = mixer.blend("leituras.Livro", serie = obj)
+        l1 = mixer.blend("leituras.Livro", serie=obj)
+        l2 = mixer.blend("leituras.Livro", serie=obj)
         assert len(obj.get_livros()) is 2, 'Devem haver dois livros na serie'
+
 
 class TestLivro:
     sch = 'leituras.Livro'
@@ -65,8 +71,8 @@ class TestLivro:
 
     def test_string(self):
         """Testa se o __str__() retorna no formato TITULO, por SOBRENOME, NOME"""
-        autor = mixer.blend('leituras.Autor', nome ='Agape', sobrenome='Garismo')
-        obj = mixer.blend(self.sch, titulo="Cafeinas", autor =autor)
+        autor = mixer.blend('leituras.Autor', nome='Agape', sobrenome='Garismo')
+        obj = mixer.blend(self.sch, titulo="Cafeinas", autor=autor)
         print(obj.__str__())
         assert obj.__str__() == "Cafeinas, por Garismo, Agape"
 
@@ -76,15 +82,17 @@ class TestLivro:
 
     def test_set_lido(self):
         """Testa o funcionamento da função"""
-        obj= mixer.blend(self.sch)
+        obj = mixer.blend(self.sch)
         obj.set_lido(True)
         assert obj.lido is True, "O valor deve ser o mesmo que o setado."
         obj.set_lido(False)
         assert obj.lido is False, "O valor deve ser o mesmo que o setado."
 
+
 class TestLeitura:
     sch = 'leituras.Leitura'
     lu = 'leituras.Leitura_Update'
+
     def test_init(self):
         """Testa se uma instancia foi criada."""
         obj = mixer.blend(self.sch)
@@ -102,13 +110,13 @@ class TestLeitura:
         obj = mixer.blend(self.sch)
         print(obj.livro)
         assert obj.is_iniciado() is False
-        lu = mixer.blend(self.lu, leitura = obj)
+        lu = mixer.blend(self.lu, leitura=obj)
         assert obj.is_iniciado() is True
 
     def test_status(self):
         obj = mixer.blend(self.sch)
         assert obj.status() == 'Não iniciada', 'Antes que uma atualização seja feita, o resultado deve ser não iniciado.'
-        luIniciado = mixer.blend(self.lu, tipo = 'IN', leitura = obj)
+        luIniciado = mixer.blend(self.lu, tipo='IN', leitura=obj)
         assert obj.status() == 'Iniciada'
         luEmLeitura = mixer.blend(self.lu, tipo='LD', leitura=obj)
         assert obj.status() == 'Em leitura'
@@ -125,5 +133,3 @@ class TestLeitura:
         luAbandonadab = mixer.blend(self.lu, tipo='AB', leitura=objb)
         print(objb.status())
         assert objb.status() == 'Abadonada'
-
-    
