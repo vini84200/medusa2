@@ -3,7 +3,6 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import django_prometheus.models
 
 
 class Migration(migrations.Migration):
@@ -21,7 +20,6 @@ class Migration(migrations.Migration):
                 ('link', models.URLField(blank=True, null=True)),
                 ('seguidores', models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
             ],
-            bases=(models.Model, django_prometheus.models.Mixin),
         ),
         migrations.AddField(
             model_name='tarefa',
