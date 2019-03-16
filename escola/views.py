@@ -669,6 +669,7 @@ def delete_tarefa(request, tarefa_pk):
     return HttpResponseRedirect(reverse('escola:index'))
 
 
+@login_required
 def concluir_tarefa(request, tarefa_pk):
     tarefa: Tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     conclusao = tarefa.get_completacao(request.user.aluno)
@@ -677,6 +678,7 @@ def concluir_tarefa(request, tarefa_pk):
     return HttpResponseRedirect(reverse('escola:index'))
 
 
+@login_required
 def detalhes_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     turma = tarefa.turma
