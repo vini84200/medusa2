@@ -25,15 +25,18 @@ def fun_perm_or_group(perm: str, group):
 
 #   VIEWS:
 
-
-@login_required
 @is_user_escola
+@login_required
 def index(request):
     context = {'request': request}
     if request.user.profile_escola.is_aluno:
         # HORARIO
         turma_pk = request.user.aluno.turma.pk
-        horario = get_object_or_404(Horario, turma_id=turma_pk) # FIXME Se o aluno não tiver turma isso da 404, não quero
+        try:
+            horario = Horario.objects.get(turma__id=turma_pk)
+        except:
+            horario = Horario(turma=request.user.aluno.turma)
+            horario.save()
         turnos = Turno.objects.all().order_by('cod')
         DIAS_DA_SEMANA = ['Domingo',
                           'Segunda-feira',
@@ -366,7 +369,10 @@ def list_alunos(request, turma_pk):
 
 @is_user_escola
 def ver_horario(request, turma_pk):
-    horario = get_object_or_404(Horario, turma_id=turma_pk)
+    horario = Horario.objects.get(turma__id=turma_pk)
+    if not horario:
+        horario = Horario(turma=Turma.objects.get(pk=turma_pk))
+        horario.save()
     turnos = Turno.objects.all().order_by('cod')
     DIAS_DA_SEMANA = ['Domingo',
                       'Segunda-feira',
@@ -704,9 +710,9 @@ def detalhes_tarefa(request, tarefa_pk):
             #                                     link=reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
             # notificacao_professor.save()
             tarefa.get_seguidor_manager().comunicar_todos(title=f"Novo Comentario na tarefa {tarefa.titulo}, "
-                                                                f"{turma}", msg=f"{comentario.user.username.title()} comentou na "
-                                                                f"tarefa {tarefa.titulo}: \n"
-                                                                f"  {comentario.texto}")
+            f"{turma}", msg=f"{comentario.user.username.title()} comentou na "
+            f"tarefa {tarefa.titulo}: \n"
+            f"  {comentario.texto}")
             return HttpResponseRedirect(reverse('escola:detalhes-tarefa', args=[tarefa_pk]))
     else:
         form = ComentarioTarefaForm()
@@ -723,10 +729,9 @@ def detalhes_tarefa(request, tarefa_pk):
 def sobre(request):
     return render(request, 'escola/sobre.html')
 
-
+@is_user_escola
 @login_required
 def seguir_manager(request, pk):
     seguidor = SeguidorManager.objects.get(pk=pk)
     seguidor.adicionar_seguidor(request.user)
-    print(request.user)
     return HttpResponseRedirect(request.GET.get('next', reverse('escola:index')))

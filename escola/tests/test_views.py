@@ -10,13 +10,6 @@ from django.test.testcases import TestCase
 pytestmark = pytest.mark.django_db
 
 
-def create_aluno():
-    user = mixer.blend(User)
-    profile = mixer.blend(Profile, user=user, is_aluno=True, is_professor=False)
-    aluno = mixer.blend(Aluno, user=user)
-    return aluno
-
-
 def create_aluno(turma=None):
     if not turma:
         turma = mixer.blend(Turma)
@@ -118,6 +111,7 @@ class TestConcluirTarefa(TestCase):
         turma = create_turma()
         tarefa = mixer.blend(Tarefa, turma = turma, materia=turma.materiadaturma_set.all()[0])
         response = c.get(reverse('escola:concluir-tarefa', args=[tarefa.pk,]))
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:concluir-tarefa', args=[1, ]))
 
 
 
@@ -131,8 +125,9 @@ class TestSeguirManager(TestCase):
 
     def test_permited(self):
         c = Client()
+        c.logout()
         response = c.get(reverse(self.page_name, args=[1, ]), follow=True)
-        self.assertRedirects(response, '/accounts/login/?next=' + reverse(self.page_name, args=[1, ]))
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:seguir', args=[1, ]))
 
     def test_cria_conexao(self):
         # Cria o Cliente
@@ -146,8 +141,6 @@ class TestSeguirManager(TestCase):
         # Pega a resposta dessa operação
         response = c.get(reverse('escola:seguir', args=[seguidor.pk, ]), follow=True)
         # Asserts:
-        # Garante que houve um redirecionamento;
-        self.assertEqual(response.status_code, 302)
         # Garante que foi redirecionado para o lado certo;
         self.assertRedirects(response, reverse('escola:index'))
         # Garante que o usuario esta seguindo o Seguidor;
