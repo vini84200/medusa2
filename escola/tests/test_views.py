@@ -17,7 +17,9 @@ def create_aluno():
     return aluno
 
 
-def create_aluno(turma):
+def create_aluno(turma=None):
+    if not turma:
+        turma = mixer.blend(Turma)
     user = mixer.blend(User, turma=turma)
     profile = mixer.blend(Profile, user=user, is_aluno=True, is_professor=False)
     aluno = mixer.blend(Aluno, user=user)
