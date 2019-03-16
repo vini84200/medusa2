@@ -29,7 +29,6 @@ class TestAutor:
     def test_string(self):
         """Testa se o __str__() retorna no formato SOBRENOME, NOME"""
         obj = mixer.blend(self.sch, nome="Nomezinho", sobrenome="Das Laranjeiras")
-        print(obj.__str__())
         assert obj.__str__() == "Das Laranjeiras, Nomezinho"
 
 
@@ -73,7 +72,6 @@ class TestLivro:
         """Testa se o __str__() retorna no formato TITULO, por SOBRENOME, NOME"""
         autor = mixer.blend('leituras.Autor', nome='Agape', sobrenome='Garismo')
         obj = mixer.blend(self.sch, titulo="Cafeinas", autor=autor)
-        print(obj.__str__())
         assert obj.__str__() == "Cafeinas, por Garismo, Agape"
 
     def _test_get_leituras_vazio(self):
@@ -103,12 +101,10 @@ class TestLeitura:
         autor = mixer.blend('leituras.Autor', nome='Agape', sobrenome='Garismo')
         livro = mixer.blend('leituras.Livro', titulo="Cafeinas", autor=autor)
         obj = mixer.blend(self.sch, livro=livro)
-        print(obj.__str__())
         assert obj.__str__() == "Leitura de Cafeinas, por Garismo, Agape"
 
     def test_is_iniciado(self):
         obj = mixer.blend(self.sch)
-        print(obj.livro)
         assert obj.is_iniciado() is False
         lu = mixer.blend(self.lu, leitura=obj)
         assert obj.is_iniciado() is True
@@ -125,11 +121,11 @@ class TestLeitura:
 
         # Testa para Abandono
         objb = mixer.blend(self.sch)
-        print(objb.status())
+        objb.status()
         luIniciadob = mixer.blend(self.lu, tipo='IN', leitura=objb)
-        print(objb.status())
+        objb.status()
         luEmLeiturab = mixer.blend(self.lu, tipo='LD', leitura=objb)
-        print(objb.status())
+        objb.status()
         luAbandonadab = mixer.blend(self.lu, tipo='AB', leitura=objb)
-        print(objb.status())
+        objb.status()
         assert objb.status() == 'Abadonada'

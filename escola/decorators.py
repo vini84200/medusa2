@@ -1,18 +1,19 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from .models import Profile, Turma
 
 
 def is_user_escola(function):
     def wrap(request, *args, **kwargs):
-        try:
-            profile = request.user.profile_escola
-        except:
-            profile = Profile(user=request.user, is_aluno=False, is_professor=False)
-            profile.save()
-
+        user = request.user
+        if not user.is_authenticated:
+            return HttpResponseRedirect(reverse('login')+'?next='+request.path)
+        profile, c = Profile.objects.get_or_create(user=request.user, defaults={'is_aluno': False, 'is_professor': False})
         if (profile.is_aluno
-                or profile.is_aluno
+                or profile.is_professor
                 or request.user.is_staff
                 or request.user.is_superuser):
             return function(request, *args, **kwargs)

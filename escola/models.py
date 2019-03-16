@@ -104,7 +104,7 @@ class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager'
     seguidores = models.ManyToManyField(User)
 
     def is_seguidor(self, user):
-        return user in self.seguidores
+        return user in self.seguidores.all()
 
     def adicionar_seguidor(self, user):
         self.seguidores.add(user)
