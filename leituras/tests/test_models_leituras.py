@@ -121,7 +121,11 @@ class TestLeitura:
 
         # Testa para Abandono
         objb = mixer.blend(self.sch)
+        objb.status()
         luIniciadob = mixer.blend(self.lu, tipo='IN', leitura=objb)
+        objb.status()
         luEmLeiturab = mixer.blend(self.lu, tipo='LD', leitura=objb)
+        objb.status()
         luAbandonadab = mixer.blend(self.lu, tipo='AB', leitura=objb)
+        objb.status()
         assert objb.status() == 'Abadonada'
