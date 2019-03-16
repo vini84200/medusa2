@@ -33,7 +33,7 @@ def index(request):
     if request.user.profile_escola.is_aluno:
         # HORARIO
         turma_pk = request.user.aluno.turma.pk
-        horario = get_object_or_404(Horario, turma_id=turma_pk)
+        horario = get_object_or_404(Horario, turma_id=turma_pk) # FIXME Se o aluno não tiver turma isso da 404, não quero
         turnos = Turno.objects.all().order_by('cod')
         DIAS_DA_SEMANA = ['Domingo',
                           'Segunda-feira',
@@ -722,8 +722,9 @@ def sobre(request):
     return render(request, 'escola/sobre.html')
 
 
-@login_required()
+@login_required
 def seguir_manager(request, pk):
     seguidor = SeguidorManager.objects.get(pk=pk)
     seguidor.adicionar_seguidor(request.user)
-    return HttpResponseRedirect(request.GET.get('next', reverse()))
+    print(request.user)
+    return HttpResponseRedirect(request.GET.get('next', reverse('escola:index')))
