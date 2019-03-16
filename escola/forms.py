@@ -14,7 +14,7 @@ class CriarTurmaForm(forms.Form):
         data = self.cleaned_data['numero']
         # Checks if it is zero or negative.
         if data <= 0:
-            raise ValidationError(_('Numero invalido, por  favor informe um numero positivo'))
+            raise ValidationError(_('Número invalido, por favor informe um número positivo.'))
 
         return data
 
@@ -22,7 +22,7 @@ class CriarTurmaForm(forms.Form):
         data = self.cleaned_data['ano']
         # Checks if it is zero or negative.
         if data <= 1940:
-            raise ValidationError(_('Ano invalido, por  favor informe um ano depois de 1940.'))
+            raise ValidationError(_('Ano invalido, por favor informe um ano posterior a 1940.'))
 
         return data
 

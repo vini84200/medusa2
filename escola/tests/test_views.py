@@ -9,6 +9,11 @@ from django.test.testcases import TestCase
 pytestmark = pytest.mark.django_db
 
 
+def create_admin():
+    user = mixer.blend(User, is_superuser=True)
+    return user
+
+
 def create_aluno(turma=None):
     if not turma:
         turma = mixer.blend(Turma)
@@ -83,7 +88,6 @@ class TestIndex(TestCase):
         self.assertContains(response, '<h2>Proximas tarefas</h2>')
         # TODO: Adicionar mais aspectos;
 
-    # TODO: Verifica as notificações
     def test_aparece_notificacoes(self):
         c = Client()
         aluno = create_aluno()
@@ -134,21 +138,172 @@ class TestIndex(TestCase):
         self.assertEqual(200, response.status_code)
         self.assertContains(response, 'Você tem 2 notificações.')
 
+    def test_nao_aparece_notificacoes_alheias(self):
+        c = Client()
+        aluno = create_aluno()
+        aluno_2 = create_aluno()
+        c.force_login(aluno.user)
+        noti = mixer.blend(Notificacao, user=aluno_2.user, visualizado=False)
+        response = c.get(reverse(self.page_name))
+        self.assertEqual(200, response.status_code)
+        # Como todas as notificações foram lidas, ela deve desapaarecer
+        self.assertNotContains(response, '<h2>Notificações</h2>')
+        self.assertNotContains(response, f'<h3>{noti.title}</h3>')
+        self.assertNotContains(response, f'<p>{noti.msg}</p>')
 
-# class TestAddTurma:
-#   TODO: Testa as permisões
-#   TODO: Testa a criação com dados invalidos.
-#   TODO: Testa com dados corretos.
-# class TestListTurmas:
-#   TODO: Testa que todas as turmas aparecem
+
+class TestAddTurma(TestCase):
+    def test_permission_anonymous(self):
+        c = Client()
+        c.logout()
+        response = c.get(reverse('escola:add-turma'), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:add-turma'))
+
+    def test_permission_user_not_admin(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        response = c.get(reverse('escola:add-turma'), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:add-turma'))
+
+    def test_permission_admin(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        response = c.get(reverse('escola:add-turma'))
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, 'escola/turma/criarForm.html')
+
+    def test_blank_values(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        response = c.post(reverse('escola:add-turma'), {})
+        self.assertFormError(response, 'form', 'numero', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'ano', 'Este campo é obrigatório.')
+
+    def test_create_invalid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        response = c.post(reverse('escola:add-turma'), {'numero': -12, 'ano': 2.4})
+        self.assertFormError(response, 'form', 'numero', 'Número invalido, por favor informe um número positivo.')
+        self.assertFormError(response, 'form', 'ano', 'Informe um número inteiro.')
+        response = c.post(reverse('escola:add-turma'), {'numero': 4.5, 'ano': 1936})
+        self.assertFormError(response, 'form', 'numero', 'Informe um número inteiro.')
+        self.assertFormError(response, 'form', 'ano', 'Ano invalido, por favor informe um ano posterior a 1940.')
+
+    def test_create_with_valid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        response = c.post(reverse('escola:add-turma'), {'numero': 133, 'ano': 2019})
+        self.assertRedirects(response, reverse('escola:list-turmas'))
+
+        turma_criada = Turma.objects.get(numero=133)
+        assert turma_criada.numero == 133
+        assert turma_criada.ano == 2019
+
+
+class TestListTurmas(TestCase):
+    def test_todas_aparecem(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        response = c.get(reverse('escola:list-turmas'))
+        self.assertTemplateUsed(response, 'escola/turma/listaTurmas.html')
+        self.assertEqual(200, response.status_code)
+        assert len(response.context['turmas']) == len(Turma.objects.all())
+        for a in range(len(Turma.objects.all())):
+            assert response.context['turmas'][a] == Turma.objects.all()[a]
+
+
 #   TODO: Testa links de permissões
-# class TestEditTurmas:
-#   TODO: Testa as permissões
-#   TODO: Tenta editar com valores invalidos
-#   TODO: Tenta editar com valores certos
-# class TestDeleteTurmas:
+class TestEditTurmas(TestCase):
+    def test_permission_anonymous(self):
+        c = Client()
+        c.logout()
+        turma = create_turma()
+        response = c.get(reverse('escola:edit-turma', args=[turma.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:edit-turma', args=[turma.pk, ]))
+
+    def test_permission_user_not_admin(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        turma = create_turma()
+        response = c.get(reverse('escola:edit-turma', args=[turma.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:edit-turma', args=[turma.pk, ]))
+
+    def test_permission_admin(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        response = c.get(reverse('escola:edit-turma', args=[turma.pk, ]))
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, 'escola/turma/criarForm.html')
+
+    def test_blank_values(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        response = c.post(reverse('escola:edit-turma', args=[turma.pk, ]), {})
+        self.assertFormError(response, 'form', 'numero', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'ano', 'Este campo é obrigatório.')
+
+    def test_edit_invalid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        response = c.post(reverse('escola:edit-turma', args=[turma.pk, ]), {'numero': -12, 'ano': 2.4})
+        self.assertFormError(response, 'form', 'numero', 'Número invalido, por favor informe um número positivo.')
+        self.assertFormError(response, 'form', 'ano', 'Informe um número inteiro.')
+        response = c.post(reverse('escola:edit-turma', args=[turma.pk, ]), {'numero': 4.5, 'ano': 1936})
+        self.assertFormError(response, 'form', 'numero', 'Informe um número inteiro.')
+        self.assertFormError(response, 'form', 'ano', 'Ano invalido, por favor informe um ano posterior a 1940.')
+
+    def test_edit_with_valid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        response = c.post(reverse('escola:edit-turma', args=[turma.pk, ]), {'numero': 133, 'ano': 2019})
+        self.assertRedirects(response, reverse('escola:list-turmas'))
+
+        turma_criada = Turma.objects.get(numero=133)
+        assert turma_criada.numero == 133
+        assert turma_criada.ano == 2019
+
+class TestDeleteTurmas(TestCase):
 #   TODO: Testa Permissões
-#   TODO: Testa Apagar
+    def test_permission_anonymous(self):
+        c = Client()
+        c.logout()
+        turma = create_turma()
+        response = c.get(reverse('escola:delete-turma', args=[turma.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:delete-turma', args=[turma.pk, ]))
+
+
+    def test_permission_user_not_admin(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        turma = create_turma()
+        response = c.get(reverse('escola:delete-turma', args=[turma.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:delete-turma', args=[turma.pk, ]))
+
+    def test_permission_admin(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        turma_pk = turma.pk
+        response = c.get(reverse('escola:delete-turma', args=[turma.pk, ]))
+        self.assertRedirects(response, reverse('escola:list-turmas'))
+        self.assertRaises(Exception, lambda: Turma.objects.get(pk=turma_pk))
 # class TestPopulateAlunos:
 #   TODO: Testa com dados invalidos
 #   TODO: Testa permissões
