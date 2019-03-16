@@ -28,7 +28,11 @@
         {%endif%}
         {% if user.is_authenticated%}
         Ola, {{user.username}}, <a href="{% url 'logout'%}">Sair</a>, <a href="{% url 'password_change'%}">Alterar senha</a>|
-        Você tem {{user.profile_escola.template_data.notificacao_count}} notificações. <!--TODO: Ajeitar o plural dinamico das notificações -->
+        {%if user.profile_escola.template_data.notificacao_count == 0%}
+            Você não tem notificações.
+        {%else%}
+        Você tem {{user.profile_escola.template_data.notificacao_count}} notifica{{user.profile_escola.template_data.notificacao_count|pluralize:"ção,ções"}}.
+        {%endif%}
         {% endif %}
     </nav>
       

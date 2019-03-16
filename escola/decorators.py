@@ -13,7 +13,7 @@ def is_user_escola(function):
             return HttpResponseRedirect(reverse('login')+'?next='+request.path)
         profile, c = Profile.objects.get_or_create(user=request.user, defaults={'is_aluno': False, 'is_professor': False})
         if (profile.is_aluno
-                or profile.is_aluno
+                or profile.is_professor
                 or request.user.is_staff
                 or request.user.is_superuser):
             return function(request, *args, **kwargs)
