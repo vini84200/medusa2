@@ -277,15 +277,15 @@ class TestEditTurmas(TestCase):
         assert turma_criada.numero == 133
         assert turma_criada.ano == 2019
 
+
 class TestDeleteTurmas(TestCase):
-#   TODO: Testa Permissões
+    #   TODO: Testa Permissões
     def test_permission_anonymous(self):
         c = Client()
         c.logout()
         turma = create_turma()
         response = c.get(reverse('escola:delete-turma', args=[turma.pk, ]), follow=True)
         self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:delete-turma', args=[turma.pk, ]))
-
 
     def test_permission_user_not_admin(self):
         c = Client()
@@ -304,27 +304,192 @@ class TestDeleteTurmas(TestCase):
         response = c.get(reverse('escola:delete-turma', args=[turma.pk, ]))
         self.assertRedirects(response, reverse('escola:list-turmas'))
         self.assertRaises(Exception, lambda: Turma.objects.get(pk=turma_pk))
+
+
 # class TestPopulateAlunos:
 #   TODO: Testa com dados invalidos
 #   TODO: Testa permissões
 #   TODO: Testa com dados, apenas nome e turma
 #   TODO: Testa com nome de usuario ja usado
 #   TODO: Testa com apenas nome de usuario
-# class TestAddCargo:
-#   TODO: Testa Permissões
-#   TODO: Tenta com dados invalidos
-#   TODO: Tenta com dados válidos
-# class TestListCargos:
-#   TODO: Testa que todas os Cargos da turma aparecem
+class TestAddCargo(TestCase):
+    def test_permission_anonymous(self):
+        c = Client()
+        c.logout()
+        turma__pk = create_turma().pk
+        response = c.get(reverse('escola:add-cargo', args=[turma__pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:add-cargo', args=[turma__pk, ]))
+
+    def test_permission_user_not_admin(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        turma__pk = create_turma().pk
+        response = c.get(reverse('escola:add-cargo', args=[turma__pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:add-cargo', args=[turma__pk, ]))
+
+    def test_permission_admin(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        response = c.get(reverse('escola:add-cargo', args=[create_turma().pk, ]))
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, 'escola/cargos/formCargos.html')
+
+    def test_blank_values(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        response = c.post(reverse('escola:add-cargo', args=[create_turma().pk, ]), {})
+        self.assertFormError(response, 'form', 'nome', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'ocupante', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'cod_especial', 'Este campo é obrigatório.')
+
+    def test_create_invalid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        response = c.post(reverse('escola:add-cargo', args=[create_turma().pk, ]), {'nome': 12, 'ocupante': 2.4,
+                                                                                    'cod_especial': 'ola', 'ativo': 2})
+        self.assertFormError(response, 'form', 'ocupante',
+                             'Faça uma escolha válida. Sua escolha não é uma das disponíveis.')
+        self.assertFormError(response, 'form', 'cod_especial',
+                             'Faça uma escolha válida. ola não é uma das escolhas disponíveis.')
+
+    def test_create_with_valid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        profe = create_professor()
+        turma__pk = create_turma().pk
+        response = c.post(reverse('escola:add-cargo', args=[turma__pk, ]),
+                          {'nome': 'Regencia', 'ocupante': profe.user.pk.__str__(),
+                           'cod_especial': '5', 'ativo': 'True'})
+        self.assertRedirects(response, reverse('escola:list-cargos', args=[turma__pk, ]))
+
+        cargo_criado: CargoTurma = CargoTurma.objects.get(nome='Regencia')
+        assert cargo_criado.turma is not None
+        assert cargo_criado.nome == 'Regencia'
+        assert cargo_criado.ativo is True
+        assert cargo_criado.cod_especial == 5
+        assert cargo_criado.ocupante == profe.user
+
+
+class TestListCargos(TestCase):
+    def test_todas_aparecem(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        turma = create_turma()
+        response = c.get(reverse('escola:list-cargos', args=[turma.pk, ]))
+        self.assertTemplateUsed(response, 'escola/cargos/listCargos.html')
+        self.assertEqual(200, response.status_code)
+        assert len(response.context['cargos']) == len(CargoTurma.objects.filter(turma=turma))
+        for a in range(len(CargoTurma.objects.filter(turma=turma))):
+            assert response.context['cargos'][a] == CargoTurma.objects.filter(turma=turma)[a]
+
+
 #   TODO: Testa as permisões dos Links
-# class TestEditCargo:
-#   TODO: Testa permissões
-#   TODO: Testa com dados invalidos
-#   TODO: Testa com dados validos
-# class TestDeleteCargo:
-#   TODO: Testa Permissão
-#   TODO: Testa apagar
-# class TestAddAluno:
+class TestEditCargo(TestCase):
+    def test_permission_anonymous(self):
+        c = Client()
+        c.logout()
+        cargo = mixer.blend(CargoTurma)
+        response = c.get(reverse('escola:edit-cargo', args=[cargo.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:edit-cargo', args=[cargo.pk, ]))
+
+    def test_permission_user_not_admin(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        cargo = mixer.blend(CargoTurma)
+        response = c.get(reverse('escola:edit-cargo', args=[cargo.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:edit-cargo', args=[cargo.pk, ]))
+
+    def test_permission_admin(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        cargo = mixer.blend(CargoTurma)
+        response = c.get(reverse('escola:edit-cargo', args=[cargo.pk, ]))
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, 'escola/cargos/formCargos.html')
+
+    def test_blank_values(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        cargo = mixer.blend(CargoTurma)
+        response = c.post(reverse('escola:edit-cargo', args=[cargo.pk, ]), {})
+        self.assertFormError(response, 'form', 'nome', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'ocupante', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'cod_especial', 'Este campo é obrigatório.')
+
+    def test_create_invalid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        cargo = mixer.blend(CargoTurma)
+        response = c.post(reverse('escola:edit-cargo', args=[cargo.pk, ]), {'nome': 12, 'ocupante': 2.4,
+                                                                            'cod_especial': 'ola', 'ativo': 2})
+        self.assertFormError(response, 'form', 'ocupante',
+                             'Faça uma escolha válida. Sua escolha não é uma das disponíveis.')
+        self.assertFormError(response, 'form', 'cod_especial',
+                             'Faça uma escolha válida. ola não é uma das escolhas disponíveis.')
+
+    def test_create_with_valid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        profe = create_professor()
+        turma = create_turma()
+        cargo = mixer.blend(CargoTurma, turma=turma)
+        response = c.post(reverse('escola:edit-cargo', args=[cargo.pk, ]),
+                          {'nome': 'Regencia', 'ocupante': profe.user.pk.__str__(),
+                           'cod_especial': '5', 'ativo': 'True'})
+        print(turma)
+        print(turma.pk)
+        self.assertRedirects(response, reverse('escola:list-cargos', args=[turma.pk, ]))
+
+        cargo_criado: CargoTurma = CargoTurma.objects.get(nome='Regencia')
+        assert cargo_criado.turma is not None
+        assert cargo_criado.nome == 'Regencia'
+        assert cargo_criado.ativo is True
+        assert cargo_criado.cod_especial == 5
+        assert cargo_criado.ocupante == profe.user
+
+
+class TestDeleteCargo(TestCase):
+    def test_permission_anonymous(self):
+        c = Client()
+        c.logout()
+        cargo = mixer.blend(CargoTurma)
+        response = c.get(reverse('escola:delete-cargo', args=[cargo.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:delete-cargo', args=[cargo.pk, ]))
+
+    def test_permission_user_not_admin(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        cargo = mixer.blend(CargoTurma)
+        response = c.get(reverse('escola:delete-cargo', args=[cargo.pk, ]), follow=True)
+        self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:delete-cargo', args=[cargo.pk, ]))
+
+    def test_permission_admin(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        turma_pk = turma.pk
+        cargo = mixer.blend(CargoTurma, turma=turma)
+        cargo_pk = cargo.pk
+        response = c.get(reverse('escola:delete-cargo', args=[cargo.pk, ]))
+        self.assertRedirects(response, reverse('escola:list-cargos', args=[turma_pk,]))
+        self.assertRaises(Exception, lambda: CargoTurma.objects.get(pk=cargo_pk))
+
+
+#class TestAddAluno(TestCase):
+
 #   TODO: Testa permissões
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos

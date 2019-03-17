@@ -253,7 +253,7 @@ def edit_cargo(request, pk):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
-        form = CargoForm(request.POST, turma=cargo.turma)
+        form = CargoForm(cargo.turma, request.POST)
 
         # Check if the form is valid:
         if form.is_valid():
@@ -266,7 +266,7 @@ def edit_cargo(request, pk):
             cargo.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('escola:list-cargos', args=[cargo.turma]))
+            return HttpResponseRedirect(reverse('escola:list-cargos', args=[cargo.turma.pk]))
 
         # If this is a GET (or any other method) create the default form.
     else:

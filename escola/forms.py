@@ -34,8 +34,8 @@ class CargoForm(ModelForm):
 
     def __init__(self, turma, *args, **kwargs):
         super(CargoForm, self).__init__(*args, **kwargs)
-        self.fields['ocupante'].queryset = User.objects.filter(aluno__turma=turma)
-
+        self.fields['ocupante'].queryset = User.objects.filter(aluno__turma=turma) | \
+                                           User.objects.filter(profile_escola__is_professor=True)
 
 class AlunoCreateForm(forms.Form):
     num_chamada = forms.IntegerField()
