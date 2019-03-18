@@ -10,7 +10,7 @@ from django.core.mail import send_mail, mail_admins, mail_managers
 from .decorators import *
 from .forms import *
 
-
+from .models import *
 #   HELPERS
 def username_present(username):
     if User.objects.filter(username=username).exists():
@@ -19,8 +19,6 @@ def username_present(username):
     return False
 
 
-def fun_perm_or_group(perm: str, group):
-    return lambda u: u.has_perm(perm) or u in group
 
 
 #   VIEWS:
@@ -253,7 +251,7 @@ def edit_cargo(request, pk):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
-        form = CargoForm(request.POST, turma=cargo.turma)
+        form = CargoForm(cargo.turma, request.POST)
 
         # Check if the form is valid:
         if form.is_valid():
@@ -266,7 +264,7 @@ def edit_cargo(request, pk):
             cargo.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('escola:list-cargos', args=[cargo.turma]))
+            return HttpResponseRedirect(reverse('escola:list-cargos', args=[cargo.turma.pk]))
 
         # If this is a GET (or any other method) create the default form.
     else:
@@ -341,7 +339,7 @@ def add_aluno(request, turma_pk, qualquer=False):
                 aluno.save()
                 # redirect to a new URL:
                 if form.cleaned_data['senha']:
-                    return HttpResponseRedirect(reverse('list-alunos', args=[turma.pk]))
+                    return HttpResponseRedirect(reverse('escola:list-alunos', args=[turma.pk]))
                 else:
                     return render(request, 'escola/alunos/alunosList.html',
                                   context={'usuarios': [(username, senha,), ]})
