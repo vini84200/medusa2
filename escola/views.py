@@ -10,7 +10,7 @@ from django.core.mail import send_mail, mail_admins, mail_managers
 from .decorators import *
 from .forms import *
 
-
+from .models import *
 #   HELPERS
 def username_present(username):
     if User.objects.filter(username=username).exists():
@@ -19,8 +19,6 @@ def username_present(username):
     return False
 
 
-def fun_perm_or_group(perm: str, group):
-    return lambda u: u.has_perm(perm) or u in group
 
 
 #   VIEWS:
@@ -341,7 +339,7 @@ def add_aluno(request, turma_pk, qualquer=False):
                 aluno.save()
                 # redirect to a new URL:
                 if form.cleaned_data['senha']:
-                    return HttpResponseRedirect(reverse('list-alunos', args=[turma.pk]))
+                    return HttpResponseRedirect(reverse('escola:list-alunos', args=[turma.pk]))
                 else:
                     return render(request, 'escola/alunos/alunosList.html',
                                   context={'usuarios': [(username, senha,), ]})

@@ -1,5 +1,8 @@
+from django.contrib.auth import authenticate
 from django.test.client import Client
 import pytest
+from django.utils.datetime_safe import datetime
+
 from escola.models import *
 from django.contrib.auth.models import User
 from mixer.backend.django import mixer
@@ -7,6 +10,9 @@ from django.urls import reverse
 from django.test.testcases import TestCase
 
 pytestmark = pytest.mark.django_db
+
+
+# TODO Test username_present()
 
 
 def create_admin():
@@ -31,7 +37,7 @@ def create_professor():
 
 
 def create_turma():
-    turma = mixer.blend(Turma)
+    turma = mixer.blend(Turma, ano=datetime.today().year)
     aluno = create_aluno(turma=turma)
     prof = create_professor()
     materia = mixer.blend(MateriaDaTurma, professor=prof, turma=turma)
@@ -447,8 +453,6 @@ class TestEditCargo(TestCase):
         response = c.post(reverse('escola:edit-cargo', args=[cargo.pk, ]),
                           {'nome': 'Regencia', 'ocupante': profe.user.pk.__str__(),
                            'cod_especial': '5', 'ativo': 'True'})
-        print(turma)
-        print(turma.pk)
         self.assertRedirects(response, reverse('escola:list-cargos', args=[turma.pk, ]))
 
         cargo_criado: CargoTurma = CargoTurma.objects.get(nome='Regencia')
@@ -484,15 +488,117 @@ class TestDeleteCargo(TestCase):
         cargo = mixer.blend(CargoTurma, turma=turma)
         cargo_pk = cargo.pk
         response = c.get(reverse('escola:delete-cargo', args=[cargo.pk, ]))
-        self.assertRedirects(response, reverse('escola:list-cargos', args=[turma_pk,]))
+        self.assertRedirects(response, reverse('escola:list-cargos', args=[turma_pk, ]))
         self.assertRaises(Exception, lambda: CargoTurma.objects.get(pk=cargo_pk))
 
 
-#class TestAddAluno(TestCase):
+class TestAddAluno(TestCase):
+    def test_permission_anonymous(self):
+        c = Client()
+        c.logout()
+        turma__pk = create_turma().pk
+        response = c.get(reverse('escola:add-aluno', args=[turma__pk, ]), follow=True)
+        self.assertEqual(403, response.status_code)
 
-#   TODO: Testa permissões
-#   TODO: Testa com dados invalidos
-#   TODO: Testa com dados validos
+    def test_permission_user_not_admin(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        turma__pk = create_turma().pk
+        response = c.get(reverse('escola:add-aluno', args=[turma__pk, ]), follow=True)
+        self.assertEqual(403, response.status_code)
+
+    def test_permission_admin(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma__pk = create_turma().pk
+        response = c.get(reverse('escola:add-aluno', args=[turma__pk, ]))
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, 'escola/alunos/formAlunosCreate.html')
+
+    def test_allows_prof_regente(self):
+        c = Client()
+        prof = create_professor()
+        c.force_login(prof.user)
+        turma = create_turma()
+        cargo = mixer.blend(CargoTurma, turma=turma, ocupante=prof.user, cod_especial=5, ativo=True)
+        turma__pk = turma.pk
+        response = c.get(reverse('escola:add-aluno', args=[turma__pk, ]))
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, 'escola/alunos/formAlunosCreate.html')
+
+    def test_blank_values(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma__pk = create_turma().pk
+        response = c.post(reverse('escola:add-aluno', args=[turma__pk, ]), {})
+        self.assertFormError(response, 'form', 'num_chamada', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'nome', 'Este campo é obrigatório.')
+        self.assertFormError(response, 'form', 'turma', 'Este campo é obrigatório.')
+
+    def test_create_invalid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        turma__pk = turma.pk
+        response = c.post(reverse('escola:add-aluno', args=[turma__pk, ]),
+                          {'num_chamada': 'KUHAKU', 'nome': 1341, 'turma': 'PEDRO'})
+        self.assertFormError(response, 'form', 'num_chamada', 'Informe um número inteiro.')
+        self.assertFormError(response, 'form', 'turma', 'Informe um número inteiro.')
+        user = create_aluno().user
+        response = c.post(reverse('escola:add-aluno', args=[turma__pk, ]),
+                          {'num_chamada': 'KUHAKU', 'nome': 1341, 'username': user.username, 'senha': '1', 'turma': 'PEDRO'})
+        self.assertFormError(response, 'form', 'num_chamada', 'Informe um número inteiro.')
+        self.assertFormError(response, 'form', 'turma', 'Informe um número inteiro.')
+        self.assertFormError(response, 'form', 'username', 'Nome de usuario já tomado, por favor escolha outro.')
+        self.assertFormError(response, 'form', 'senha', 'Esta senha é muito curta. Ela precisa conter pelo menos 8 '
+                                                        'caracteres.')
+        self.assertFormError(response, 'form', 'senha', 'Esta senha é muito comum.')
+        self.assertFormError(response, 'form', 'senha', 'Esta senha é inteiramente numérica.')
+
+    def test_create_with_valid(self):
+        c = Client()
+        admin = create_admin()
+        c.force_login(admin)
+        turma = create_turma()
+        turma__pk = turma.pk
+        response = c.post(reverse('escola:add-aluno', args=[turma.pk, ]),
+                          {'num_chamada': 12, 'nome': 'Pedro Alvares Cabral', 'turma': turma.numero})
+        print(response)
+        self.assertEqual(200, response.status_code)
+
+        aluno_criado = Aluno.objects.get(nome='Pedro Alvares Cabral')
+        usuario_criado = aluno_criado.user
+        assert aluno_criado.nome == 'Pedro Alvares Cabral'
+        assert aluno_criado.chamada == 12
+        assert usuario_criado == User.objects.get(username=response.context['usuarios'][0][0])
+        assert authenticate(username=response.context['usuarios'][0][0], password=response.context['usuarios'][0][1]).pk == usuario_criado.pk
+        assert aluno_criado.turma == turma
+        assert aluno_criado.user.profile_escola.is_aluno
+        assert not aluno_criado.user.profile_escola.is_professor
+
+        response = c.post(reverse('escola:add-aluno', args=[turma.numero, ]),
+                          {'num_chamada': 12, 'nome': 'Thomas C Marshall', 'turma': turma.numero,
+                           'username': 'thomis6343', 'senha': 'vc3hz0atu'})
+        print(response)
+
+        self.assertRedirects(response, reverse('escola:list-alunos', args=[turma__pk, ]))
+
+        aluno_criado = Aluno.objects.get(nome='Thomas C Marshall')
+        usuario_criado = aluno_criado.user
+        assert aluno_criado.nome == 'Thomas C Marshall'
+        assert aluno_criado.chamada == 12
+        assert usuario_criado.username == 'thomis6343'
+        assert authenticate(username='thomis6343',
+                            password='vc3hz0atu').pk == usuario_criado.pk
+        assert aluno_criado.turma == turma
+        assert aluno_criado.user.profile_escola.is_aluno
+        assert not aluno_criado.user.profile_escola.is_professor
+
+
 # class TestListAlunos:
 #   TODO: Testa que todas aparacem
 #   TODO: Testa links de permissões

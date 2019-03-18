@@ -165,7 +165,8 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     def __str__(self):
         return self.nome
 
-    permissions = (('can_add_materia', 'Pode adicionar uma novo Materia geral'),
+    class Meta:
+        permissions = (('can_add_materia', 'Pode adicionar uma novo Materia geral'),
                    ('can_edit_materia', 'Pode editar uma materia'),
                    ('can_delete_materia', 'Pode deletar uma materia'),)
 
@@ -179,7 +180,8 @@ class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
     def __str__(self):
         return self.nome
 
-    permissions = (('can_add_aluno', 'Pode adicionar um novo aluno.'),
+    class Meta:
+        permissions = (('can_add_aluno', 'Pode adicionar um novo aluno.'),
                    ('edit_aluno', 'Pode editar um aluno.'),
                    ('can_delete_aluno', 'Pode deletar um aluno.'),)
 
@@ -312,7 +314,8 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
             self.save()
             return self.manager_seguidor
 
-    permissions = (('can_add_tarefa', 'Pode adicionar uma nova tarefa.'),
+    class Meta:
+        permissions = (('can_add_tarefa', 'Pode adicionar uma nova tarefa.'),
                    ('can_edit_tarefa', 'Pode editar uma tarefa.'),
                    ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
 
