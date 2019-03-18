@@ -8,3 +8,4 @@
 .env
 /htmlcov/
 .coverage
+escola/tests/htmlcov
