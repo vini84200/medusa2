@@ -1,5 +1,6 @@
 import datetime
 
+import guardian
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import formset_factory
@@ -9,6 +10,7 @@ from django.urls import reverse
 from django.core.mail import send_mail, mail_admins, mail_managers
 from .decorators import *
 from .forms import *
+from guardian.decorators import permission_required as permission_required_obj
 
 from .models import *
 #   HELPERS
@@ -202,6 +204,29 @@ def populate_alunos(request):
     return render(request, 'escola/alunos/formPopulateAlunos.html', context)
 
 
+def dar_permissa_user(ocupante, cargo: CargoTurma):
+    if cargo.cod_especial == 1:
+        # PERMISSÔES DE LIDER
+        group: Group = cargo.turma.get_or_create_lider_group()
+        for user in group.user_set:
+            group.user_set.remove(user)
+        ocupante.groups.add(group)
+    if cargo.cod_especial == 2:
+        # PERMISSÔES DE VICELIDER
+        group: Group = cargo.turma.get_or_create_vicelider_group()
+        for user in group.user_set:
+            group.user_set.remove(user)
+        ocupante.groups.add(group)
+    if cargo.cod_especial == 5:
+        # PERMISSÔES DE REGENTE
+        group: Group = cargo.turma.get_or_create_regente_group()
+        for user in group.user_set:
+            group.user_set.remove(user)
+        ocupante.groups.add(group)
+        # Permissões de Regente
+
+
+
 @permission_required('escola.can_add_cargo')
 def add_cargo(request, turma_pk):
     if request.method == 'POST':
@@ -220,6 +245,8 @@ def add_cargo(request, turma_pk):
             cargo.ativo = form.cleaned_data['ativo']
             cargo.ocupante = form.cleaned_data['ocupante']
             cargo.save()
+
+            dar_permissa_user(cargo.ocupante, cargo)
 
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('escola:list-cargos', args=[turma_pk]))
@@ -286,7 +313,8 @@ def delete_cargo(request, pk):
     return HttpResponseRedirect(reverse('escola:list-cargos', args=[turmapk]))
 
 
-@user_has_perm_or_turma_cargo('escola.can_add_aluno', lider=False, alter_qualquer=True)
+#@user_has_perm_or_turma_cargo('escola.can_add_aluno', lider=False, alter_qualquer=True)
+@permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'))
 def add_aluno(request, turma_pk, qualquer=False):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms

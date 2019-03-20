@@ -1,8 +1,11 @@
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
 from django.urls import reverse
+from guardian.shortcuts import assign_perm
 from model_utils.managers import InheritanceManager
+
+
 # Create your models here.
 
 
@@ -36,13 +39,67 @@ class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
 class Turma(models.Model, ExportModelOperationsMixin('Turma')):
     numero = models.IntegerField()
     ano = models.IntegerField()
+    lider = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
+    vicelider = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True, blank=True,
+                                  related_name='turma_vicelider')
+    regente = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
 
     class Meta:
         permissions = (('can_add_turma', "Pode criar turmas"),
                        ('can_edit_turma', "Pode editar turmas"),
                        ('can_delete_turma', "Pode deletar turmas"),
-                       ('can_populate_turma', "Pode popular turmas"),)
+                       ('can_populate_turma', "Pode popular turmas"),
+                       ('can_add_aluno', "Pode adicionar um aluno a turma."))
 
+    def get_or_create_lider_group(self):
+        if self.lider:
+            return self.lider
+        else:
+            if Group.objects.filter(name=f'lider_turma_{self.pk}').exists:
+                self.lider = Group.objects.get(name=f'lider_turma_{self.pk}')
+            else:
+                self.lider = Group.objects.create(name=f'lider_turma_{self.pk}')
+            assign_perm('escola.editar_horario', self.lider, self.horario)
+            assign_perm('escola.can_add_materia', self.lider, self)
+            assign_perm('escola.can_edit_materia', self.lider, self)
+            assign_perm('escola.can_delete_materia', self.lider, self)
+            assign_perm('escola.can_add_tarefa', self.lider, self)
+            assign_perm('escola.can_edit_tarefa', self.lider, self)
+            assign_perm('escola.can_delete_tarefa', self.lider, self)
+            return self.lider
+
+    def get_or_create_vicelider_group(self):
+        if self.vicelider:
+            return self.vicelider
+        else:
+            if Group.objects.filter(name=f'vicelider_turma_{self.pk}').exists:
+                self.vicelider = Group.objects.get(name=f'vicelider_turma_{self.pk}')
+            else:
+                self.vicelider = Group.objects.create(name=f'vicelider_turma_{self.pk}')
+            assign_perm('escola.editar_horario', self.vicelider, self)
+            assign_perm('escola.can_add_materia', self.vicelider, self)
+            assign_perm('escola.can_edit_materia', self.vicelider, self)
+            assign_perm('escola.can_add_tarefa', self.vicelider, self)
+            assign_perm('escola.can_edit_tarefa', self.vicelider, self)
+            return self.vicelider
+
+    def get_or_create_regente_group(self):
+        if self.regente:
+            return self.regente
+        else:
+            if Group.objects.filter(name=f'regente_turma_{self.pk}').exists:
+                self.regente = Group.objects.get(name=f'regente_turma_{self.pk}')
+            else:
+                self.regente = Group.objects.create(name=f'regente_turma_{self.pk}')
+            assign_perm('escola.can_add_aluno', self.regente, self)
+            assign_perm('escola.editar_horario', self.regente, self)
+            assign_perm('escola.can_add_materia', self.regente, self)
+            assign_perm('escola.can_edit_materia', self.regente, self)
+            assign_perm('escola.can_delete_materia', self.regente, self)
+            assign_perm('escola.can_add_tarefa', self.regente, self)
+            assign_perm('escola.can_edit_tarefa', self.regente, self)
+            assign_perm('escola.can_delete_tarefa', self.regente, self)
+            return self.regente
     def __str__(self):
         return f"Turma {self.numero}"
 
@@ -166,9 +223,9 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
         return self.nome
 
     class Meta:
-        permissions = (('can_add_materia', 'Pode adicionar uma novo Materia geral'),
-                   ('can_edit_materia', 'Pode editar uma materia'),
-                   ('can_delete_materia', 'Pode deletar uma materia'),)
+        permissions = (('can_add_materia', 'Pode adicionar uma novo Materia'),
+                       ('can_edit_materia', 'Pode editar uma materia'),
+                       ('can_delete_materia', 'Pode deletar uma materia'),)
 
 
 class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
@@ -181,9 +238,8 @@ class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
         return self.nome
 
     class Meta:
-        permissions = (('can_add_aluno', 'Pode adicionar um novo aluno.'),
-                   ('edit_aluno', 'Pode editar um aluno.'),
-                   ('can_delete_aluno', 'Pode deletar um aluno.'),)
+        permissions = (('edit_aluno', 'Pode editar um aluno.'),
+                       ('can_delete_aluno', 'Pode deletar um aluno.'),)
 
 
 class ProvaBase(models.Model):
@@ -243,7 +299,7 @@ class Turno(models.Model, ExportModelOperationsMixin('Turno')):
         return self.nome
 
     def get_turno_by_cod(cod):
-        return Turno.objects.filter(cod = cod)[0]
+        return Turno.objects.filter(cod=cod)[0]
 
 
 class TurnoAula(models.Model, ExportModelOperationsMixin('TurnoAula')):
@@ -285,17 +341,17 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
     TIPOS = (
-        (1,'Tema'),
-        (2,'Trabalho'),
-        (3,'Pesquisa'),
-        (4,'Redação'),
+        (1, 'Tema'),
+        (2, 'Trabalho'),
+        (3, 'Pesquisa'),
+        (4, 'Redação'),
     )
     tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
     descricao = models.TextField()
     deadline = models.DateField(verbose_name='Data limite')
     manager_seguidor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
 
-    def get_completacao(self, aluno:Aluno):
+    def get_completacao(self, aluno: Aluno):
         completo = self.tarefacompletacao_set.filter(aluno=aluno)
         if len(completo) > 0:
             return completo[0]
@@ -316,8 +372,8 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
 
     class Meta:
         permissions = (('can_add_tarefa', 'Pode adicionar uma nova tarefa.'),
-                   ('can_edit_tarefa', 'Pode editar uma tarefa.'),
-                   ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
+                       ('can_edit_tarefa', 'Pode editar uma tarefa.'),
+                       ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
 
 
 class TarefaCompletacao(models.Model, ExportModelOperationsMixin('TarefaCompletação')):
@@ -330,7 +386,7 @@ class TarefaComentario(models.Model, ExportModelOperationsMixin('TarefaComentari
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     texto = models.TextField()
-    parent = models.ForeignKey('self',on_delete=models.CASCADE, blank=True, null=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
 
