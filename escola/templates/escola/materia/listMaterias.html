@@ -23,14 +23,13 @@
 {%for materia in materias%}
 <tr>
     {% get_obj_perms user for materia as "materia_perm" %}
-    <!--FIXME Terminar de implementar isso;-->
     <th>{{materia.nome}}</th>
     <th>{{materia.professor.nome}}</th>
     <th>{{materia.abreviacao}}</th>
-    {%if perms.escola.can_edit_materia%}
+    {%if 'can_edit_materia' in materia_perm%}
     <th><a href="{% url 'escola:edit-materia' materia.turma.pk materia.pk %}">EDIT</a></th>
     {%endif%}
-    {%if perms.escola.can_delete_materia%}
+    {%if 'can_delete_materia' in materia_perm%}
     <th><a href="{% url 'escola:delete-materia' materia.turma.pk materia.pk %}">DELETE</a></th>
     {%endif%}
 </tr>

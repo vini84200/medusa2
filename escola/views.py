@@ -226,6 +226,20 @@ def dar_permissao_user(ocupante, cargo: CargoTurma):
         # Permissões de Regente
 
 
+def dar_permissao_perm_a_user_of_level(perm, level_min, turma, obj):
+    if level_min == 1:
+        assign_perm(perm,turma.get_or_create_lider_group(), obj)
+        assign_perm(perm,turma.get_or_create_vicelider_group(), obj)
+        assign_perm(perm,turma.get_or_create_regente_group(), obj)
+    if level_min == 2:
+        assign_perm(perm,turma.get_or_create_lider_group(), obj)
+        assign_perm(perm,turma.get_or_create_regente_group(), obj)
+    if level_min == 3:
+        assign_perm(perm,turma.get_or_create_regente_group(), obj)
+
+
+
+
 @permission_required('escola.can_add_cargo')
 def add_cargo(request, turma_pk):
     if request.method == 'POST':
@@ -425,7 +439,8 @@ def ver_horario(request, turma_pk):
 
 
 @is_user_escola
-@user_has_perm_or_turma_cargo('escola.editar_horario')
+#@user_has_perm_or_turma_cargo('escola.editar_horario')
+@permission_required_obj('escola.edit_horario', (Turma, 'pk', 'turma_pk'))
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)
     PeriodoFormSet = formset_factory(PeriodoForm, extra=5, max_num=5)
@@ -574,7 +589,8 @@ def delete_professor(request, pk):
 
 
 # @permission_required('escola.can_add_materia')
-@user_has_perm_or_turma_cargo('escola.can_add_materia')
+#@user_has_perm_or_turma_cargo('escola.can_add_materia')
+@permission_required_obj('escola.can_add_materia', (Turma, 'pk', 'turma_pk'))
 def add_materia(request, turma_pk):
     # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
     if request.method == 'POST':
@@ -586,6 +602,8 @@ def add_materia(request, turma_pk):
             materia.professor = form.cleaned_data['professor']
             materia.abreviacao = form.cleaned_data['abreviacao']
             materia.save()
+            dar_permissao_perm_a_user_of_level('can_edit_materia',1,get_object_or_404(Turma, pk=turma_pk), materia)
+            dar_permissao_perm_a_user_of_level('can_delete_materia', 2, get_object_or_404(Turma, pk=turma_pk), materia)
             return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
         form = MateriaForm()
@@ -604,12 +622,13 @@ def list_materias(request, turma_pk):
 
 
 # @permission_required('escola.can_edit_materia')
-@user_has_perm_or_turma_cargo('escola.can_edit_materia')
+#@user_has_perm_or_turma_cargo('escola.can_edit_materia')
+@permission_required_obj('escola.can_edit_materia', (MateriaDaTurma, 'pk', 'materia_pk'))
 def edit_materia(request, turma_pk, materia_pk):
+    materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
     if request.method == 'POST':
         form = MateriaForm(request.POST)
         if form.is_valid():
-            materia = MateriaDaTurma()
             materia.nome = form.cleaned_data['nome']
             materia.turma = get_object_or_404(Turma, pk=turma_pk)
             materia.professor = form.cleaned_data['professor']
@@ -617,7 +636,7 @@ def edit_materia(request, turma_pk, materia_pk):
             materia.save()
     else:
 
-        form = MateriaForm(get_object_or_404(MateriaDaTurma, pk=materia_pk))
+        form = MateriaForm(materia)
 
     context = {
         'form': form,
@@ -625,14 +644,17 @@ def edit_materia(request, turma_pk, materia_pk):
     return render(request, 'escola/materia/formMateria.html', context=context)
 
 
-@user_has_perm_or_turma_cargo('escola.can_delete_materia')
+#@user_has_perm_or_turma_cargo('escola.can_delete_materia')
+@permission_required_obj('escola.can_delete_materia', (MateriaDaTurma, 'pk', 'materia_pk'))
 def delete_materia(request, turma_pk, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
     materia.delete()
     return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
 
 
-@user_has_perm_or_turma_cargo('escola.can_add_tarefa', cargo_geral=True)
+#@user_has_perm_or_turma_cargo('escola.can_add_tarefa', cargo_geral=True)
+
+@permission_required_obj('escola.can_add_tarefa', (Turma, 'pk', 'turma_pk'))
 def add_tarefa(request, turma_pk):
     # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
     turma = get_object_or_404(Turma, pk=turma_pk)
@@ -650,6 +672,10 @@ def add_tarefa(request, turma_pk):
             seg = tarefa.get_seguidor_manager()
             seg.adicionar_seguidor(request.user)
             seg.adicionar_seguidor(tarefa.materia.professor.user)
+
+            dar_permissao_perm_a_user_of_level('can_edit_tarefa', 1, turma, tarefa)
+            dar_permissao_perm_a_user_of_level('can_delete_tarefa', 2, turma, tarefa)
+
             return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
         form = TarefaForm(turma=turma)
@@ -672,7 +698,8 @@ def list_tarefa(request, turma_pk):
         return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas})
 
 
-@user_has_perm_or_turma_cargo('escola.can_edit_tarefa')
+#@user_has_perm_or_turma_cargo('escola.can_edit_tarefa')
+@permission_required_obj('escola.can_edit_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
 def edit_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     turma = tarefa.turma
@@ -697,7 +724,9 @@ def edit_tarefa(request, tarefa_pk):
     return render(request, 'escola/tarefas/formTarefa.html', context=context)
 
 
-@user_has_perm_or_turma_cargo('escola.can_delete_tarefa')
+#@user_has_perm_or_turma_cargo('escola.can_delete_tarefa')
+
+@permission_required_obj('escola.can_delete_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
 def delete_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     tarefa.delete()

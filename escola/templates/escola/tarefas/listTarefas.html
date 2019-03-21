@@ -1,7 +1,7 @@
 {% extends "../base.html" %}
 
 {%block conteudo%}
-
+<!--FIXME Implementar permissões melhoradas-->
 <h1>Listagem de tarefas da turma {{turma.numero}}</h1>
 {%if perms.escola.can_add_tarefa%}
     <a href="{% url 'escola:add-tarefa' turma.pk %}">Adicionar Tarefa</a>
