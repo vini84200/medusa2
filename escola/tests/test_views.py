@@ -39,6 +39,7 @@ def create_professor():
 
 def create_turma():
     turma = mixer.blend(Turma, ano=datetime.today().year)
+    horario = mixer.blend(Horario, turma=turma)
     aluno = create_aluno(turma=turma)
     prof = create_professor()
     materia = mixer.blend(MateriaDaTurma, professor=prof, turma=turma)

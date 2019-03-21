@@ -13,14 +13,14 @@ from .forms import *
 from guardian.decorators import permission_required as permission_required_obj
 
 from .models import *
+
+
 #   HELPERS
 def username_present(username):
     if User.objects.filter(username=username).exists():
         return True
 
     return False
-
-
 
 
 #   VIEWS:
@@ -220,11 +220,10 @@ def dar_permissa_user(ocupante, cargo: CargoTurma):
     if cargo.cod_especial == 5:
         # PERMISSÔES DE REGENTE
         group: Group = cargo.turma.get_or_create_regente_group()
-        for user in group.user_set:
+        for user in group.user_set.all():
             group.user_set.remove(user)
         ocupante.groups.add(group)
         # Permissões de Regente
-
 
 
 @permission_required('escola.can_add_cargo')
@@ -313,7 +312,7 @@ def delete_cargo(request, pk):
     return HttpResponseRedirect(reverse('escola:list-cargos', args=[turmapk]))
 
 
-#@user_has_perm_or_turma_cargo('escola.can_add_aluno', lider=False, alter_qualquer=True)
+# @user_has_perm_or_turma_cargo('escola.can_add_aluno', lider=False, alter_qualquer=True)
 @permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'))
 def add_aluno(request, turma_pk, qualquer=False):
     if request.method == 'POST':
@@ -575,6 +574,7 @@ def delete_professor(request, pk):
 # @permission_required('escola.can_add_materia')
 @user_has_perm_or_turma_cargo('escola.can_add_materia')
 def add_materia(request, turma_pk):
+    # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
     if request.method == 'POST':
         form = MateriaForm(request.POST)
         if form.is_valid():
@@ -632,6 +632,7 @@ def delete_materia(request, turma_pk, materia_pk):
 
 @user_has_perm_or_turma_cargo('escola.can_add_tarefa', cargo_geral=True)
 def add_tarefa(request, turma_pk):
+    # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
     turma = get_object_or_404(Turma, pk=turma_pk)
     if request.method == 'POST':
         form = TarefaForm(turma, request.POST)
@@ -754,6 +755,7 @@ def detalhes_tarefa(request, tarefa_pk):
 
 def sobre(request):
     return render(request, 'escola/sobre.html')
+
 
 @is_user_escola
 @login_required

@@ -49,7 +49,10 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
                        ('can_edit_turma', "Pode editar turmas"),
                        ('can_delete_turma', "Pode deletar turmas"),
                        ('can_populate_turma', "Pode popular turmas"),
-                       ('can_add_aluno', "Pode adicionar um aluno a turma."))
+                       ('can_add_aluno', "Pode adicionar um aluno a turma."),
+                       ('editar_horario', "Pode editar o horario."),
+                       ('can_add_materia', 'Pode adicionar uma materia a turma.'),
+                       ('can_add_tarefa', "Pode adicionar uma tarefa."))
 
     def get_or_create_lider_group(self):
         if self.lider:
@@ -59,13 +62,9 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
                 self.lider = Group.objects.get(name=f'lider_turma_{self.pk}')
             else:
                 self.lider = Group.objects.create(name=f'lider_turma_{self.pk}')
-            assign_perm('escola.editar_horario', self.lider, self.horario)
-            assign_perm('escola.can_add_materia', self.lider, self)
-            assign_perm('escola.can_edit_materia', self.lider, self)
-            assign_perm('escola.can_delete_materia', self.lider, self)
-            assign_perm('escola.can_add_tarefa', self.lider, self)
-            assign_perm('escola.can_edit_tarefa', self.lider, self)
-            assign_perm('escola.can_delete_tarefa', self.lider, self)
+            assign_perm('escola.editar_horario', self.lider, obj=self)
+            assign_perm('escola.can_add_materia', self.lider, obj=self)
+            assign_perm('escola.can_add_tarefa', self.lider, obj=self)
             return self.lider
 
     def get_or_create_vicelider_group(self):
@@ -76,29 +75,24 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
                 self.vicelider = Group.objects.get(name=f'vicelider_turma_{self.pk}')
             else:
                 self.vicelider = Group.objects.create(name=f'vicelider_turma_{self.pk}')
-            assign_perm('escola.editar_horario', self.vicelider, self)
-            assign_perm('escola.can_add_materia', self.vicelider, self)
-            assign_perm('escola.can_edit_materia', self.vicelider, self)
-            assign_perm('escola.can_add_tarefa', self.vicelider, self)
-            assign_perm('escola.can_edit_tarefa', self.vicelider, self)
+            assign_perm('escola.editar_horario', self.vicelider, obj=self)
+            assign_perm('escola.can_add_materia', self.vicelider, obj=self)
+            assign_perm('escola.can_add_tarefa', self.vicelider, obj=self)
             return self.vicelider
 
     def get_or_create_regente_group(self):
+        # TODO add tests
         if self.regente:
             return self.regente
         else:
-            if Group.objects.filter(name=f'regente_turma_{self.pk}').exists:
+            if len(Group.objects.filter(name=f'regente_turma_{self.pk}')) > 0:
                 self.regente = Group.objects.get(name=f'regente_turma_{self.pk}')
             else:
                 self.regente = Group.objects.create(name=f'regente_turma_{self.pk}')
-            assign_perm('escola.can_add_aluno', self.regente, self)
-            assign_perm('escola.editar_horario', self.regente, self)
-            assign_perm('escola.can_add_materia', self.regente, self)
-            assign_perm('escola.can_edit_materia', self.regente, self)
-            assign_perm('escola.can_delete_materia', self.regente, self)
-            assign_perm('escola.can_add_tarefa', self.regente, self)
-            assign_perm('escola.can_edit_tarefa', self.regente, self)
-            assign_perm('escola.can_delete_tarefa', self.regente, self)
+            assign_perm('escola.can_add_aluno', self.regente, obj=self)
+            assign_perm('escola.editar_horario', self.regente, obj=self)
+            assign_perm('escola.can_add_materia', self.regente, obj=self)
+            assign_perm('escola.can_add_tarefa', self.regente, obj=self)
             return self.regente
     def __str__(self):
         return f"Turma {self.numero}"
@@ -223,8 +217,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
         return self.nome
 
     class Meta:
-        permissions = (('can_add_materia', 'Pode adicionar uma novo Materia'),
-                       ('can_edit_materia', 'Pode editar uma materia'),
+        permissions = (('can_edit_materia', 'Pode editar uma materia'),
                        ('can_delete_materia', 'Pode deletar uma materia'),)
 
 
@@ -274,9 +267,6 @@ class Horario(models.Model, ExportModelOperationsMixin('Horario')):
             per = Periodo(turnoAula=turno_aula, num=num)
             per.save()
             return per
-
-    permissions = (('editar_horario', 'Pode Editar o horario de qualquer turma.'),)
-
 
 class Turno(models.Model, ExportModelOperationsMixin('Turno')):
     nome = models.CharField(max_length=30)
@@ -371,8 +361,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
             return self.manager_seguidor
 
     class Meta:
-        permissions = (('can_add_tarefa', 'Pode adicionar uma nova tarefa.'),
-                       ('can_edit_tarefa', 'Pode editar uma tarefa.'),
+        permissions = (('can_edit_tarefa', 'Pode editar uma tarefa.'),
                        ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
 
 
