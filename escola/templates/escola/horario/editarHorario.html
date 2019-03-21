@@ -1,7 +1,9 @@
 {% extends "../base.html" %}
 
+{% load guardian_tags %}
 
 {% block conteudo %}
+{% get_obj_perms user for turma as "turma_perm" %}
 {# turnos , DIAS_DA_SEMANA , DIAS_DA_SEMANA_N, ta[dia][turno.cod]#}
 <table>
   <tr>
@@ -36,7 +38,7 @@
                 {%for p in range%}
                     {%get_p turno dia p ta%} <br/>
                 {%endfor%}
-                {%if perms.escola.editar_horario%}
+                {%if 'editar_horario' in turma_perm %}
                 <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}">EDITAR</a>
                 {%endif%}
             {%else%}

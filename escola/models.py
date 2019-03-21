@@ -58,7 +58,9 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
         if self.lider:
             return self.lider
         else:
-            if Group.objects.filter(name=f'lider_turma_{self.pk}').exists:
+            print(Group.objects.filter(name=f'lider_turma_{self.pk}'))
+            print(len(Group.objects.filter(name=f'lider_turma_{self.pk}')))
+            if not len(Group.objects.filter(name=f'lider_turma_{self.pk}')) == 0:
                 self.lider = Group.objects.get(name=f'lider_turma_{self.pk}')
             else:
                 self.lider = Group.objects.create(name=f'lider_turma_{self.pk}')

@@ -204,17 +204,17 @@ def populate_alunos(request):
     return render(request, 'escola/alunos/formPopulateAlunos.html', context)
 
 
-def dar_permissa_user(ocupante, cargo: CargoTurma):
+def dar_permissao_user(ocupante, cargo: CargoTurma):
     if cargo.cod_especial == 1:
         # PERMISSÔES DE LIDER
         group: Group = cargo.turma.get_or_create_lider_group()
-        for user in group.user_set:
+        for user in group.user_set.all():
             group.user_set.remove(user)
         ocupante.groups.add(group)
     if cargo.cod_especial == 2:
         # PERMISSÔES DE VICELIDER
         group: Group = cargo.turma.get_or_create_vicelider_group()
-        for user in group.user_set:
+        for user in group.user_set.all():
             group.user_set.remove(user)
         ocupante.groups.add(group)
     if cargo.cod_especial == 5:
@@ -245,7 +245,7 @@ def add_cargo(request, turma_pk):
             cargo.ocupante = form.cleaned_data['ocupante']
             cargo.save()
 
-            dar_permissa_user(cargo.ocupante, cargo)
+            dar_permissao_user(cargo.ocupante, cargo)
 
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('escola:list-cargos', args=[turma_pk]))
@@ -288,6 +288,8 @@ def edit_cargo(request, pk):
             cargo.ativo = form.cleaned_data['ativo']
             cargo.ocupante = form.cleaned_data['ocupante']
             cargo.save()
+
+            dar_permissao_user(cargo.ocupante, cargo)
 
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('escola:list-cargos', args=[cargo.turma.pk]))
