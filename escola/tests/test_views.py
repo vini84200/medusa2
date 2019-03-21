@@ -1,8 +1,6 @@
 from django.contrib.auth import authenticate
 from django.test.client import Client
 import pytest
-from django.utils.datetime_safe import datetime
-from guardian.shortcuts import assign_perm
 
 from escola.models import *
 from django.contrib.auth.models import User
@@ -10,40 +8,12 @@ from mixer.backend.django import mixer
 from django.urls import reverse
 from django.test.testcases import TestCase
 
+from helpers.utils import create_admin, create_aluno, create_professor, create_turma
+
 pytestmark = pytest.mark.django_db
 
 
 # TODO Test username_present()
-
-
-def create_admin():
-    user = mixer.blend(User, is_superuser=True)
-    return user
-
-
-def create_aluno(turma=None):
-    if not turma:
-        turma = mixer.blend(Turma)
-    user = mixer.blend(User, turma=turma)
-    profile = mixer.blend(Profile, user=user, is_aluno=True, is_professor=False)
-    aluno = mixer.blend(Aluno, user=user)
-    return aluno
-
-
-def create_professor():
-    user = mixer.blend(User)
-    profile = mixer.blend(Profile, user=user, is_aluno=False, is_professor=True)
-    professor = mixer.blend(Professor, user=user)
-    return professor
-
-
-def create_turma():
-    turma = mixer.blend(Turma, ano=datetime.today().year)
-    horario = mixer.blend(Horario, turma=turma)
-    aluno = create_aluno(turma=turma)
-    prof = create_professor()
-    materia = mixer.blend(MateriaDaTurma, professor=prof, turma=turma)
-    return turma
 
 
 class TestIndex(TestCase):
