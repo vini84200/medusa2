@@ -6,11 +6,23 @@ from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
+
 def username_present(username):
     if User.objects.filter(username=username).exists():
         return True
 
     return False
+
+
+def clean_numero(self, campo, v_min, v_max, msg_min='Valor muito baixo', msg_max='Valor muito alto'):
+    assert not 0 is None
+    data = self.cleaned_data[campo]
+    if v_min is not None and data <= v_min:
+        raise ValidationError(_(msg_min))
+    if v_max is not None and data >= v_max:
+        raise ValidationError(_(msg_max))
+    return data
+
 
 class CriarTurmaForm(forms.Form):
     numero = forms.IntegerField(label="Numero da Turma:",
@@ -26,12 +38,8 @@ class CriarTurmaForm(forms.Form):
         return data
 
     def clean_ano(self):
-        data = self.cleaned_data['ano']
-        # Checks if it is zero or negative.
-        if data <= 1940:
-            raise ValidationError(_('Ano invalido, por favor informe um ano posterior a 1940.'))
+        return clean_numero(self, 'ano', 1940, None, 'Ano invalido, por favor informe um ano posterior a 1940.','')
 
-        return data
 
 
 class CargoForm(ModelForm):
@@ -53,11 +61,7 @@ class AlunoCreateForm(forms.Form):
     turma = forms.IntegerField()
 
     def clean_num_chamada(self):
-        data = self.cleaned_data['num_chamada']
-        if data <= 0:
-            raise ValidationError(_("Por favor, salve a chamada com um numero positivo."))
-
-        return data
+        return clean_numero(self, 'num_chamada', 0, None, "Por favor, salve a chamada com um numero positivo.")
 
     def clean_senha(self):
         data = self.cleaned_data['senha']
@@ -90,11 +94,7 @@ class AlunoCreateFormOutLabel(forms.Form):
     turma = forms.IntegerField(label='')
 
     def clean_num_chamada(self):
-        data = self.cleaned_data['num_chamada']
-        if data <= 0:
-            raise ValidationError(_("Por favor, salve a chamada com um numero positivo."))
-
-        return data
+        return clean_numero(self, 'num_chamada', 0, None, "Por favor, salve a chamada com um numero positivo.")
 
 
 class PeriodoForm(ModelForm):
