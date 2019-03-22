@@ -1,9 +1,12 @@
 {% extends "../base.html" %}
+{% load guardian_tags %}
 
 {%block conteudo%}
 
 <h1>Listagem de Alunos da turma {{turma.numero}}</h1>
-{%if perms.escola.can_add_aluno%}
+{% get_obj_perms user for turma as "turma_perm" %}
+
+{%if 'can_add_aluno' in turma_perm%}
     <a href="{% url 'escola:add-aluno' turma.pk %}">Adicionar Aluno</a>
 {%endif%}
 
