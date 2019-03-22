@@ -5,6 +5,8 @@ python:
 services:
   - postgresql
   - redis-server
+notifications:
+  slack: pesquisa2019:JYDcZ0S8d0nZ2ql3jtm78Q2h
 before_install:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
