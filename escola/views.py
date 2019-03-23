@@ -1,13 +1,11 @@
 import datetime
-import logging
-import guardian
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import login_required, permission_required
 from django.forms import formset_factory
-from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-from django.core.mail import send_mail, mail_admins, mail_managers
+from django.core.mail import mail_managers
+
+from escola.utils import username_present
 from .decorators import *
 from .forms import *
 from guardian.decorators import permission_required as permission_required_obj
@@ -15,13 +13,7 @@ from guardian.decorators import permission_required as permission_required_obj
 from .models import *
 
 logger = logging.getLogger(__name__)
-
-#   HELPERS
-def username_present(username):
-    if User.objects.filter(username=username).exists():
-        return True
-
-    return False
+from escola.utils import username_present
 
 
 #   VIEWS:
