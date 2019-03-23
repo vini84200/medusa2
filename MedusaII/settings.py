@@ -143,7 +143,7 @@ def get_release():
     try:
         return raven.fetch_git_sha(Path(__file__).parent.parent)
     except:
-        return config('HEROKU_SLUG_COMMIT', config('SOURCE_VERSION', config('')))
+        return config('HEROKU_SLUG_COMMIT', config('SOURCE_VERSION', config('DEFAULT_VERSION', "NotFound")))
 
 
 RAVEN_CONFIG = {
