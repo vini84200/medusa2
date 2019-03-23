@@ -1,7 +1,8 @@
 import pytest
 from django.core.exceptions import ValidationError
 
-from escola.forms import VerificarLambda, Verificacao, VerificarMinimo, verificar, VerificarMaximo, VerificarPositivo
+from escola.verificacao_forms import Verificacao, VerificarLambda, VerificarMinimo, VerificarMaximo, VerificarPositivo, \
+    verificar
 
 
 def test_verificacao_lambda_raise():
