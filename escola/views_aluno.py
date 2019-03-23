@@ -27,45 +27,7 @@ def populate_alunos(request):
             for form in formset:
                 # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
                 if 'nome' in form.cleaned_data:
-                    nome: str = form.cleaned_data['nome']
-                    username = form.cleaned_data['username']
-                    # Gera username a partir do Nome
-                    if not username:
-                        # Cria a base do username a partir do primeiro nome
-                        username = nome.split(' ')[0].lower() + "."
-                        # Adiciona as iniciais depois do ponto
-                        for n in nome.split(' '):
-                            if n[0]:
-                                username += n[0].lower()
-
-                        # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
-                        a = 0
-                        usernameTeste = username
-                        while username_present(usernameTeste):
-                            a += 1
-                            usernameTeste = username + a.__str__()
-                        username = usernameTeste
-
-                    senha = form.cleaned_data['senha']
-                    # Verifica se uma senha foi especificada.
-                    # Caso não, gera uma.
-                    if not senha:
-                        senha = BaseUserManager().make_random_password(length=8,
-                                                                       allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
-
-                    user = User.objects.create_user(username, password=senha)
-                    user.first_name = nome.split(" ")[0]
-                    user.last_name = nome.split(" ")[-1]
-                    user.save()
-                    profile = Profile(user=user, is_aluno=True, is_professor=False)
-                    profile.save()
-                    aluno = Aluno()
-                    aluno.chamada = form.cleaned_data['num_chamada']
-                    aluno.nome = nome
-                    aluno.user = user
-                    turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
-                    aluno.turma = turma
-                    aluno.save()
+                    senha, username = generate_aluno(form)
                     usuarios.append((username, senha))
             response = render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
             mail_managers("Lista de Senhas para uma nova popuação de usarios, imprima", response.content)
@@ -75,6 +37,54 @@ def populate_alunos(request):
         'formset': formset
     }
     return render(request, 'escola/alunos/formPopulateAlunos.html', context)
+
+
+def generate_aluno(form):
+    nome: str = form.cleaned_data['nome']
+    username = form.cleaned_data['username']
+    # Gera username a partir do Nome
+    if not username:
+        username = generate_username(nome)
+    senha = form.cleaned_data['senha']
+    if not senha:
+        senha = genarate_password()
+    user = User.objects.create_user(username, password=senha)
+    user.first_name = nome.split(" ")[0]
+    user.last_name = nome.split(" ")[-1]
+    user.save()
+    profile = Profile(user=user, is_aluno=True, is_professor=False)
+    profile.save()
+    aluno = Aluno()
+    aluno.chamada = form.cleaned_data['num_chamada']
+    aluno.nome = nome
+    aluno.user = user
+    turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
+    aluno.turma = turma
+    aluno.save()
+    return senha, username
+
+
+def genarate_password():
+    senha = BaseUserManager().make_random_password(length=8,
+                                                   allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
+    return senha
+
+
+def generate_username(nome):
+    # Cria a base do username a partir do primeiro nome
+    username = nome.split(' ')[0].lower() + "."
+    # Adiciona as iniciais depois do ponto
+    for n in nome.split(' '):
+        if n[0]:
+            username += n[0].lower()
+    # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
+    a = 0
+    usernameTeste = username
+    while username_present(usernameTeste):
+        a += 1
+        usernameTeste = username + a.__str__()
+    username = usernameTeste
+    return username
 
 
 @permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'))
@@ -88,46 +98,7 @@ def add_aluno(request, turma_pk, qualquer=False):
         if form.is_valid():
             turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
             if qualquer or turma.pk == turma_pk:
-                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-                nome: str = form.cleaned_data['nome']
-                username = form.cleaned_data['username']
-                # Gera username a partir do Nome
-                if not username:
-                    # Cria a base do username a partir do primeiro nome
-                    username = nome.split(' ')[0].lower() + "."
-                    # Adiciona as iniciais depois do ponto
-                    for n in nome.split(' '):
-                        if n[0]:
-                            username += n[0].lower()
-
-                    # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
-                    a = 0
-                    usernameTeste = username
-                    while username_present(usernameTeste):
-                        a += 1
-                        usernameTeste = username + a.__str__()
-                    username = usernameTeste
-
-                senha = form.cleaned_data['senha']
-                # Verifica se uma senha foi especificada.
-                # Caso não, gera uma.
-                if not senha:
-                    senha = BaseUserManager().make_random_password(length=8,
-                                                                   allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
-
-                user = User.objects.create_user(username, password=senha)
-                user.first_name = nome.split(" ")[0]
-                user.last_name = nome.split(" ")[-1]
-                user.save()
-                profile = Profile(user=user, is_aluno=True, is_professor=False)
-                profile.save()
-                aluno = Aluno()
-                aluno.chamada = form.cleaned_data['num_chamada']
-                aluno.nome = nome
-                aluno.user = user
-
-                aluno.turma = turma
-                aluno.save()
+                senha, username = generate_aluno(form)
                 # redirect to a new URL:
                 if form.cleaned_data['senha']:
                     return HttpResponseRedirect(reverse('escola:list-alunos', args=[turma.pk]))
