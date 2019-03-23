@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from escola.models_horario import Horario, Turno, TurnoAula, Periodo
 from .models import *
 
 admin.site.register(Profile)
