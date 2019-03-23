@@ -140,7 +140,10 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 def get_release():
-    return raven.fetch_git_sha(Path(__file__).parent.parent)
+    try:
+        return raven.fetch_git_sha(Path(__file__).parent.parent)
+    except:
+        return config('HEROKU_RELEASE_VERSION')
 
 
 RAVEN_CONFIG = {
@@ -148,6 +151,7 @@ RAVEN_CONFIG = {
     # If you are using git, you can also automatically configure the
     # release based on the git info.
     'release': get_release(),
+    'environment': config('ENVIRONMENT', 'Default')
 }
 
 

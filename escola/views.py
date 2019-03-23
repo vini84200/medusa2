@@ -1,15 +1,14 @@
 import datetime
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.mail import mail_managers
 from django.forms import formset_factory
 from django.shortcuts import render, get_object_or_404
-from django.core.mail import mail_managers
-
-from escola.utils import username_present
-from .decorators import *
-from .forms import *
 from guardian.decorators import permission_required as permission_required_obj
 
+from .decorators import *
+from .forms import *
 from .models import *
 
 logger = logging.getLogger(__name__)
