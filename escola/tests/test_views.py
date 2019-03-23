@@ -1,9 +1,7 @@
 import pytest
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
 from django.test.client import Client
 from django.test.testcases import TestCase
-from django.urls import reverse
 from helpers.utils import create_admin, create_aluno, create_professor, create_turma
 from mixer.backend.django import mixer
 
@@ -526,7 +524,7 @@ class TestAddAluno(TestCase):
                           {'num_chamada': 'KUHAKU', 'nome': 1341, 'username': user.username, 'senha': '1', 'turma': 'PEDRO'})
         self.assertFormError(response, 'form', 'num_chamada', 'Informe um número inteiro.')
         self.assertFormError(response, 'form', 'turma', 'Informe um número inteiro.')
-        self.assertFormError(response, 'form', 'username', 'Nome de usuario já tomado, por favor escolha outro.')
+        self.assertFormError(response, 'form', 'username', 'Este nome de usuario já existe, use outro.')
         self.assertFormError(response, 'form', 'senha', 'Esta senha é muito curta. Ela precisa conter pelo menos 8 '
                                                         'caracteres.')
         self.assertFormError(response, 'form', 'senha', 'Esta senha é muito comum.')
