@@ -6,37 +6,12 @@ from guardian.decorators import permission_required as permission_required_obj
 
 from escola.decorators import is_user_escola
 from escola.forms import PeriodoForm
-from escola.models import Turma, MateriaDaTurma
-from escola.models_horario import Horario, Turno, TurnoAula
+from escola.models import Turma, MateriaDaTurma, Horario, Turno, TurnoAula
 
 
 @is_user_escola
 def ver_horario(request, turma_pk):
-    horario = Horario.objects.get(turma__id=turma_pk)
-    if not horario:
-        horario = Horario(turma=Turma.objects.get(pk=turma_pk))
-        horario.save()
-    turnos = Turno.objects.all().order_by('cod')
-    DIAS_DA_SEMANA = ['Domingo',
-                      'Segunda-feira',
-                      'Terça-feira',
-                      'Quarta-feira',
-                      'Quinta-feira',
-                      'Sexta-feira',
-                      'Sabado', ]
-    DIAS_DA_SEMANA_N = range(1, 8)
-    ta = {}
-    for turno in turnos:
-        for dia in DIAS_DA_SEMANA_N:
-            a = TurnoAula.objects.filter(turno=turno, diaDaSemana=dia, horario=horario)
-            if len(a) > 0:
-                if not dia in ta:
-                    ta[dia] = dict()
-                ta[dia][turno.cod] = a[0]
-
-    context = {'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
-               'ta': ta, 'turma_pk': turma_pk, 'range': range(1, 6)}
-
+    context = {'turma': get_object_or_404(Turma, pk=turma_pk), }
     return render(request, 'escola/horario/mostraHorario.html', context=context)
 
 
