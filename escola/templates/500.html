@@ -1,0 +1,14 @@
+<!-- Sentry JS SDK 2.1.+ required -->
+<script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>
+OI
+{{request.sentry.id}}
+{% if request.sentry.id %}
+  <script>
+  Raven.showReportDialog({
+    eventId: '{{ request.sentry.id }}',
+
+    // use the public DSN (dont include your secret!)
+    dsn: 'https://4cc5a783be3d448c892650255b403196@sentry.io/1422015'
+  });
+  </script>
+{% endif %}

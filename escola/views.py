@@ -1,5 +1,5 @@
 import datetime
-
+import logging
 import guardian
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import login_required, permission_required
@@ -14,6 +14,7 @@ from guardian.decorators import permission_required as permission_required_obj
 
 from .models import *
 
+logger = logging.getLogger(__name__)
 
 #   HELPERS
 def username_present(username):
@@ -28,16 +29,24 @@ def username_present(username):
 @is_user_escola
 @login_required
 def index(request):
+    logger.info('views:index; user_id: %s', request.user.pk)
     context = {'request': request}
     if request.user.profile_escola.is_aluno:
+        logger.info('views:index; user_id: %s é aluno.', request.user.pk)
         # HORARIO
+        logger.warning("Lembre-se de retirar os horarios daqui e generalizar;")
         turma_pk = request.user.aluno.turma.pk
+        logger.info('Preparando para tentar pegar horario...')
         try:
             horario = Horario.objects.get(turma__id=turma_pk)
+            logger.info('O horario já existia, id=%s', horario.pk)
         except:
+            logger.info("Criando horario novo...")
             horario = Horario(turma=request.user.aluno.turma)
             horario.save()
+            logger.info('O novo horario possui id: %s', horario.pk)
         turnos = Turno.objects.all().order_by('cod')
+        logger.info('Puxou %s turno(s) do banco de dados.', len(turnos))
         DIAS_DA_SEMANA = ['Domingo',
                           'Segunda-feira',
                           'Terça-feira',
@@ -47,7 +56,9 @@ def index(request):
                           'Sabado', ]
         DIAS_DA_SEMANA_N = range(1, 8)
         ta = {}
+        logger.info('Preparando para entrar no loop de turnos...')
         for turno in turnos:
+            logger.debug('Turno id:%s', turno.pk)
             for dia in DIAS_DA_SEMANA_N:
                 a = TurnoAula.objects.filter(turno=turno, diaDaSemana=dia, horario=horario)
                 if len(a) > 0:
@@ -58,12 +69,14 @@ def index(request):
         context.update({'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
                         'ta': ta, 'turma_pk': turma_pk, 'range': range(1, 6)})
         # TAREFAS
+        logger.warning("Lembre-se de retirar as tarefas daqui e generalizar;")
         tarefas = Tarefa.objects.filter(turma__pk=turma_pk, deadline__gte=datetime.date.today()).order_by('deadline')
         tarefas_c = []
         for tarefa in tarefas:
             tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
         context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 
+    logger.info('Antes de renderizar a view index, user: %s', request.user.pk)
     return render(request, 'escola/home.html', context=context)
 
 

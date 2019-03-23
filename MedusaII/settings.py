@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102
 
 # Application definition
 
+
+
 INSTALLED_APPS = [
     'leituras.apps.LeiturasConfig',
     'voting.apps.VotingConfig',
