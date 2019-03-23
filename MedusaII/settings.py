@@ -11,12 +11,14 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import raven
 from decouple import config
 from dj_database_url import parse as dburl
+import logging.config
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -25,10 +27,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104', '10.0.0.105', '10.0.0.106', 'medusa2-brancha.herokuapp.com']
 
+ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104', 
+                 '10.0.0.105', '10.0.0.106', '127.0.0.1', 'medusa2-brancha.herokuapp.com']
 
 # Application definition
+
+
 
 INSTALLED_APPS = [
     'leituras.apps.LeiturasConfig',
@@ -41,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'raven.contrib.django.raven_compat',
     'guardian',
 ]
 
@@ -81,25 +87,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MedusaII.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 
 default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 default_dbengine = 'django_prometheus.db.backends.sqlite3',
-# DATABASES = {
-#     'default': {
-#         'ENGINE': config('DATABASE_ENGINE', default_dbengine),
-#         'NAME': config('DATABASE_URL', default=default_dburl, cast=dburl),
-#     }
-# }
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django_prometheus.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
+
 DATABASES = {'default': config('DATABASE_URL', default=default_dburl, cast=dburl), }
 
 # Password validation
@@ -119,7 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -142,6 +135,54 @@ MANAGERS = [('Vinicius', 'www.vini84200@hotmail.com')]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-#Login info
+# Login info
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+def get_release():
+    return raven.fetch_git_sha(Path(__file__).parent.parent)
+
+
+RAVEN_CONFIG = {
+    'dsn': config('DSN_SENTRY'),
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': get_release(),
+}
+
+
+LOGGING_CONFIG = None
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            # exact format is not important, this is the minimum information
+            'format': '%(asctime)s %(name)-12s %(thread)d %(levelname)-8s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+        # Add Handler for Sentry for `warning` and above
+        'sentry': {
+            'level': 'WARNING',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
+    },
+    'loggers': {
+        # root logger
+        '': {
+            'level': 'WARNING',
+            'handlers': ['console', 'sentry'],
+        },
+        'escola': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'sentry'],
+            # required to avoid double logging with root logger
+            'propagate': False,
+        },
+    },
+})
