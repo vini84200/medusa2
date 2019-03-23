@@ -7,8 +7,7 @@ from django.urls import reverse
 
 from escola.decorators import is_user_escola
 from escola.forms import CriarTurmaForm
-from escola.models import Turma
-from escola.models_horario import Horario
+from escola.models import Turma, Horario
 
 
 @permission_required('escola.can_add_turma')
