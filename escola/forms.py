@@ -3,6 +3,7 @@ import logging
 from django import forms
 from django.forms import ModelForm
 
+from escola.models_horario import Periodo
 from escola.verificacao_forms import VerificarMinimo, VerificarPositivo, VerificarNomeUsuario, VerificarSenha, verificar
 from .models import *
 
