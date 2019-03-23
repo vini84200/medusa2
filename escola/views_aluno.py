@@ -1,6 +1,5 @@
 import datetime
 
-from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -14,7 +13,7 @@ from guardian.decorators import permission_required as permission_required_obj
 from escola.decorators import is_user_escola
 from escola.forms import AlunoCreateFormOutLabel, AlunoCreateForm
 from escola.models import Profile, Aluno, Turma
-from escola.utils import username_present
+from escola.utils import genarate_password, generate_username
 
 
 @permission_required('escola.can_populate_turma')
@@ -62,29 +61,6 @@ def generate_aluno(form):
     aluno.turma = turma
     aluno.save()
     return senha, username
-
-
-def genarate_password():
-    senha = BaseUserManager().make_random_password(length=8,
-                                                   allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
-    return senha
-
-
-def generate_username(nome):
-    # Cria a base do username a partir do primeiro nome
-    username = nome.split(' ')[0].lower() + "."
-    # Adiciona as iniciais depois do ponto
-    for n in nome.split(' '):
-        if n[0]:
-            username += n[0].lower()
-    # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
-    a = 0
-    usernameTeste = username
-    while username_present(usernameTeste):
-        a += 1
-        usernameTeste = username + a.__str__()
-    username = usernameTeste
-    return username
 
 
 @permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'))

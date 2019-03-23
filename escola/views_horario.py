@@ -41,7 +41,6 @@ def ver_horario(request, turma_pk):
 
 
 @is_user_escola
-#@user_has_perm_or_turma_cargo('escola.editar_horario')
 @permission_required_obj('escola.edit_horario', (Turma, 'pk', 'turma_pk'))
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)
@@ -60,8 +59,6 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
                 n += 1
             return HttpResponseRedirect(reverse('escola:show-horario', args=[turma_pk]))
     else:
-        # Visual
-
         turnos = Turno.objects.all().order_by('cod')
         DIAS_DA_SEMANA = ['Domingo',
                           'Segunda-feira',
