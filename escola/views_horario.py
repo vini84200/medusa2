@@ -18,12 +18,18 @@ def ver_horario(request, turma_pk):
 @is_user_escola
 @permission_required_obj('escola.edit_horario', (Turma, 'pk', 'turma_pk'))
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
+
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)
+
     PeriodoFormSet = formset_factory(PeriodoForm, extra=5, max_num=5)
+
     data = request.POST or None
+
     formset = PeriodoFormSet(data=data)
+
     for form in formset:
         form.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=horario.turma)
+
     if request.method == 'POST':
         if formset.is_valid():
             n = 1
@@ -33,33 +39,30 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
                 per.save()
                 n += 1
             return HttpResponseRedirect(reverse('escola:show-horario', args=[turma_pk]))
-    else:
-        turnos = Turno.objects.all().order_by('cod')
-        DIAS_DA_SEMANA = ['Domingo',
+    DIAS_DA_SEMANA = ['Domingo',
                           'Segunda-feira',
                           'Terça-feira',
                           'Quarta-feira',
                           'Quinta-feira',
                           'Sexta-feira',
                           'Sabado', ]
-        DIAS_DA_SEMANA_N = range(1, 8)
-        ta = {}
-        for turno in turnos:
-            for dia in DIAS_DA_SEMANA_N:
-                a = TurnoAula.objects.filter(turno=turno, diaDaSemana=dia, horario=horario)
-                if len(a) > 0:
-                    if not dia in ta:
-                        ta[dia] = dict()
-                    ta[dia][turno.cod] = a[0]
-        if (turno_cod in ta and dia_cod in ta[turno_cod]):
-            ini = []
-            for periodo in ta[turno_cod][dia_cod].periodo_set.all():
-                ini.append({'materia': periodo.materia})
-            formset = PeriodoFormSet(initial=ini)
-            for form in formset:
-                form.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=horario.turma)
+    turnos = Turno.objects.all().order_by('cod')
+
+    formset, ta = genarate_initial_form(PeriodoFormSet, dia_cod, formset, horario, turno_cod)
 
     return render(request, 'escola/horario/editarHorario.html',
-                  context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': DIAS_DA_SEMANA_N,
+                  context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': range(1,8),
                            'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset': formset,
                            'range': range(1, 6), 'turma_pk': turma_pk})
+
+
+def genarate_initial_form(PeriodoFormSet, dia_cod, formset, horario, turno_cod):
+    ta = horario.get_horario()
+    if turno_cod in ta and dia_cod in ta[turno_cod]:
+        ini = []
+        for periodo in ta[turno_cod][dia_cod].periodo_set.all():
+            ini.append({'materia': periodo.materia})
+        formset = PeriodoFormSet(initial=ini)
+        for form in formset:
+            form.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=horario.turma)
+    return formset, ta
