@@ -53,7 +53,7 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     return render(request, 'escola/horario/editarHorario.html',
                   context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': range(1,8),
                            'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset': formset,
-                           'range': range(1, 6), 'turma_pk': turma_pk})
+                           'range': range(1, 6), 'turma_pk': turma_pk, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 
 
 def genarate_initial_form(PeriodoFormSet, dia_cod, formset, horario, turno_cod):

@@ -34,7 +34,6 @@ ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102
 # Application definition
 
 
-
 INSTALLED_APPS = [
     'leituras.apps.LeiturasConfig',
     'voting.apps.VotingConfig',
@@ -139,6 +138,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+
 def get_release():
     try:
         return raven.fetch_git_sha(Path(__file__).parent.parent)
@@ -153,7 +153,6 @@ RAVEN_CONFIG = {
     'release': get_release(),
     'environment': config('ENVIRONMENT', 'Default')
 }
-
 
 LOGGING_CONFIG = None
 logging.config.dictConfig({
