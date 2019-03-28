@@ -7,9 +7,8 @@ from django.contrib.auth.models import User, Group
 from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
 from django.urls import reverse
+from mptt.models import MPTTModel, TreeForeignKey
 from guardian.shortcuts import assign_perm
-
-# Create your models here.
 from taggit.managers import TaggableManager
 
 import escola
@@ -194,12 +193,16 @@ class Professor(models.Model, ExportModelOperationsMixin('Professor')):
                        ('can_delete_professor', 'Pode deletar um professor'),)
 
 
-class Conteudo(models.Model):
+class Conteudo(MPTTModel):
     """Conteudo que pode ser o filho de outro."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     descricao = models.TextField()
-    conteudo_pai = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+
+    def get_absolute_url(self):
+        """Retorna Url do conteudo."""
+        return reverse('conteudo-detail', kwargs={'pk': self.pk})
 
     class Meta:
         verbose_name = "Conteudo"
@@ -207,8 +210,8 @@ class Conteudo(models.Model):
 
         permissions = (('can_add_in_materia', 'Pode adicionar esse conteudo à uma materia.'),)
 
-        def __str__(self):
-            pass
+    def __str__(self):
+        return self.nome
 
 
 class CategoriaConteudo(models.Model):
@@ -226,7 +229,7 @@ class CategoriaConteudo(models.Model):
         verbose_name_plural = "Categorias de Links de Conteudos"
 
     def __str__(self):
-        pass
+        return self.nome
 
 
 class LinkConteudo(models.Model):
@@ -235,6 +238,7 @@ class LinkConteudo(models.Model):
     link = models.URLField()
     categoria = models.ForeignKey(CategoriaConteudo, on_delete=models.CASCADE)
     descricao = models.TextField(null=True, blank=True)
+    conteudo = models.ForeignKey(Conteudo, on_delete=models.CASCADE)
     tags = TaggableManager()
 
     class Meta:
@@ -242,7 +246,7 @@ class LinkConteudo(models.Model):
         verbose_name_plural = "Links de Conteudos"
 
     def __str__(self):
-        pass
+        return self.titulo
 
 
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):

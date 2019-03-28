@@ -1,0 +1,13 @@
+{% extends "escola/base.html" %}
+{%load dict_key %}
+{% block title %} Home {% endblock %}
+
+
+{% block conteudo %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Salvar" />
+</form>
+{% endblock %}

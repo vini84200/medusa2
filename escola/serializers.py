@@ -216,7 +216,7 @@ class ConteudoSerializer(serializers.ModelSerializer):
             'nome',
             'professor',
             'descricao',
-            'conteudo_pai',
+            'parent',
         )
 
 

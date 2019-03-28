@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'taggit',
     'taggit_labels',
     'taggit_serializer',
+    'mptt',
 ]
 
 MIDDLEWARE = [
