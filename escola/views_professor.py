@@ -8,7 +8,7 @@ from django.urls import reverse
 from escola.decorators import is_user_escola
 from escola.forms import ProfessorCreateForm
 from escola.models import Profile, Professor
-from escola.utils import username_present
+from escola.utils import username_present, generate_username, genarate_password
 
 
 @permission_required('escola.can_add_professor')
@@ -21,43 +21,7 @@ def add_professor(request):
 
         # Check if the form is valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            nome: str = form.cleaned_data['nome']
-            username = form.cleaned_data['username']
-            # Gera username a partir do Nome
-            if not username:
-                # Cria a base do username a partir do primeiro nome
-                username = nome.split(' ')[0].lower() + "."
-                # Adiciona as iniciais depois do ponto
-                for n in nome.split(' '):
-                    if n[0]:
-                        username += n[0].lower()
-
-                # Verifica se já foi usado, caso positivo, vai adicionando numeros até o certo
-                a = 0
-                usernameTeste = username
-                while username_present(usernameTeste):
-                    a += 1
-                    usernameTeste = username + a.__str__()
-                username = usernameTeste
-
-            senha = form.cleaned_data['senha']
-            # Verifica se uma senha foi especificada.
-            # Caso não, gera uma.
-            if not senha:
-                senha = BaseUserManager().make_random_password(length=8,
-                                                               allowed_chars='abcdefghjkmnpqrstuvwxyz23456789')
-
-            user = User.objects.create_user(username, password=senha)
-            user.first_name = nome.split(" ")[0]
-            user.last_name = nome.split(" ")[-1]
-            user.save()
-            profile = Profile(user=user, is_aluno=False, is_professor=True)
-            profile.save()
-            professor = Professor()
-            professor.user = user
-            professor.nome = nome
-            professor.save()
+            senha, username = create_professor(form)
             # redirect to a new URL:
             if form.cleaned_data['senha']:
                 return HttpResponseRedirect(reverse('list-professores'))
@@ -73,6 +37,29 @@ def add_professor(request):
     }
 
     return render(request, 'escola/professor/formProfessorCreate.html', context)
+
+
+def create_professor(form):
+    # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+    nome = form.cleaned_data['nome']
+    username = form.cleaned_data['username']
+    # Gera username a partir do Nome
+    if not username:
+        username = generate_username(nome)
+    senha = form.cleaned_data['senha']
+    if not senha:
+        senha = genarate_password()
+    user = User.objects.create_user(username, password=senha)
+    user.first_name = nome.split(" ")[0]
+    user.last_name = nome.split(" ")[-1]
+    user.save()
+    profile = Profile(user=user, is_aluno=False, is_professor=True)
+    profile.save()
+    professor = Professor()
+    professor.user = user
+    professor.nome = nome
+    professor.save()
+    return senha, username
 
 
 @is_user_escola

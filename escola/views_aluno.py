@@ -64,7 +64,7 @@ def generate_aluno(form):
 
 
 @permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'))
-def add_aluno(request, turma_pk, qualquer=False):
+def add_aluno(request, turma_pk):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
@@ -73,7 +73,7 @@ def add_aluno(request, turma_pk, qualquer=False):
         # Check if the form is valid:
         if form.is_valid():
             turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
-            if qualquer or turma.pk == turma_pk:
+            if request.user.has_perm('escola.can_add_aluno',turma):
                 senha, username = generate_aluno(form)
                 # redirect to a new URL:
                 if form.cleaned_data['senha']:

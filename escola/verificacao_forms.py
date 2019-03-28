@@ -1,3 +1,6 @@
+"""
+Verificações dos Campos dos Forms.
+"""
 from typing import Callable, Any
 
 from django.contrib.auth.password_validation import validate_password
@@ -10,10 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class Verificacao:
-    """Objeto de verificação base, possui uma funçao que retorna True se o campo for valido e raise Validation error
-    se não for """
+    """
+    Objeto de verificação base, possui uma funçao que retorna True se o campo for valido e raise Validation error
+    se não for
+    """
 
     def verificar(self, date):
+        """Verifica se os dados estão OK"""
         return date
 
 
@@ -24,9 +30,10 @@ class VerificarLambda(Verificacao):
 
     def __init__(self, veri, msg="Esse campo não foi preenchido corretamente."):
         self.lamb = veri
-        self.msg = msg
+        self.msg = _(msg)
 
     def verificar(self, data):
+        """Verifica se a Lambda retorna True"""
         if self.lamb(data):
             return data
         else:
@@ -72,6 +79,7 @@ class VerificarNomeUsuario(Verificacao):
         self.msg_ja_usado = _(msg_ja_usado)
 
     def verificar(self, data):
+        """Verifica que o nome de usuario é valido."""
         if data == '':
             if self.blank:
                 return data
@@ -95,6 +103,7 @@ class VerificarSenha(Verificacao):
         self.msg_blank = _(msg_blank)
 
     def verificar(self, data):
+        """Verifica se a senha é valida."""
         if data == '':
             if self.blank:
                 return data

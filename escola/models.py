@@ -1,3 +1,6 @@
+"""
+Models gerais do aplicativo Escola.
+"""
 import logging
 
 from django.contrib.auth.models import User, Group
@@ -6,11 +9,11 @@ from django_prometheus.models import ExportModelOperationsMixin
 from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
-
 # Create your models here.
 import escola
 
 logger = logging.getLogger(__name__)
+
 
 class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
     """Perfil basico, todos os usuarios do sistema tem um."""
@@ -22,6 +25,7 @@ class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
 
     @property
     def template_data(self):
+        """ Retorna valores basicos requeridos pelo template, como notificações, etc... """
         context = {
             'notificacoes': self.get_unread_notifications(),
             'notificacao_count': len(self.get_unread_notifications()),
@@ -29,9 +33,11 @@ class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
         return context
 
     def get_unread_notifications(self):
+        """Retorna lista de todas as notificações não lidas desse usuario."""
         return self.user.notificacao_set.filter(visualizado=False).order_by('dataCriado')
 
     def read_all_notifications(self):
+        """Marca como lida todas as notificações"""
         for n in self.get_unread_notifications():
             n.visualizado = True
             n.save()
@@ -50,6 +56,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
     regente = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
 
     class Meta:
+        """Meta das Models"""
         permissions = (('can_add_turma', "Pode criar turmas"),
                        ('can_edit_turma', "Pode editar turmas"),
                        ('can_delete_turma', "Pode deletar turmas"),
@@ -60,6 +67,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
                        ('can_add_tarefa', "Pode adicionar uma tarefa."))
 
     def get_or_create_lider_group(self):
+        """Retorna o grupo de lider, que deve possuir apenas um usuario."""
         if self.lider:
             return self.lider
         else:
@@ -75,6 +83,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
             return self.lider
 
     def get_or_create_vicelider_group(self):
+        """Retorna o grupo de vicelider, que deve ter apenas um usuario."""
         if self.vicelider:
             return self.vicelider
         else:
@@ -88,6 +97,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
             return self.vicelider
 
     def get_or_create_regente_group(self):
+        """ Retorna o grupo de regente, que deve ter apenas um usuario. """
         # TODO add tests
         if self.regente:
             return self.regente
@@ -103,6 +113,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
             return self.regente
 
     def get_or_create_horario(self):
+        """Retorna ou cria e retorna o horario."""
         try:
             return self.horario
         except escola.models.Turma.horario.RelatedObjectDoesNotExist:
@@ -115,25 +126,32 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
 
 
 class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager')):
+    """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
     link = models.URLField(null=True, blank=True)
     seguidores = models.ManyToManyField(User)
 
     def is_seguidor(self, user):
+        """Verifica se determinado ususario está na lista de seguidores desse conteudo."""
         return user in self.seguidores.all()
 
     def adicionar_seguidor(self, user):
+        """Adiciona um usuario a lista de seguidores."""
         self.seguidores.add(user)
         self.save()
 
     def comunicar_todos(self, title, msg):
+        """Cria uma notificação para cada usuario."""
         for seguidor in self.seguidores:
             noti = Notificacao(seguidor, title, msg)
+            # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
+            #  usuario.
             if self.link:
                 noti.link = self.link
             noti.save()
 
 
 class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
+    """Um cargo dentro de uma turma como lider, regente e vice"""
     nome = models.CharField(max_length=50)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     ocupante = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -149,6 +167,7 @@ class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
     ativo = models.BooleanField(default=True)
 
     class Meta:
+        """Meta, contem metas"""
         permissions = (('can_add_cargo', "Pode criar Cargo"),
                        ('can_edit_cargo', "Pode editar Cargo"),
                        ('can_delete_cargo', "Pode deletar Cargo"),
@@ -159,6 +178,7 @@ class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
 
 
 class Professor(models.Model, ExportModelOperationsMixin('Professor')):
+    """Um professor, não esecifico para uma turma."""
     user = models.OneToOneField(User, related_name='professor', on_delete=models.CASCADE)
     nome = models.CharField(max_length=70)
 
@@ -166,12 +186,14 @@ class Professor(models.Model, ExportModelOperationsMixin('Professor')):
         return self.nome
 
     class Meta:
+        """Classe meta"""
         permissions = (('can_add_professor', 'Pode adicionar um novo Professor'),
                        ('can_edit_professor', 'Pode editar um professor'),
                        ('can_delete_professor', 'Pode deletar um professor'),)
 
 
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
+    """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
@@ -181,11 +203,13 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
         return self.nome
 
     class Meta:
+        """Meta"""
         permissions = (('can_edit_materia', 'Pode editar uma materia'),
                        ('can_delete_materia', 'Pode deletar uma materia'),)
 
 
 class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
+    """Aluno de uma turma."""
     chamada = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
     nome = models.CharField(max_length=70)
     user = models.OneToOneField(User, related_name='aluno', on_delete=models.CASCADE)
@@ -195,22 +219,13 @@ class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
         return self.nome
 
     class Meta:
+        """Meta"""
         permissions = (('edit_aluno', 'Pode editar um aluno.'),
                        ('can_delete_aluno', 'Pode deletar um aluno.'),)
 
 
-class ProvaBase(models.Model):
-    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
-
-
-class ProvaAplicada(models.Model):
-    provaBase = models.ForeignKey(ProvaBase, on_delete=models.CASCADE)
-    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
-    nota = models.FloatField(null=True, blank=True)
-
-
 class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
+    """Tarefa para com prazo, como um tema, ou pesquisa"""
     titulo = models.CharField(max_length=60)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
@@ -226,6 +241,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     manager_seguidor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def get_completacao(self, aluno: Aluno):
+        """Retorna se já foi completado."""
         completo = self.tarefacompletacao_set.filter(aluno=aluno)
         if len(completo) > 0:
             return completo[0]
@@ -235,6 +251,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
             return completo
 
     def get_seguidor_manager(self):
+        """Retorna o SeguidorManager dessa tarefa."""
         if self.manager_seguidor:
             return self.manager_seguidor
         else:
@@ -245,17 +262,20 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
             return self.manager_seguidor
 
     class Meta:
+        """Meta"""
         permissions = (('can_edit_tarefa', 'Pode editar uma tarefa.'),
                        ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
 
 
 class TarefaCompletacao(models.Model, ExportModelOperationsMixin('TarefaCompletação')):
+    """Completação de uma tarefa especifica por um aluno especifico."""
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
     completo = models.BooleanField(default=False)
 
 
 class TarefaComentario(models.Model, ExportModelOperationsMixin('TarefaComentario')):
+    """Comentario em uma tarefa por um usuario."""
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     texto = models.TextField()
@@ -274,9 +294,11 @@ class Notificacao(models.Model, ExportModelOperationsMixin('Alerta')):
 
 
 class Horario(models.Model, ExportModelOperationsMixin('Horario')):
+    """O horario de uma turma."""
     turma = models.OneToOneField(Turma, related_name='horario', on_delete=models.CASCADE)
 
     def get_turno_aula_or_create(self, dia, turno_a):
+        """"""
         turno = TurnoAula.objects.filter(diaDaSemana=dia, turno=turno_a, turma=self.turma)
         if turno:
             return turno[0]
@@ -286,7 +308,7 @@ class Horario(models.Model, ExportModelOperationsMixin('Horario')):
             return turno
 
     def get_periodo_or_create(self, dia, turno: int, num):
-        turno_aula = self.get_turno_ausla_or_create(dia, Turno.get_turno_by_cod(turno))
+        turno_aula = self.get_turno_aula_or_create(dia, Turno.get_turno_by_cod(turno))
         per = turno_aula.periodo_set.filter(num=num)
         if per:
             return per[0]
