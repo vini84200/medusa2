@@ -25,7 +25,7 @@
 </tr>
 {%for tarefa in tarefas%}
 <tr>
-    <th>{{tarefa.0.titulo}}</th>
+    <th><a href="{% url 'escola:detalhes-tarefa' tarefa.0.pk %}">{{tarefa.0.titulo}}</a> </th>
     <th>{{tarefa.0.materia}}</th>
     <th>{{tarefa.0.get_tipo_display}}</th>
     <th>{{tarefa.0.descricao|truncatechars:30}}</th>

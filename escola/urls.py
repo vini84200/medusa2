@@ -66,9 +66,11 @@ urlpatterns = [
     # materias
     path('turma/<int:turma_pk>/materias/add', escola.views_materia.add_materia, name='add-materia'),
     path('turma/<int:turma_pk>/materias', escola.views_materia.list_materias, name='list-materias'),
-    path('turma/<int:turma_pk>/materia/<int:materia_pk>/edit', escola.views_materia.edit_materia, name='edit-materia'),
-    path('turma/<int:turma_pk>/materia/<int:materia_pk>/delete', escola.views_materia.delete_materia,
+    path('materia/<int:materia_pk>/edit', escola.views_materia.edit_materia, name='edit-materia'),
+    path('materia/<int:materia_pk>/delete', escola.views_materia.delete_materia,
          name='delete-materia'),
+    path('materia/<int:pk>', escola.views_materia.MateriaDaTurmaDetailView.as_view(),
+         name='detail-materia'),
     # tarefa
     path('turma/<int:turma_pk>/tarefas/add', escola.views_tarefa.add_tarefa, name='add-tarefa'),
     path('turma/<int:turma_pk>/tarefas', escola.views_tarefa.list_tarefa, name='list-tarefa'),

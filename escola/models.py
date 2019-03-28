@@ -89,7 +89,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
         if self.vicelider:
             return self.vicelider
         else:
-            if Group.objects.filter(name=f'vicelider_turma_{self.pk}').exists:
+            if len(Group.objects.filter(name=f'vicelider_turma_{self.pk}').all()) != 0:
                 self.vicelider = Group.objects.get(name=f'vicelider_turma_{self.pk}')
             else:
                 self.vicelider = Group.objects.create(name=f'vicelider_turma_{self.pk}')
@@ -142,7 +142,7 @@ class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager'
 
     def comunicar_todos(self, title, msg):
         """Cria uma notificação para cada usuario."""
-        for seguidor in self.seguidores:
+        for seguidor in self.seguidores.all()   :
             noti = Notificacao(seguidor, title, msg)
             # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
             #  usuario.
@@ -313,7 +313,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
         if self.manager_seguidor:
             return self.manager_seguidor
         else:
-            m = SeguidorManager(link=reverse('detalhes-tarefa', args=[self.pk, ]))
+            m = SeguidorManager(link=reverse('escola:detalhes-tarefa', args=[self.pk, ]))
             m.save()
             self.manager_seguidor = m
             self.save()

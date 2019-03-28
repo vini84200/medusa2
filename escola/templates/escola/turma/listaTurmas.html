@@ -19,6 +19,7 @@
     <th>Alunos</th>
     <th>Materias</th>
     <th>Horario</th>
+    <th>Tarefas</th>
     {%if perms.escola.can_edit_turma%}
     <th></th>
     {%endif%}
@@ -34,6 +35,7 @@
     <th><a href="{% url 'escola:list-alunos' turma.pk %}">ALUNOS</a></th>
     <th><a href="{% url 'escola:list-materias' turma.pk %}">MATERIAS</a></th>
     <th><a href="{% url 'escola:show-horario' turma.pk %}">HORARIO</a></th>
+    <th><a href="{% url 'escola:list-tarefa' turma.pk %}">TAREFAS</a></th>
     {%if perms.escola.can_edit_turma%}
     <th><a href="{% url 'escola:edit-turma' turma.pk %}">EDIT</a></th>
     {%endif%}

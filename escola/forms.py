@@ -111,7 +111,7 @@ class MateriaForm(ModelForm):
 class TarefaForm(ModelForm):
     class Meta:
         model = Tarefa
-        exclude = ('turma',)
+        exclude = ('turma', 'manager_seguidor')
 
     def __init__(self, turma, *args, **kwargs):
         super(TarefaForm, self).__init__(*args, **kwargs)
