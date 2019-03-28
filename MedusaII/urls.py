@@ -29,6 +29,8 @@ urlpatterns = [
     # path('escola/', include('escola.urls')),
     path('', include('escola.urls')),
     path('', include('django_prometheus.urls')),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+
 ]
 if settings.DEBUG:
     urlpatterns.append(path('500', lambda request: HttpResponseServerError()))

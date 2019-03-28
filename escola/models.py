@@ -224,17 +224,6 @@ class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
                        ('can_delete_aluno', 'Pode deletar um aluno.'),)
 
 
-class ProvaBase(models.Model):
-    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
-
-
-class ProvaAplicada(models.Model):
-    provaBase = models.ForeignKey(ProvaBase, on_delete=models.CASCADE)
-    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
-    nota = models.FloatField(null=True, blank=True)
-
-
 class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     """Tarefa para com prazo, como um tema, ou pesquisa"""
     titulo = models.CharField(max_length=60)

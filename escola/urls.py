@@ -1,4 +1,5 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 
 import escola.views_aluno
 import escola.views_cargo
@@ -7,10 +8,32 @@ import escola.views_materia
 import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
+from escola import api
 from . import views
 
+router = routers.DefaultRouter()
+router.register(r'users', api.UserViewSet)
+router.register(r'groups', api.GroupViewSet)
+router.register(r'profile', api.ProfileViewSet)
+router.register(r'turma', api.TurmaViewSet)
+router.register(r'seguidormanager', api.SeguidorManagerViewSet)
+router.register(r'cargoturma', api.CargoTurmaViewSet)
+router.register(r'professor', api.ProfessorViewSet)
+router.register(r'materiadaturma', api.MateriaDaTurmaViewSet)
+router.register(r'aluno', api.AlunoViewSet)
+router.register(r'tarefa', api.TarefaViewSet)
+router.register(r'tarefacompletacao', api.TarefaCompletacaoViewSet)
+router.register(r'tarefacomentario', api.TarefaComentarioViewSet)
+router.register(r'notificacao', api.NotificacaoViewSet)
+router.register(r'horario', api.HorarioViewSet)
+router.register(r'turno', api.TurnoViewSet)
+router.register(r'turnoaula', api.TurnoAulaViewSet)
+
+
 app_name = 'escola'
+
 urlpatterns = [
+    path('api/v1/', include(router.urls)),
     path('', views.index, name='index'),
     # turma
     path('turmas/', escola.views_turma.list_turmas, name='list-turmas'),
