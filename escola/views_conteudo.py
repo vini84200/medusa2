@@ -6,20 +6,6 @@ from django.views.generic import TemplateView, CreateView, UpdateView, DetailVie
 from .forms import *
 from .models import *
 
-
-class ListConteudosMateriaView(TemplateView):
-    # FIXME: 28/03/2019 por wwwvi: Transferir para Materia-Detail
-    """Lista conteudos de uma materia."""
-    template_name = "escola/conteudo/ListConteudosMateria.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(ListConteudosMateriaView, self).get_context_data(**kwargs)
-        materia = get_object_or_404(MateriaDaTurma, pk=kwargs['pk'])
-        context['materia'] = materia
-        context['conteudos'] = materia.conteudos.all()
-        return context
-
-
 class ConteudoCreate(CreateView):
     """View para criar um Conteudo."""
     model = Conteudo

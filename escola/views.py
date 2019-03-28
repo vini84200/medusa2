@@ -26,6 +26,7 @@ def index(request):
         tarefas_c = []
         for tarefa in tarefas:
             tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
+        logger.debug(f'Encontrei {len(tarefas_c)} tarefas.')
         context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 
     logger.info('Antes de renderizar a view index, user: %s', request.user.pk)
