@@ -10,7 +10,10 @@ from django.urls import reverse
 from guardian.shortcuts import assign_perm
 
 # Create your models here.
+from taggit.managers import TaggableManager
+
 import escola
+from escola.customFields import ColorField
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +101,6 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
 
     def get_or_create_regente_group(self):
         """ Retorna o grupo de regente, que deve ter apenas um usuario. """
-        # TODO add tests
         if self.regente:
             return self.regente
         else:
@@ -192,12 +194,64 @@ class Professor(models.Model, ExportModelOperationsMixin('Professor')):
                        ('can_delete_professor', 'Pode deletar um professor'),)
 
 
+class Conteudo(models.Model):
+    """Conteudo que pode ser o filho de outro."""
+    nome = models.CharField(max_length=50)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    descricao = models.TextField()
+    conteudo_pai = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Conteudo"
+        verbose_name_plural = "Conteudos"
+
+        permissions = (('can_add_in_materia', 'Pode adicionar esse conteudo à uma materia.'),)
+
+        def __str__(self):
+            pass
+
+
+class CategoriaConteudo(models.Model):
+    """
+    Uma cateogoria de um conteudo, inicialmente
+    'Para se aprofundar',
+    'Para revisar',
+    'Para expandir seus horizontes'.
+    """
+    nome = models.CharField(max_length=50)
+    cor = ColorField(default='#0e74ce')
+
+    class Meta:
+        verbose_name = "Categoria de Link de Conteudos"
+        verbose_name_plural = "Categorias de Links de Conteudos"
+
+    def __str__(self):
+        pass
+
+
+class LinkConteudo(models.Model):
+    """Um link em conteudo."""
+    titulo = models.CharField(max_length=50)
+    link = models.URLField()
+    categoria = models.ForeignKey(CategoriaConteudo, on_delete=models.CASCADE)
+    descricao = models.TextField(null=True, blank=True)
+    tags = TaggableManager()
+
+    class Meta:
+        verbose_name = "Link de Conteudo"
+        verbose_name_plural = "Links de Conteudos"
+
+    def __str__(self):
+        pass
+
+
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     abreviacao = models.CharField(max_length=5)
+    conteudos = models.ManyToManyField(Conteudo)
 
     def __str__(self):
         return self.nome

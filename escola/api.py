@@ -136,3 +136,22 @@ class TurnoAulaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.DjangoObjectPermissions]
 
 
+class ConteudoViewSet(viewsets.ModelViewSet):
+    """Viewset for the Conteudo class"""
+    queryset = models.Conteudo.objects.all()
+    serializer_class = serializers.ConteudoSerializer
+    permission_classes = [permissions.DjangoObjectPermissions]
+
+
+class LinkConteudoViewSet(viewsets.ModelViewSet):
+    """Viewset for the LinkConteudo class"""
+    queryset = models.LinkConteudo.objects.all()
+    serializer_class = serializers.LinkConteudoSerializer
+    permission_classes = [permissions.DjangoObjectPermissions]
+
+
+class CategoriaConteudoViewSet(viewsets.ModelViewSet):
+    """Viewset for the CategoriaConteudo class"""
+    queryset = models.CategoriaConteudo.objects.all()
+    serializer_class = serializers.CategoriaConteudoSerializer
+    permission_classes = [permissions.DjangoObjectPermissions]

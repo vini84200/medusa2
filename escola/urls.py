@@ -28,6 +28,9 @@ router.register(r'notificacao', api.NotificacaoViewSet)
 router.register(r'horario', api.HorarioViewSet)
 router.register(r'turno', api.TurnoViewSet)
 router.register(r'turnoaula', api.TurnoAulaViewSet)
+router.register(r'conteudo', api.ConteudoViewSet)
+router.register(r'link_conteudo', api.LinkConteudoViewSet)
+router.register(r'categoria_conteudo', api.CategoriaConteudoViewSet)
 
 
 app_name = 'escola'

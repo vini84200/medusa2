@@ -1,5 +1,6 @@
 """Serializadores dos models para a API"""
 from django.contrib.auth.models import User, Group
+from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
 
 from . import models
 
@@ -100,6 +101,7 @@ class MateriaDaTurmaSerializer(serializers.ModelSerializer):
             'nome',
             'abreviacao',
             'professor',
+            'conteudos',
         )
 
 
@@ -121,6 +123,7 @@ class AlunoSerializer(serializers.ModelSerializer):
 class TarefaSerializer(serializers.ModelSerializer):
     turma = TurmaSerializer()
     materia = MateriaDaTurmaSerializer()
+
     class Meta:
         model = models.Tarefa
         fields = (
@@ -202,4 +205,41 @@ class TurnoAulaSerializer(serializers.ModelSerializer):
             'turno',
             'horario',
             'turma',
+        )
+
+
+class ConteudoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Conteudo
+        fields = (
+            'pk',
+            'nome',
+            'professor',
+            'descricao',
+            'conteudo_pai',
+        )
+
+
+class CategoriaConteudoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CategoriaConteudo
+        fields = (
+            'nome',
+            'cor',
+        )
+
+
+class LinkConteudoSerializer(TaggitSerializer, serializers.ModelSerializer):
+    tags = TagListSerializerField()
+    categoria = CategoriaConteudoSerializer()
+
+    class Meta:
+        model = models.LinkConteudo
+        fields = (
+            'pk',
+            'titulo',
+            'link',
+            'categoria',
+            'descricao',
+            'tags',
         )
