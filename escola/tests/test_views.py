@@ -1,14 +1,11 @@
+import pytest
 from django.contrib.auth import authenticate
 from django.test.client import Client
-import pytest
+from django.test.testcases import TestCase
+from helpers.utils import create_admin, create_aluno, create_professor, create_turma
+from mixer.backend.django import mixer
 
 from escola.models import *
-from django.contrib.auth.models import User
-from mixer.backend.django import mixer
-from django.urls import reverse
-from django.test.testcases import TestCase
-
-from helpers.utils import create_admin, create_aluno, create_professor, create_turma
 
 pytestmark = pytest.mark.django_db
 
@@ -165,7 +162,7 @@ class TestAddTurma(TestCase):
         admin = create_admin()
         c.force_login(admin)
         response = c.post(reverse('escola:add-turma'), {'numero': -12, 'ano': 2.4})
-        self.assertFormError(response, 'form', 'numero', 'Número invalido, por favor informe um número positivo.')
+        self.assertFormError(response, 'form', 'numero', 'Por favor, digite um valor positivo')
         self.assertFormError(response, 'form', 'ano', 'Informe um número inteiro.')
         response = c.post(reverse('escola:add-turma'), {'numero': 4.5, 'ano': 1936})
         self.assertFormError(response, 'form', 'numero', 'Informe um número inteiro.')
@@ -237,7 +234,7 @@ class TestEditTurmas(TestCase):
         c.force_login(admin)
         turma = create_turma()
         response = c.post(reverse('escola:edit-turma', args=[turma.pk, ]), {'numero': -12, 'ano': 2.4})
-        self.assertFormError(response, 'form', 'numero', 'Número invalido, por favor informe um número positivo.')
+        self.assertFormError(response, 'form', 'numero', 'Por favor, digite um valor positivo')
         self.assertFormError(response, 'form', 'ano', 'Informe um número inteiro.')
         response = c.post(reverse('escola:edit-turma', args=[turma.pk, ]), {'numero': 4.5, 'ano': 1936})
         self.assertFormError(response, 'form', 'numero', 'Informe um número inteiro.')
@@ -527,7 +524,7 @@ class TestAddAluno(TestCase):
                           {'num_chamada': 'KUHAKU', 'nome': 1341, 'username': user.username, 'senha': '1', 'turma': 'PEDRO'})
         self.assertFormError(response, 'form', 'num_chamada', 'Informe um número inteiro.')
         self.assertFormError(response, 'form', 'turma', 'Informe um número inteiro.')
-        self.assertFormError(response, 'form', 'username', 'Nome de usuario já tomado, por favor escolha outro.')
+        self.assertFormError(response, 'form', 'username', 'Este nome de usuario já existe, use outro.')
         self.assertFormError(response, 'form', 'senha', 'Esta senha é muito curta. Ela precisa conter pelo menos 8 '
                                                         'caracteres.')
         self.assertFormError(response, 'form', 'senha', 'Esta senha é muito comum.')

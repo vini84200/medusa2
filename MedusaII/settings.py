@@ -34,7 +34,6 @@ ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102
 # Application definition
 
 
-
 INSTALLED_APPS = [
     'leituras.apps.LeiturasConfig',
     'voting.apps.VotingConfig',
@@ -48,6 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
     'guardian',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -139,8 +140,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
+
 def get_release():
-    return raven.fetch_git_sha(Path(__file__).parent.parent)
+    try:
+        return raven.fetch_git_sha(Path(__file__).parent.parent)
+    except:
+        return config('HEROKU_SLUG_COMMIT', config('SOURCE_VERSION', config('DEFAULT_VERSION', "NotFound")))
 
 
 RAVEN_CONFIG = {
@@ -148,8 +153,8 @@ RAVEN_CONFIG = {
     # If you are using git, you can also automatically configure the
     # release based on the git info.
     'release': get_release(),
+    'environment': config('ENVIRONMENT', 'Default')
 }
-
 
 LOGGING_CONFIG = None
 logging.config.dictConfig({

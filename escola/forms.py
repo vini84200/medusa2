@@ -1,27 +1,12 @@
+import logging
+
 from django import forms
-from django.contrib.auth.password_validation import validate_password
-
-from .models import *
 from django.forms import ModelForm
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 
+from escola.verificacao_forms import VerificarMinimo, VerificarPositivo, VerificarNomeUsuario, VerificarSenha, verificar
+from .models import *
 
-def username_present(username):
-    if User.objects.filter(username=username).exists():
-        return True
-
-    return False
-
-
-def clean_numero(self, campo, v_min, v_max, msg_min='Valor muito baixo', msg_max='Valor muito alto'):
-    assert not 0 is None
-    data = self.cleaned_data[campo]
-    if v_min is not None and data <= v_min:
-        raise ValidationError(_(msg_min))
-    if v_max is not None and data >= v_max:
-        raise ValidationError(_(msg_max))
-    return data
+logger = logging.getLogger(__name__)
 
 
 class CriarTurmaForm(forms.Form):
@@ -30,16 +15,14 @@ class CriarTurmaForm(forms.Form):
     ano = forms.IntegerField(label="Ano:", help_text="Ano de atividade dessa turma. Exs. 2018, 2019")
 
     def clean_numero(self):
-        data = self.cleaned_data['numero']
-        # Checks if it is zero or negative.
-        if data <= 0:
-            raise ValidationError(_('Número invalido, por favor informe um número positivo.'))
-
-        return data
+        return verificar(self.cleaned_data['numero'], [
+            VerificarPositivo()
+        ])
 
     def clean_ano(self):
-        return clean_numero(self, 'ano', 1940, None, 'Ano invalido, por favor informe um ano posterior a 1940.','')
-
+        return verificar(self.cleaned_data['ano'], [
+            VerificarMinimo(1940, msg='Ano invalido, por favor informe um ano posterior a {}.')
+        ])
 
 
 class CargoForm(ModelForm):
@@ -61,29 +44,19 @@ class AlunoCreateForm(forms.Form):
     turma = forms.IntegerField()
 
     def clean_num_chamada(self):
-        return clean_numero(self, 'num_chamada', 0, None, "Por favor, salve a chamada com um numero positivo.")
+        return verificar(self.cleaned_data['num_chamada'], [
+            VerificarPositivo()
+        ])
 
     def clean_senha(self):
-        data = self.cleaned_data['senha']
-        if data == '':
-            return data
-        # Segundo a documentação validate_password retorna None se passar;
-        if validate_password(data) is None:
-            return data
-        print("Por algum motivo o validate_password()[forms.py:AlunoCreateForm:clean_senha()] não retornou None, "
-              "nem deu Raise num ValidateError.")
-        raise ValidationError(_('Por algum motivo o validate_password()[forms.py:AlunoCreateForm:clean_senha()] não '
-                                'retornou None, nem deu Raise num ValidateError, entre em contato porfavor.'))
+        return verificar(self.cleaned_data['senha'], [
+            VerificarSenha(blank=True)
+        ])
 
     def clean_username(self):
-        data = self.cleaned_data['username']
-        if data == '':
-            return data
-
-        if username_present(data):
-            raise ValidationError(_('Nome de usuario já tomado, por favor escolha outro.'))
-
-        return data
+        return verificar(self.cleaned_data['username'], [
+            VerificarNomeUsuario(blank=True)
+        ])
 
 
 class AlunoCreateFormOutLabel(forms.Form):
@@ -94,7 +67,19 @@ class AlunoCreateFormOutLabel(forms.Form):
     turma = forms.IntegerField(label='')
 
     def clean_num_chamada(self):
-        return clean_numero(self, 'num_chamada', 0, None, "Por favor, salve a chamada com um numero positivo.")
+        return verificar(self.cleaned_data['num_chamada'], [
+            VerificarPositivo()
+        ])
+
+    def clean_username(self):
+        return verificar(self.cleaned_data['username'], [
+            VerificarNomeUsuario(blank=True),
+        ])
+
+    def clean_senha(self):
+        return verificar(self.cleaned_data['senha'], [
+            VerificarSenha(blank=True)
+        ])
 
 
 class PeriodoForm(ModelForm):
@@ -107,6 +92,16 @@ class ProfessorCreateForm(forms.Form):
     nome = forms.CharField()
     username = forms.CharField(help_text="Deixe em branco para geração automatica.", required=False)
     senha = forms.CharField(help_text="Deixe em branco para aleatorio.", required=False)
+
+    def clean_senha(self):
+        return verificar(self.cleaned_data['senha'], [
+            VerificarSenha(blank=True)
+        ])
+
+    def clean_username(self):
+        return verificar(self.cleaned_data['username'], [
+            VerificarNomeUsuario(blank=True),
+        ])
 
 
 class MateriaForm(ModelForm):

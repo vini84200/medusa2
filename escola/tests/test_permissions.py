@@ -10,7 +10,7 @@ from django.test.testcases import TestCase
 
 from helpers.utils import create_admin, create_aluno, create_professor, create_turma, create_cargo, cargo_muda_ocupante
 
-from escola.views import dar_permissao_user
+from escola.utils import dar_permissao_user
 
 pytestmark = pytest.mark.django_db
 
