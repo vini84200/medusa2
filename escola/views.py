@@ -21,11 +21,12 @@ def index(request):
         turma_pk = request.user.aluno.turma.pk
         logger.info('views:index; user_id: %s é aluno.', request.user.pk)
         # TAREFAS
-        logger.warning("Lembre-se de retirar as tarefas daqui e generalizar;")
+        logger.info("Lembre-se de retirar as tarefas daqui e generalizar;")
         tarefas = Tarefa.objects.filter(turma__pk=turma_pk, deadline__gte=datetime.date.today()).order_by('deadline')
         tarefas_c = []
         for tarefa in tarefas:
             tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
+        logger.debug(f'Encontrei {len(tarefas_c)} tarefas.')
         context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 
     logger.info('Antes de renderizar a view index, user: %s', request.user.pk)

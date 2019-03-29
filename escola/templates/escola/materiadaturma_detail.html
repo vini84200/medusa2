@@ -1,0 +1,32 @@
+{% extends "escola/base.html" %}
+
+{%load dict_key %}
+{% load mptt_tags %}
+
+{% block title %} {{materia.nome}} {% endblock %}
+
+
+{% block conteudo %}
+
+<h1>{{materia.nome}}</h1>
+
+Prof. {{materia.professor.nome}}
+
+{% if materia.conteudos.all %}
+<h3>Conteudos:</h3>
+<ul class="root">
+    {% recursetree materia.conteudos.all %}
+        <li>
+            <a href="{% url 'escola:conteudo-detail' node.pk%}">{{ node.nome }}</a>
+            {% if not node.is_leaf_node %}
+                <ul class="children">
+                    {{ children }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+</ul>
+{% endif %}
+
+
+{% endblock %}

@@ -67,7 +67,7 @@ def edit_tarefa(request, tarefa_pk):
             tarefa.descricao = form.cleaned_data['descricao']
             tarefa.deadline = form.cleaned_data['deadline']
             tarefa.save()
-            return HttpResponseRedirect(reverse('escola:list-tarefas', args=[turma.pk]))
+            return HttpResponseRedirect(reverse('escola:list-tarefa', args=[turma.pk]))
     else:
         form = TarefaForm(turma=turma, initial={'titulo': tarefa.titulo, 'materia': tarefa.materia, 'tipo': tarefa.tipo,
                                                 'descricao': tarefa.descricao, 'deadline': tarefa.deadline})

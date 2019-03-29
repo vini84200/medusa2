@@ -1,0 +1,27 @@
+{% extends "escola/base.html" %}
+
+{%load dict_key %}
+
+
+{% block title %} {{conteudo.nome}} {% endblock %}
+
+
+{% block conteudo %}
+
+<h1>{{conteudo.nome}}</h1>
+<p>{{conteudo.descricao}}</p>
+<hr />
+{% for categoria in categorias%}
+
+    <h2 style="color: {{categoria.obj.cor}}"> {{categoria.obj.nome}} </h2>
+    <ul>
+    {%for link in categoria.links%}
+        <li><a href="{{link.link}}">{{link.titulo}}</a>
+            <p>{{link.descricao}}</p>
+        </li>
+    {% endfor %}
+    </ul>
+
+{% endfor %}
+
+{% endblock %}

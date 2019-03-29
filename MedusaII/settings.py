@@ -49,6 +49,10 @@ INSTALLED_APPS = [
     'guardian',
     'rest_framework',
     'rest_framework.authtoken',
+    'taggit',
+    'taggit_labels',
+    'taggit_serializer',
+    'mptt',
 ]
 
 MIDDLEWARE = [

@@ -2,12 +2,13 @@
 
 {% load guardian_tags %}
 
-{% get_obj_perms user for turma as "turma_perm" %}
+
 
 {%block conteudo%}
-
+{% get_obj_perms user for turma as "turma_perm" %}
 <h1>Listagem de Materias da turma {{turma.numero}}</h1>
 {%if 'can_add_materia' in turma_perm %}
+
     <a href="{% url 'escola:add-materia' turma.id %}">Adicionar Materia</a>
 {%endif%}
 
@@ -23,14 +24,14 @@
 {%for materia in materias%}
 <tr>
     {% get_obj_perms user for materia as "materia_perm" %}
-    <th>{{materia.nome}}</th>
+    <th><a href="{% url 'escola:detail-materia' materia.pk %}">{{materia.nome}}</a></th>
     <th>{{materia.professor.nome}}</th>
     <th>{{materia.abreviacao}}</th>
     {%if 'can_edit_materia' in materia_perm%}
-    <th><a href="{% url 'escola:edit-materia' materia.turma.pk materia.pk %}">EDIT</a></th>
+    <th><a href="{% url 'escola:edit-materia' materia.pk %}">EDIT</a></th>
     {%endif%}
     {%if 'can_delete_materia' in materia_perm%}
-    <th><a href="{% url 'escola:delete-materia' materia.turma.pk materia.pk %}">DELETE</a></th>
+    <th><a href="{% url 'escola:delete-materia' materia.pk %}">DELETE</a></th>
     {%endif%}
 </tr>
 {%endfor%}

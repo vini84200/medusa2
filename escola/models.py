@@ -7,10 +7,12 @@ from django.contrib.auth.models import User, Group
 from django.db import models
 from django_prometheus.models import ExportModelOperationsMixin
 from django.urls import reverse
+from mptt.models import MPTTModel, TreeForeignKey
 from guardian.shortcuts import assign_perm
+from taggit.managers import TaggableManager
 
-# Create your models here.
 import escola
+from escola.customFields import ColorField
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +89,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
         if self.vicelider:
             return self.vicelider
         else:
-            if Group.objects.filter(name=f'vicelider_turma_{self.pk}').exists:
+            if len(Group.objects.filter(name=f'vicelider_turma_{self.pk}').all()) != 0:
                 self.vicelider = Group.objects.get(name=f'vicelider_turma_{self.pk}')
             else:
                 self.vicelider = Group.objects.create(name=f'vicelider_turma_{self.pk}')
@@ -98,7 +100,6 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
 
     def get_or_create_regente_group(self):
         """ Retorna o grupo de regente, que deve ter apenas um usuario. """
-        # TODO add tests
         if self.regente:
             return self.regente
         else:
@@ -141,7 +142,7 @@ class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager'
 
     def comunicar_todos(self, title, msg):
         """Cria uma notificação para cada usuario."""
-        for seguidor in self.seguidores:
+        for seguidor in self.seguidores.all()   :
             noti = Notificacao(seguidor, title, msg)
             # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
             #  usuario.
@@ -192,12 +193,69 @@ class Professor(models.Model, ExportModelOperationsMixin('Professor')):
                        ('can_delete_professor', 'Pode deletar um professor'),)
 
 
+class Conteudo(MPTTModel):
+    """Conteudo que pode ser o filho de outro."""
+    nome = models.CharField(max_length=50)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    descricao = models.TextField()
+    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+
+    def get_absolute_url(self):
+        """Retorna Url do conteudo."""
+        return reverse('conteudo-detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        verbose_name = "Conteudo"
+        verbose_name_plural = "Conteudos"
+
+        permissions = (('can_add_in_materia', 'Pode adicionar esse conteudo à uma materia.'),)
+
+    def __str__(self):
+        return self.nome
+
+
+class CategoriaConteudo(models.Model):
+    """
+    Uma cateogoria de um conteudo, inicialmente
+    'Para se aprofundar',
+    'Para revisar',
+    'Para expandir seus horizontes'.
+    """
+    nome = models.CharField(max_length=50)
+    cor = ColorField(default='#0e74ce')
+
+    class Meta:
+        verbose_name = "Categoria de Link de Conteudos"
+        verbose_name_plural = "Categorias de Links de Conteudos"
+
+    def __str__(self):
+        return self.nome
+
+
+class LinkConteudo(models.Model):
+    """Um link em conteudo."""
+    titulo = models.CharField(max_length=50)
+    link = models.URLField()
+    categoria = models.ForeignKey(CategoriaConteudo, on_delete=models.CASCADE)
+    descricao = models.TextField(null=True, blank=True)
+    conteudo = models.ForeignKey(Conteudo, on_delete=models.CASCADE)
+    tags = TaggableManager()
+
+    class Meta:
+        verbose_name = "Link de Conteudo"
+        verbose_name_plural = "Links de Conteudos"
+
+    def __str__(self):
+        return self.titulo
+
+
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     abreviacao = models.CharField(max_length=5)
+    conteudos = models.ManyToManyField(Conteudo)
 
     def __str__(self):
         return self.nome
@@ -255,7 +313,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
         if self.manager_seguidor:
             return self.manager_seguidor
         else:
-            m = SeguidorManager(link=reverse('detalhes-tarefa', args=[self.pk, ]))
+            m = SeguidorManager(link=reverse('escola:detalhes-tarefa', args=[self.pk, ]))
             m.save()
             self.manager_seguidor = m
             self.save()

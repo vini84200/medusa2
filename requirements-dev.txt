@@ -17,3 +17,7 @@ raven==6.10.0
 djangorestframework==3.9.2
 markdown==3.1
 django-filter==2.1.0
+django-taggit==1.1.0
+django-taggit-labels==0.6.0
+django-taggit-serializer==0.1.7
+django-mptt==0.9.1

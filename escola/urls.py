@@ -8,6 +8,7 @@ import escola.views_materia
 import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
+import escola.views_conteudo
 from escola import api
 from . import views
 
@@ -28,7 +29,9 @@ router.register(r'notificacao', api.NotificacaoViewSet)
 router.register(r'horario', api.HorarioViewSet)
 router.register(r'turno', api.TurnoViewSet)
 router.register(r'turnoaula', api.TurnoAulaViewSet)
-
+router.register(r'conteudo', api.ConteudoViewSet)
+router.register(r'link_conteudo', api.LinkConteudoViewSet)
+router.register(r'categoria_conteudo', api.CategoriaConteudoViewSet)
 
 app_name = 'escola'
 
@@ -53,7 +56,8 @@ urlpatterns = [
     path('turmas/aluno/<int:aluno_pk>/delete', views.delete_aluno, name='delete-aluno'),
     # horario
     path('turma/<int:turma_pk>/horario', escola.views_horario.ver_horario, name='show-horario'),
-    path('turma/<int:turma_pk>/horario/edit/<int:turno_cod>/<int:dia_cod>', escola.views_horario.alterar_horario, name='alterar-horario'),
+    path('turma/<int:turma_pk>/horario/edit/<int:turno_cod>/<int:dia_cod>', escola.views_horario.alterar_horario,
+         name='alterar-horario'),
     # professores
     path('professores/add', escola.views_professor.add_professor, name='add-professor'),
     path('professores/', escola.views_professor.list_professores, name='list-professores'),
@@ -62,8 +66,11 @@ urlpatterns = [
     # materias
     path('turma/<int:turma_pk>/materias/add', escola.views_materia.add_materia, name='add-materia'),
     path('turma/<int:turma_pk>/materias', escola.views_materia.list_materias, name='list-materias'),
-    path('turma/<int:turma_pk>/materia/<int:materia_pk>/edit', escola.views_materia.edit_materia, name='edit-materia'),
-    path('turma/<int:turma_pk>/materia/<int:materia_pk>/delete', escola.views_materia.delete_materia, name='delete-materia'),
+    path('materia/<int:materia_pk>/edit', escola.views_materia.edit_materia, name='edit-materia'),
+    path('materia/<int:materia_pk>/delete', escola.views_materia.delete_materia,
+         name='delete-materia'),
+    path('materia/<int:pk>', escola.views_materia.MateriaDaTurmaDetailView.as_view(),
+         name='detail-materia'),
     # tarefa
     path('turma/<int:turma_pk>/tarefas/add', escola.views_tarefa.add_tarefa, name='add-tarefa'),
     path('turma/<int:turma_pk>/tarefas', escola.views_tarefa.list_tarefa, name='list-tarefa'),
@@ -74,3 +81,11 @@ urlpatterns = [
     # Seguir
     path('seguir/<int:pk>', views.seguir_manager, name='seguir'),
 ]
+
+# Conteudos
+urlpatterns += \
+    [
+        path('conteudo/<int:pk>', escola.views_conteudo.ConteudoDetail.as_view(), name='conteudo-detail'),
+        path('conteudo/add/<int:pk_parent>', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
+        path('conteudo/add/', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
+    ]

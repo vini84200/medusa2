@@ -1,5 +1,3 @@
-import logging
-
 from django import forms
 from django.forms import ModelForm
 
@@ -113,7 +111,7 @@ class MateriaForm(ModelForm):
 class TarefaForm(ModelForm):
     class Meta:
         model = Tarefa
-        exclude = ('turma',)
+        exclude = ('turma', 'manager_seguidor')
 
     def __init__(self, turma, *args, **kwargs):
         super(TarefaForm, self).__init__(*args, **kwargs)
@@ -124,3 +122,13 @@ class ComentarioTarefaForm(ModelForm):
     class Meta:
         model = TarefaComentario
         fields = ['texto', ]
+
+
+class ConteudoForm(ModelForm):
+    """Formulario para criação e atualização de Conteudos."""
+
+    class Meta:
+        model = Conteudo
+        fields = ['nome', 'descricao', 'parent', ]
+        widgets = {'parent': forms.HiddenInput(),
+                   }

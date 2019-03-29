@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.views.generic import DetailView
 from guardian.decorators import permission_required as permission_required_obj
 
 from escola.decorators import is_user_escola
@@ -41,19 +42,20 @@ def list_materias(request, turma_pk):
 
 
 @permission_required_obj('escola.can_edit_materia', (MateriaDaTurma, 'pk', 'materia_pk'))
-def edit_materia(request, turma_pk, materia_pk):
+def edit_materia(request, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
+    turma = materia.turma
     if request.method == 'POST':
         form = MateriaForm(request.POST)
         if form.is_valid():
             materia.nome = form.cleaned_data['nome']
-            materia.turma = get_object_or_404(Turma, pk=turma_pk)
+            materia.turma = turma
             materia.professor = form.cleaned_data['professor']
             materia.abreviacao = form.cleaned_data['abreviacao']
             materia.save()
     else:
 
-        form = MateriaForm(materia)
+        form = MateriaForm(instance=materia)
 
     context = {
         'form': form,
@@ -62,7 +64,14 @@ def edit_materia(request, turma_pk, materia_pk):
 
 
 @permission_required_obj('escola.can_delete_materia', (MateriaDaTurma, 'pk', 'materia_pk'))
-def delete_materia(request, turma_pk, materia_pk):
+def delete_materia(request, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
+    turma = materia.turma
     materia.delete()
-    return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
+    return HttpResponseRedirect(reverse('escola:list-materias', args=[turma.pk]))
+
+
+class MateriaDaTurmaDetailView(DetailView):
+    """View de detalhes sobre a materia"""
+    model = MateriaDaTurma
+    context_object_name = 'materia'
