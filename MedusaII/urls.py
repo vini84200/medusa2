@@ -25,7 +25,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('l/',include('leituras.urls')),
     path('vc/', include('voting.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('escola.urlsAuth')),
     # path('escola/', include('escola.urls')),
     path('', include('escola.urls')),
     path('', include('django_prometheus.urls')),

@@ -1,0 +1,730 @@
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 15:50:25
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 15:50:34
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+----------------------------------------
+Exception happened during processing of request from ('10.0.0.101', 47854)
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 647, in process_request_thread
+    self.finish_request(request, client_address)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 357, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 717, in __init__
+    self.handle()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 171, in handle
+    self.handle_one_request()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 179, in handle_one_request
+    self.raw_requestline = self.rfile.readline(65537)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socket.py", line 589, in readinto
+    return self._sock.recv_into(b)
+ConnectionResetError: [WinError 10054] Foi forçado o cancelamento de uma conexão existente pelo host remoto
+----------------------------------------
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:02:31
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:02:43
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:03:23
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+2019-03-30 16:04:09,983 django.server 14504 ERROR    "GET /alunos/populate/ HTTP/1.1" 500 59
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 55444)
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 141, in run
+    self.handle_error()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 116, in handle_error
+    super().handle_error()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 368, in handle_error
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 331, in send_headers
+    if not self.origin_server or self.client_is_modern():
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 344, in client_is_modern
+    return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 647, in process_request_thread
+    self.finish_request(request, client_address)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 357, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 717, in __init__
+    self.handle()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 169, in handle
+    self.handle_one_request()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 194, in handle_one_request
+    handler.run(self.server.get_app())
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 144, in run
+    self.close()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 111, in close
+    super().close()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\simple_server.py", line 35, in close
+    self.status.split(' ',1)[0], self.bytes_sent
+AttributeError: 'NoneType' object has no attribute 'split'
+----------------------------------------
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:06:06
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+2019-03-30 16:06:41,270 django.server 10200 ERROR    "GET /alunos/populate/ HTTP/1.1" 500 59
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 55692)
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 141, in run
+    self.handle_error()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 116, in handle_error
+    super().handle_error()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 368, in handle_error
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 331, in send_headers
+    if not self.origin_server or self.client_is_modern():
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 344, in client_is_modern
+    return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 647, in process_request_thread
+    self.finish_request(request, client_address)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 357, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 717, in __init__
+    self.handle()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 169, in handle
+    self.handle_one_request()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 194, in handle_one_request
+    handler.run(self.server.get_app())
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 144, in run
+    self.close()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 111, in close
+    super().close()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\simple_server.py", line 35, in close
+    self.status.split(' ',1)[0], self.bytes_sent
+AttributeError: 'NoneType' object has no attribute 'split'
+----------------------------------------
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+2019-03-30 16:06:59,291 django.server 16448 ERROR    "GET /alunos/populate/ HTTP/1.1" 500 59
+----------------------------------------
+Exception happened during processing of request from ('127.0.0.1', 55718)
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 141, in run
+    self.handle_error()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 116, in handle_error
+    super().handle_error()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 368, in handle_error
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 331, in send_headers
+    if not self.origin_server or self.client_is_modern():
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 344, in client_is_modern
+    return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 647, in process_request_thread
+    self.finish_request(request, client_address)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 357, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 717, in __init__
+    self.handle()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 169, in handle
+    self.handle_one_request()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 194, in handle_one_request
+    handler.run(self.server.get_app())
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 144, in run
+    self.close()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 111, in close
+    super().close()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\simple_server.py", line 35, in close
+    self.status.split(' ',1)[0], self.bytes_sent
+AttributeError: 'NoneType' object has no attribute 'split'
+----------------------------------------
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:07:21
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:09:18
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-03-30 16:11:59,892 django.security.TooManyFieldsSent 20104 ERROR    The number of GET/POST parameters exceeded settings.DATA_UPLOAD_MAX_NUMBER_FIELDS.
+2019-03-30 16:12:02,785 django.request 20104 WARNING  Bad Request: /alunos/populate/
+2019-03-30 16:12:02,846 django.server 20104 WARNING  "POST /alunos/populate/ HTTP/1.1" 400 104106
+2019-03-30 16:16:45,784 django.security.TooManyFieldsSent 20104 ERROR    The number of GET/POST parameters exceeded settings.DATA_UPLOAD_MAX_NUMBER_FIELDS.
+2019-03-30 16:16:45,905 django.request 20104 WARNING  Bad Request: /alunos/populate/
+2019-03-30 16:16:45,945 django.server 20104 WARNING  "POST /alunos/populate/ HTTP/1.1" 400 104106
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:21:24
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:21:37
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:22:01
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-03-30 16:22:07,744 escola.views 18444 INFO     views:index; user_id: 1
+2019-03-30 16:22:07,748 escola.views 18444 INFO     views:index; user_id: 1 é aluno.
+2019-03-30 16:22:07,749 escola.views 18444 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-03-30 16:22:07,753 escola.views 18444 DEBUG    Encontrei 1 tarefas.
+2019-03-30 16:22:07,755 escola.views 18444 INFO     Antes de renderizar a view index, user: 1
+2019-03-30 16:22:07,774 escola.models 18444 DEBUG    horario:get_horario()
+2019-03-30 16:22:07,777 escola.models 18444 INFO     Puxou 3 turno(s) do banco de dados.
+2019-03-30 16:22:07,777 escola.models 18444 INFO     Preparando para entrar no loop de turnos...
+2019-03-30 16:22:07,777 escola.models 18444 DEBUG    Turno id:1
+2019-03-30 16:22:07,790 escola.models 18444 DEBUG    Turno id:3
+2019-03-30 16:22:07,802 escola.models 18444 DEBUG    Turno id:2
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:22:47
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:23:02
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:23:29
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-03-30 16:28:06,875 django.security.csrf 1484 WARNING  Forbidden (CSRF token missing or incorrect.): /alunos/populate/
+2019-03-30 16:28:08,830 django.server 1484 WARNING  "POST /alunos/populate/ HTTP/1.1" 403 2514
+2019-03-30 16:28:22,675 django.security.csrf 1484 WARNING  Forbidden (CSRF token missing or incorrect.): /alunos/populate/
+2019-03-30 16:28:22,689 django.server 1484 WARNING  "POST /alunos/populate/ HTTP/1.1" 403 2514
+2019-03-30 16:28:23,978 django.security.csrf 1484 WARNING  Forbidden (CSRF token missing or incorrect.): /alunos/populate/
+2019-03-30 16:28:23,992 django.server 1484 WARNING  "POST /alunos/populate/ HTTP/1.1" 403 2514
+2019-03-30 16:28:29,329 django.security.csrf 1484 WARNING  Forbidden (CSRF token missing or incorrect.): /alunos/populate/
+2019-03-30 16:28:29,345 django.server 1484 WARNING  "POST /alunos/populate/ HTTP/1.1" 403 2514
+2019-03-30 16:28:52,888 django.request 1484 ERROR    Internal Server Error: /alunos/populate/
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\contrib\auth\decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 32, in populate_alunos
+    mail_managers("Lista de Senhas para uma nova popuação de usarios, imprima", response.content)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\__init__.py", line 116, in mail_managers
+    mail.send(fail_silently=fail_silently)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 291, in send
+    return self.get_connection(fail_silently).send_messages([self])
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\backends\smtp.py", line 110, in send_messages
+    sent = self._send(message)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\backends\smtp.py", line 124, in _send
+    message = email_message.message()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 253, in message
+    msg = SafeMIMEText(self.body, self.content_subtype, encoding)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 166, in __init__
+    MIMEText.__init__(self, _text, _subtype=_subtype, _charset=_charset)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\email\mime\text.py", line 42, in __init__
+    self.set_payload(_text, _charset)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 176, in set_payload
+    for l in payload.splitlines()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 176, in <genexpr>
+    for l in payload.splitlines()
+AttributeError: 'bytes' object has no attribute 'encode'
+2019-03-30 16:28:52,899 django.server 1484 ERROR    "POST /alunos/populate/ HTTP/1.1" 500 122175
+2019-03-30 16:30:07,752 escola.views 1484 INFO     views:index; user_id: 1
+2019-03-30 16:30:07,759 escola.views 1484 INFO     views:index; user_id: 1 é aluno.
+2019-03-30 16:30:07,759 escola.views 1484 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-03-30 16:30:07,766 escola.views 1484 DEBUG    Encontrei 1 tarefas.
+2019-03-30 16:30:07,768 escola.views 1484 INFO     Antes de renderizar a view index, user: 1
+2019-03-30 16:30:07,800 escola.models 1484 DEBUG    horario:get_horario()
+2019-03-30 16:30:07,803 escola.models 1484 INFO     Puxou 3 turno(s) do banco de dados.
+2019-03-30 16:30:07,803 escola.models 1484 INFO     Preparando para entrar no loop de turnos...
+2019-03-30 16:30:07,804 escola.models 1484 DEBUG    Turno id:1
+2019-03-30 16:30:07,815 escola.models 1484 DEBUG    Turno id:3
+2019-03-30 16:30:07,827 escola.models 1484 DEBUG    Turno id:2
+2019-03-30 16:30:48,032 django.request 1484 ERROR    Internal Server Error: /alunos/populate/
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\contrib\auth\decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 32, in populate_alunos
+    mail_managers("Lista de Senhas para uma nova popuação de usarios, imprima", response.content)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\__init__.py", line 116, in mail_managers
+    mail.send(fail_silently=fail_silently)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 291, in send
+    return self.get_connection(fail_silently).send_messages([self])
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\backends\smtp.py", line 110, in send_messages
+    sent = self._send(message)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\backends\smtp.py", line 124, in _send
+    message = email_message.message()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 253, in message
+    msg = SafeMIMEText(self.body, self.content_subtype, encoding)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 166, in __init__
+    MIMEText.__init__(self, _text, _subtype=_subtype, _charset=_charset)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\email\mime\text.py", line 42, in __init__
+    self.set_payload(_text, _charset)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 176, in set_payload
+    for l in payload.splitlines()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\mail\message.py", line 176, in <genexpr>
+    for l in payload.splitlines()
+AttributeError: 'bytes' object has no attribute 'encode'
+2019-03-30 16:30:48,037 django.server 1484 ERROR    "POST /alunos/populate/ HTTP/1.1" 500 122175
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:31:40
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-03-30 16:31:59,413 django.security.csrf 20168 WARNING  Forbidden (CSRF token missing or incorrect.): /alunos/populate/
+2019-03-30 16:32:01,974 django.server 20168 WARNING  "POST /alunos/populate/ HTTP/1.1" 403 2514
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:34:21
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x05045A50>
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\commands\runserver.py", line 117, in inner_run
+    self.check(display_num_errors=True)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 379, in check
+    include_deployment_checks=include_deployment_checks,
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 366, in _run_checks
+    return checks.run_checks(**kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\registry.py", line 71, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 40, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 57, in _load_all_namespaces
+    url_patterns = getattr(resolver, 'url_patterns', [])
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 533, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 526, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\MedusaII\urls.py", line 30, in <module>
+    path('', include('escola.urls')),
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\escola\urls.py", line 4, in <module>
+    import escola.views_aluno
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 23
+    @permission_required('escola.can_populate_turma')
+    ^
+IndentationError: expected an indented block
+Performing system checks...
+
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x05045A50>
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\commands\runserver.py", line 117, in inner_run
+    self.check(display_num_errors=True)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 379, in check
+    include_deployment_checks=include_deployment_checks,
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 366, in _run_checks
+    return checks.run_checks(**kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\registry.py", line 71, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 40, in check_url_namespaces_unique
+    all_namespaces = _load_all_namespaces(resolver)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 57, in _load_all_namespaces
+    url_patterns = getattr(resolver, 'url_patterns', [])
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 533, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 526, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\MedusaII\urls.py", line 30, in <module>
+    path('', include('escola.urls')),
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\escola\urls.py", line 4, in <module>
+    import escola.views_aluno
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 24
+    @permission_required('escola.can_populate_turma')
+    ^
+IndentationError: expected an indented block
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:37:51
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:38:46
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:40:33
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-03-30 16:40:44,472 django.request 22380 ERROR    Internal Server Error: /alunos/populate/
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\contrib\auth\decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 31, in populate_alunos
+    formset = AlunosFormSet(data=request.POST or None)
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 24, in __init__
+    self.template = 'bootstrap/table_inline_formset.html'
+NameError: name 'Submit' is not defined
+2019-03-30 16:40:44,477 django.server 22380 ERROR    "GET /alunos/populate/ HTTP/1.1" 500 85564
+2019-03-30 16:40:51,402 django.request 22380 ERROR    Internal Server Error: /alunos/populate/
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\contrib\auth\decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 31, in populate_alunos
+    formset = AlunosFormSet(data=request.POST or None)
+  File "C:\Programação\Medusa II\escola\views_aluno.py", line 24, in __init__
+    self.template = 'bootstrap/table_inline_formset.html'
+NameError: name 'Submit' is not defined
+2019-03-30 16:40:51,406 django.server 22380 ERROR    "GET /alunos/populate/ HTTP/1.1" 500 85564
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:41:33
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:42:33
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:45:21
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-03-30 16:47:49,840 escola.views 18348 INFO     views:index; user_id: 1
+2019-03-30 16:47:49,843 escola.views 18348 INFO     views:index; user_id: 1 é aluno.
+2019-03-30 16:47:49,843 escola.views 18348 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-03-30 16:47:49,847 escola.views 18348 DEBUG    Encontrei 1 tarefas.
+2019-03-30 16:47:49,847 escola.views 18348 INFO     Antes de renderizar a view index, user: 1
+2019-03-30 16:47:49,863 escola.models 18348 DEBUG    horario:get_horario()
+2019-03-30 16:47:49,864 escola.models 18348 INFO     Puxou 3 turno(s) do banco de dados.
+2019-03-30 16:47:49,864 escola.models 18348 INFO     Preparando para entrar no loop de turnos...
+2019-03-30 16:47:49,864 escola.models 18348 DEBUG    Turno id:1
+2019-03-30 16:47:49,872 escola.models 18348 DEBUG    Turno id:3
+2019-03-30 16:47:49,879 escola.models 18348 DEBUG    Turno id:2
+2019-03-30 16:48:11,097 django.request 18348 ERROR    Internal Server Error: /turma/tarefa/7
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\contrib\auth\decorators.py", line 21, in _wrapped_view
+    return view_func(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\escola\views_tarefa.py", line 123, in detalhes_tarefa
+    f"{turma}", msg=f"{comentario.user.username.title()} comentou na "
+  File "C:\Programação\Medusa II\escola\models.py", line 151, in comunicar_todos
+    noti.save()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\base.py", line 718, in save
+    force_update=force_update, update_fields=update_fields)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\base.py", line 748, in save_base
+    updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\base.py", line 812, in _save_table
+    forced_update)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\base.py", line 841, in _do_update
+    filtered = base_qs.filter(pk=pk_val)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\query.py", line 844, in filter
+    return self._filter_or_exclude(False, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\query.py", line 862, in _filter_or_exclude
+    clone.query.add_q(Q(*args, **kwargs))
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\sql\query.py", line 1263, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\sql\query.py", line 1287, in _add_q
+    split_subq=split_subq,
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\sql\query.py", line 1225, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\sql\query.py", line 1096, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\lookups.py", line 20, in __init__
+    self.rhs = self.get_prep_lookup()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\lookups.py", line 70, in get_prep_lookup
+    return self.lhs.output_field.get_prep_value(self.rhs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\db\models\fields\__init__.py", line 965, in get_prep_value
+    return int(value)
+TypeError: int() argument must be a string, a bytes-like object or a number, not 'User'
+2019-03-30 16:48:11,108 django.server 18348 ERROR    "POST /turma/tarefa/7 HTTP/1.1" 500 153805
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 30, 2019 - 16:54:04
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-03-30 16:54:22,020 escola.views 20748 INFO     views:index; user_id: 1
+2019-03-30 16:54:22,024 escola.views 20748 INFO     views:index; user_id: 1 é aluno.
+2019-03-30 16:54:22,024 escola.views 20748 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-03-30 16:54:22,028 escola.views 20748 DEBUG    Encontrei 1 tarefas.
+2019-03-30 16:54:22,029 escola.views 20748 INFO     Antes de renderizar a view index, user: 1
+2019-03-30 16:54:22,051 escola.models 20748 DEBUG    horario:get_horario()
+2019-03-30 16:54:22,053 escola.models 20748 INFO     Puxou 3 turno(s) do banco de dados.
+2019-03-30 16:54:22,053 escola.models 20748 INFO     Preparando para entrar no loop de turnos...
+2019-03-30 16:54:22,054 escola.models 20748 DEBUG    Turno id:1
+2019-03-30 16:54:22,065 escola.models 20748 DEBUG    Turno id:3
+2019-03-30 16:54:22,075 escola.models 20748 DEBUG    Turno id:2
+2019-03-30 16:54:50,199 escola.views 20748 INFO     views:index; user_id: 1
+2019-03-30 16:54:50,204 escola.views 20748 INFO     views:index; user_id: 1 é aluno.
+2019-03-30 16:54:50,204 escola.views 20748 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-03-30 16:54:50,208 escola.views 20748 DEBUG    Encontrei 1 tarefas.
+2019-03-30 16:54:50,209 escola.views 20748 INFO     Antes de renderizar a view index, user: 1
+2019-03-30 16:54:50,231 escola.models 20748 DEBUG    horario:get_horario()
+2019-03-30 16:54:50,233 escola.models 20748 INFO     Puxou 3 turno(s) do banco de dados.
+2019-03-30 16:54:50,233 escola.models 20748 INFO     Preparando para entrar no loop de turnos...
+2019-03-30 16:54:50,233 escola.models 20748 DEBUG    Turno id:1
+2019-03-30 16:54:50,244 escola.models 20748 DEBUG    Turno id:3
+2019-03-30 16:54:50,251 escola.models 20748 DEBUG    Turno id:2
+2019-03-30 16:56:30,875 escola.views 22228 INFO     views:index; user_id: 1
+2019-03-30 16:56:30,879 escola.views 22228 INFO     views:index; user_id: 1 é aluno.
+2019-03-30 16:56:30,879 escola.views 22228 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-03-30 16:56:30,882 escola.views 22228 DEBUG    Encontrei 1 tarefas.
+2019-03-30 16:56:30,883 escola.views 22228 INFO     Antes de renderizar a view index, user: 1
+2019-03-30 16:56:30,901 escola.models 22228 DEBUG    horario:get_horario()
+2019-03-30 16:56:30,903 escola.models 22228 INFO     Puxou 3 turno(s) do banco de dados.
+2019-03-30 16:56:30,903 escola.models 22228 INFO     Preparando para entrar no loop de turnos...
+2019-03-30 16:56:30,903 escola.models 22228 DEBUG    Turno id:1
+2019-03-30 16:56:30,912 escola.models 22228 DEBUG    Turno id:3
+2019-03-30 16:56:30,922 escola.models 22228 DEBUG    Turno id:2

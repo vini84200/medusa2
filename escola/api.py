@@ -1,6 +1,8 @@
 """Views da API do sistema"""
 from django.contrib.auth.models import User, Group
+from rest_framework.decorators import action
 
+from escola import api_permissions
 from . import models
 from . import serializers
 from rest_framework import viewsets, permissions
@@ -110,6 +112,13 @@ class NotificacaoViewSet(viewsets.ModelViewSet):
     queryset = models.Notificacao.objects.all()
     serializer_class = serializers.NotificacaoSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
+
+    @action(detail=True, methods=['post'], permission_classes=[api_permissions.IsAdminOrIsTheUser])
+    def set_as_read(self, request, pk=None):
+        """Define o campo de visualizado de uma notificação."""
+        noti: models.Notificacao = self.get_object()
+        noti.visualizado = request.date['visu']
+        noti.save()
 
 
 class HorarioViewSet(viewsets.ModelViewSet):

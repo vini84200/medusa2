@@ -142,8 +142,8 @@ class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager'
 
     def comunicar_todos(self, title, msg):
         """Cria uma notificação para cada usuario."""
-        for seguidor in self.seguidores.all()   :
-            noti = Notificacao(seguidor, title, msg)
+        for seguidor in self.seguidores.all():
+            noti = Notificacao(user=seguidor, title=title, msg=msg)
             # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
             #  usuario.
             if self.link:
@@ -346,7 +346,7 @@ class Notificacao(models.Model, ExportModelOperationsMixin('Alerta')):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     visualizado = models.BooleanField(default=False)
     dataCriado = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=20)
+    title = models.CharField(max_length=80)
     msg = models.TextField()
     link = models.URLField(blank=True, null=True)
 

@@ -9,19 +9,7 @@
 
   <!-- Favicon -->
 
-  <!-- Scripts.js -->
-  <!--JQuerry-->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-          crossorigin="anonymous"></script>
-  <!--Bootstrap-->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-          crossorigin="anonymous"></script>
-  <!--Popper.js-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-          crossorigin="anonymous"></script>
+
 
   <!-- Arquivos CSS -->
   <!--Botstrap-->
@@ -71,24 +59,37 @@
     </ul>
     </div>
       {% if user.is_authenticated%}
-      <span class="navbar-text">Ola, {{user.username}}</span>
-        {%if user.profile_escola.template_data.notificacao_count == 0%}
-          <span class="navbar-text">, você não tem notificações.</span>
-        {%else%}
-          <span class="navbar-text">, você tem {{user.profile_escola.template_data.notificacao_count}}
-            notifica{{user.profile_escola.template_data.notificacao_count|pluralize:"ção,ções"}}.</span>
-        {%endif%}
+      <span class="navbar-text">Ola, {{user.username}} </span>
+
       <a class="nav-item nav-link" href="{% url 'logout'%}">Sair</a>
       <a class="nav-item nav-link" href="{% url 'password_change'%}">Alterar senha</a>
       {%else%}
        <button class="btn btn-outline-success" type="button" onclick="window.location.href = '{%url 'login' %}';">Login</button>
       {% endif %}
+      <div>
+      <i class="fas fa-bell" style="color:Dodgerblue; font-size:21.5px;"></i>
+      {%if user.profile_escola.template_data.notificacao_count != 0%}
+        <span class="badge badge-light">{{user.profile_escola.template_data.notificacao_count}}</span>
+      {%endif%}
+      </div>
   </div>
 </nav>
 
 <!-- Bloco de conteúdo -->
 {% block conteudo %}{% endblock %}
-
+<!-- Scripts.js -->
+  <!--JQuerry-->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"></script>
+  <!--Bootstrap-->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"></script>
+  <!--Popper.js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"></script>
 <!-- Bloco de scripts -->
 {% block scripts %}{% endblock %}
 
