@@ -6,6 +6,7 @@ from django.views.generic import TemplateView, CreateView, UpdateView, DetailVie
 from .forms import *
 from .models import *
 
+
 class ConteudoCreate(CreateView):
     """View para criar um Conteudo."""
     model = Conteudo
@@ -16,6 +17,7 @@ class ConteudoCreate(CreateView):
         initial = super(ConteudoCreate, self).get_initial(**kwargs)
         if 'pk_parent' in kwargs.keys():
             initial['parent'] = kwargs['pk_parent']
+            # FIXME: 28/03/2019 por wwwvi: Isso não esta funcionando
         return initial
 
     def form_valid(self, form):
@@ -47,3 +49,8 @@ class ConteudoDetail(DetailView):
                                })
         context['categorias'] = categorias
         return context
+
+
+class LinkConteudoCreateView(CreateView):
+    model = LinkConteudo
+    template_name = "TEMPLATE_NAME"
