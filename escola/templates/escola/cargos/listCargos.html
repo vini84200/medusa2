@@ -1,18 +1,18 @@
 {% extends "../base.html" %}
 
 {%block conteudo%}
-
+<div class="container">
 <h1>Listagem de Cargos da turma {{turma.numero}}</h1>
 {%if perms.escola.can_add_cargo%}
-    <a href="{% url 'escola:add-cargo' turma.pk %}">Adicionar Cargo</a>
+    <a href="{% url 'escola:add-cargo' turma.pk %}" class="btn btn-primary">Adicionar Cargo</a>
 {%endif%}
-
-<table>
+<div class="table-responsive">
+<table class="table table-striped">
 <tr>
     <th>Nome</th>
     <th>Ocupante</th>
     <th>Ativo</th>
-    <th>cod. Especial</th>
+    <th>Tipo de Cargo</th>
     {%if perms.escola.can_edit_cargo%}
     <th></th>
     {%endif%}
@@ -22,17 +22,19 @@
 </tr>
 {%for cargo in cargos%}
 <tr>
-    <th>{{cargo.nome}}</th>
-    <th>{{cargo.ocupante.username}}</th>
-    <th>{{cargo.ativo}}</th>
-    <th>{{cargo.cod_especial}}</th>
+    <td>{{cargo.nome}}</td>
+    <td>{{cargo.ocupante.username}}</td>
+    <td>{{cargo.ativo|yesno:'Sim,Não'}}</td>
+    <td>{{cargo.get_cod_especial_display}}</td>
     {%if perms.escola.can_edit_cargo%}
-    <th><a href="{% url 'escola:edit-cargo' cargo.pk %}">EDIT</a></th>
+    <td><a href="{% url 'escola:edit-cargo' cargo.pk %}" class="btn btn-primary" >Editar</a></td>
     {%endif%}
     {%if perms.escola.can_delete_cargo%}
-    <th><a href="{% url 'escola:delete-cargo' cargo.pk %}">DELETE</a></th>
+    <td><a href="{% url 'escola:delete-cargo' cargo.pk %}" class="btn btn-danger" >Apagar</a></td>
     {%endif%}
 </tr>
 {%endfor%}
 </table>
+</div>
+</div>
 {%endblock%}

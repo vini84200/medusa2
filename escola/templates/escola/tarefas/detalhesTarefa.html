@@ -1,25 +1,36 @@
 {% extends "../base.html" %}
 
+{% load crispy_forms_tags %}
+
 {% block conteudo %}
-<h2>Tarefa: {{tarefa.titulo}}</h2>
-Materia: {{tarefa.materia}}
-Tipo: {{tarefa.get_tipo_display}}
-Turma:{{tarefa.turma}}
-<h3>Prazo: {{tarefa.deadline}}</h3>
-Completado:{{completacao.completa|yesno:'Sim,Não'}}
-<h4>Detalhes:</h4>
-{{tarefa.descricao}}<br/>
+<div class="container">
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'escola:index'%}">Home</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">{{tarefa.turma}}</a></li>
+      <!--TODO Quando houver uma pagina especfica para cada turma com details, adicionar aqui ^ -->
+    <li class="breadcrumb-item"><a href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{tarefa.titulo|truncatechars:18}}</li>
+  </ol>
+</nav>
+<h2>{{tarefa.titulo}}
+    <span class="badge badge-primary">{{tarefa.materia}}</span>
+    {%if tarefa.tipo%}
+    <span class="badge badge-secondary">{{tarefa.get_tipo_display}}</span>{%endif%}</h2>
+    <a href="{% url 'escola:concluir-tarefa' tarefa.pk %}" class="btn btn-outline-primary">{{completacao.completo|yesno:'Marcar como não concluida,Marcar como concluida'}}</a><br>
+Você tem atê dia {{tarefa.deadline}} para terminar essa tarefa. <br>
+{{completacao.completo|yesno:'Você já a completou,Você ainda não a completou'}} <br>
+<span class="text-primary h5">Detalhes: </span><br>
+    <div class="container">
+        <p class="text-justify">{{tarefa.descricao}}</p>
+    </div>
+    <br/>
 <hr>
-<form action="" method="post">
-    {% csrf_token %}
-    <table>
-    {{ form.as_table }}
-    </table>
-    <input type="submit" value="Enviar">
-</form>
+    {% crispy form %}
 {%for comentario in comentarios%}
     <strong>{{comentario.user.username}}:<br/></strong>
 {{comentario.texto}}<br/>
 <em>{{comentario.created_on}}</em><br/><br/>
 {%endfor%}
+</div>
 {%endblock%}

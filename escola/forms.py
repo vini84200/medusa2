@@ -37,6 +37,8 @@ class CargoForm(ModelForm):
         super(CargoForm, self).__init__(*args, **kwargs)
         self.fields['ocupante'].queryset = User.objects.filter(aluno__turma=turma) | \
                                            User.objects.filter(profile_escola__is_professor=True)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
 
 
 class AlunoCreateForm(forms.Form):
@@ -118,6 +120,11 @@ class PeriodoForm(ModelForm):
         model = Periodo
         fields = ['materia']
 
+    def __init__(self, *args, **kwargs):
+        super(PeriodoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_show_labels = False
+
 
 class ProfessorCreateForm(forms.Form):
     nome = forms.CharField()
@@ -134,11 +141,21 @@ class ProfessorCreateForm(forms.Form):
             VerificarNomeUsuario(blank=True),
         ])
 
+    def __init__(self, *args, **kwargs):
+        super(ProfessorCreateForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
+
 
 class MateriaForm(ModelForm):
     class Meta:
         model = MateriaDaTurma
         fields = ['nome', 'professor', 'abreviacao']
+
+    def __init__(self, *args, **kwargs):
+        super(MateriaForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
 
 
 class TarefaForm(ModelForm):
@@ -155,6 +172,15 @@ class ComentarioTarefaForm(ModelForm):
     class Meta:
         model = TarefaComentario
         fields = ['texto', ]
+        widgets = {'texto': forms.Textarea(attrs={'placeholder': 'Escreva aqui um comentario...',
+                                                  'rows': 3})}
+
+    def __init__(self, *args, **kwargs):
+        super(ComentarioTarefaForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Comentar"))
+        self.helper.form_show_labels = False
+        self.helper.html5_required =True
 
 
 class ConteudoForm(ModelForm):

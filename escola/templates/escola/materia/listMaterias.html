@@ -5,18 +5,21 @@
 
 
 {%block conteudo%}
+
+<div class="container">
+
 {% get_obj_perms user for turma as "turma_perm" %}
-<h1>Listagem de Materias da turma {{turma.numero}}</h1>
+<h1>Listagem de materias da turma {{turma.numero}}</h1>
 {%if 'can_add_materia' in turma_perm %}
-
-    <a href="{% url 'escola:add-materia' turma.id %}">Adicionar Materia</a>
+    <a href="{% url 'escola:add-materia' turma.id %}" class="btn btn-primary">Adicionar Materia</a>
+    <br><br>
 {%endif%}
-
-<table>
+<div class="table-responsive">
+<table class="table table-striped table-hover">
 <tr>
     <th>Nome</th>
     <th>Professor</th>
-    <th>Abreviação</th>
+    <th class="text-center">Abreviação</th>
     <th></th>
 
     <th></th>
@@ -24,16 +27,18 @@
 {%for materia in materias%}
 <tr>
     {% get_obj_perms user for materia as "materia_perm" %}
-    <th><a href="{% url 'escola:detail-materia' materia.pk %}">{{materia.nome}}</a></th>
-    <th>{{materia.professor.nome}}</th>
-    <th>{{materia.abreviacao}}</th>
+    <td><a href="{% url 'escola:detail-materia' materia.pk %}">{{materia.nome}}</a></td>
+    <td>{{materia.professor.nome}}</td>
+    <td class="text-center">{{materia.abreviacao}}</td>
     {%if 'can_edit_materia' in materia_perm%}
-    <th><a href="{% url 'escola:edit-materia' materia.pk %}">EDIT</a></th>
+    <td><a href="{% url 'escola:edit-materia' materia.pk %}" class="btn btn-primary">Editar</a></td>
     {%endif%}
     {%if 'can_delete_materia' in materia_perm%}
-    <th><a href="{% url 'escola:delete-materia' materia.pk %}">DELETE</a></th>
+    <td><a href="{% url 'escola:delete-materia' materia.pk %}" class="btn btn-danger">Apagar</a></td>
     {%endif%}
 </tr>
 {%endfor%}
 </table>
+    </div>
+</div>
 {%endblock%}
