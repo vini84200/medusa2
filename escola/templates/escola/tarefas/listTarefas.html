@@ -14,7 +14,7 @@
     <th>Tipo</th>
     <th>Descrição</th>
     <th>Data de Entrega:</th>
-    {%if perms.escola.can_edit_cargo%}
+    {%if perms.escola.can_edit_tarefa%}
     <th></th>
     {%endif%}
     {%if perms.escola.can_delete_cargo%}
@@ -28,10 +28,10 @@
     <th>{{tarefa.get_tipo_display}}</th>
     <th>{{tarefa.descricao|truncatechars:30}}</th>
     <th>{{tarefa.deadline}}</th>
-    {%if perms.escola.can_edit_cargo%}
+    {%if perms.escola.can_edit_tarefa%}
     <th><a href="{% url 'escola:edit-tarefa' tarefa.pk %}">EDIT</a></th>
     {%endif%}
-    {%if perms.escola.can_delete_cargo%}
+    {%if perms.escola.can_delete_tarefa%}
     <th><a href="{% url 'escola:delete-tarefa' tarefa.pk %}">DELETE</a></th>
     {%endif%}
 </tr>

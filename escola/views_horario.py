@@ -1,3 +1,5 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -15,6 +17,13 @@ def ver_horario(request, turma_pk):
     return render(request, 'escola/horario/mostraHorario.html', context=context)
 
 
+class PeriodoFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(PeriodoFormSetHelper, self).__init__(*args, **kwargs)
+        self.add_input(Submit("submit", "Adicionar"))
+        self.form_show_labels = False
+
+
 @is_user_escola
 @permission_required_obj('escola.edit_horario', (Turma, 'pk', 'turma_pk'))
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
@@ -26,7 +35,7 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     data = request.POST or None
 
     formset = PeriodoFormSet(data=data)
-
+    helper = PeriodoFormSetHelper()
     for form in formset:
         form.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=horario.turma)
 
@@ -53,7 +62,8 @@ def alterar_horario(request, turno_cod, dia_cod, turma_pk):
     return render(request, 'escola/horario/editarHorario.html',
                   context={'turnos': turnos, 'DIAS_DA_SEMANA': DIAS_DA_SEMANA, 'DIAS_DA_SEMANA_N': range(1,8),
                            'ta': ta, 'edit_turno': turno_cod, 'edit_dia': dia_cod, 'formset': formset,
-                           'range': range(1, 6), 'turma_pk': turma_pk, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+                           'range': range(1, 6), 'turma_pk': turma_pk, 'turma': get_object_or_404(Turma, pk=turma_pk),
+                           'helper': helper})
 
 
 def genarate_initial_form(PeriodoFormSet, dia_cod, formset, horario, turno_cod):

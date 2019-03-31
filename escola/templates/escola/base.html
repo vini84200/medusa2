@@ -1,48 +1,99 @@
 <!DOCTYPE html>
 <html>
-  {% load static %}
-  <head>
-    <!-- Title -->
-    <title>
-      {% block title %}Sistema Escola{% endblock %}
-    </title>
+{% load static %}
+<head>
+  <!-- Title -->
+  <title>
+    {% block title %}Sistema Escola{% endblock %}
+  </title>
 
-    <!-- Favicon -->
-
-    <!-- Arquivos CSS -->
+  <!-- Favicon -->
 
 
-    <!-- Bloco de Estilos -->
-    {% block styles %}{% endblock %}
-  </head>
 
-  <body>
-    
-    <nav>
-        <a href="{% url 'escola:index' %}">Home</a>|
-        <a href="{% url 'escola:list-turmas' %}">Lista de turmas</a>|
-        <a href="{% url 'escola:list-professores' %}">Lista de Professores</a>|
-        {% if user.profile_escola.is_aluno %}
-        <a href="{% url 'escola:list-materias' user.aluno.turma.id %}">Materias</a>|
-        <a href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>|
-        {%endif%}
-        {% if user.is_authenticated%}
-        Ola, {{user.username}}, <a href="{% url 'logout'%}">Sair</a>, <a href="{% url 'password_change'%}">Alterar senha</a>|
-        {%if user.profile_escola.template_data.notificacao_count == 0%}
-            Você não tem notificações.
-        {%else%}
-        Você tem {{user.profile_escola.template_data.notificacao_count}} notifica{{user.profile_escola.template_data.notificacao_count|pluralize:"ção,ções"}}.
-        {%endif%}
-        {% endif %}
-    </nav>
-      
-    <!-- Bloco de conteúdo -->
-    {% block conteudo %}{% endblock %}
+  <!-- Arquivos CSS -->
+  <!--Botstrap-->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!--Fontawesome - go get icons in https://fontawesome.com -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
-    <!-- Bloco de scripts -->
-    {% block scripts %}{% endblock %}
 
-    <!-- Scripts.js -->
-    
-  </body>
+  <!-- Bloco de Estilos -->
+  {% block styles %}{% endblock %}
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#">Medusa II</a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-item nav-link active" href="{% url 'escola:index' %}">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:list-turmas' %}">Lista de turmas</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:list-professores' %}">Lista de Professores</a>
+      </li>
+      {% if user.profile_escola.is_aluno %}
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="{% url 'escola:list-materias' user.aluno.turma.id %}">Materias</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>
+        </li>
+      {%endif%}
+      {%if user.is_staff%}
+        <li class="nav-item">
+          <a class="nav-item nav-link" href="{% url 'admin:index'%}">Admin</a>
+        </li>
+      {%endif%}
+    </ul>
+    </div>
+      {% if user.is_authenticated%}
+      <span class="navbar-text">Ola, {{user.username}} </span>
+
+      <a class="nav-item nav-link" href="{% url 'logout'%}">Sair</a>
+      <a class="nav-item nav-link" href="{% url 'password_change'%}">Alterar senha</a>
+      {%else%}
+       <button class="btn btn-outline-success" type="button" onclick="window.location.href = '{%url 'login' %}';">Login</button>
+      {% endif %}
+      <div>
+      <i class="fas fa-bell" style="color:Dodgerblue; font-size:21.5px;"></i>
+      {%if user.profile_escola.template_data.notificacao_count != 0%}
+        <span class="badge badge-light">{{user.profile_escola.template_data.notificacao_count}}</span>
+      {%endif%}
+      </div>
+  </div>
+</nav>
+
+<!-- Bloco de conteúdo -->
+{% block conteudo %}{% endblock %}
+<!-- Scripts.js -->
+  <!--JQuerry-->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"></script>
+  <!--Bootstrap-->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"></script>
+  <!--Popper.js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"></script>
+<!-- Bloco de scripts -->
+{% block scripts %}{% endblock %}
+
+
+
+</body>
 </html>

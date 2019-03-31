@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'taggit_labels',
     'taggit_serializer',
     'mptt',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -195,3 +196,12 @@ logging.config.dictConfig({
         },
     },
 })
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_USE_TLS = True
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

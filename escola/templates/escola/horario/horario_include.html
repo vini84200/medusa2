@@ -1,11 +1,12 @@
 {%load dict_key %}
 {% load guardian_tags %}
 {% get_obj_perms user for turma as "turma_perm" %}
-<table>
+<div class="table-responsive">
+<table class="table">
   <tr>
       <th></th>
       {%for d in DIAS_DA_SEMANA%}
-         <th>
+         <th class="primary">
           {{d}}
           </th>
       {%endfor%}
@@ -13,9 +14,9 @@
   </tr>
    {% for turno in turnos %}
     <tr>
-        <th>{{turno.nome}}</th>
+        <th class="text-center">{{turno.nome}}</th>
         {%for dia in DIAS_DA_SEMANA_N%}
-        <th>
+        <td class="text-center">
 
 
            {%dia_teste turno dia ta as verdade%}
@@ -24,16 +25,19 @@
                     {%get_p turno dia p ta%} <br />
                 {%endfor%}
                 {%if 'editar_horario' in turma_perm%}
-                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}">EDITAR</a>
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">EDITAR</a>
                 {%endif%}
             {%else%}
-                Não há um horario cadastrado para esse horario.
+                <br/><br/>
+                NADA
+                <br/><br/><br/>
                 {%if 'editar_horario' in turma_perm%}
-                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}">EDITAR</a>
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">EDITAR</a>
                 {%endif%}
             {%endif%}
-        </th>
+        </td>
         {%endfor%}
     </tr>
     {%endfor%}
 </table>
+</div>

@@ -1,5 +1,7 @@
 import datetime
 
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
@@ -16,24 +18,31 @@ from escola.models import Profile, Aluno, Turma
 from escola.utils import genarate_password, generate_username
 
 
+class AlunosFormSetHelper(FormHelper):
+    def __init__(self, *args, **kwargs):
+        super(AlunosFormSetHelper, self).__init__(*args, **kwargs)
+        self.template = 'bootstrap/table_inline_formset.html'
+        self.add_input(Submit("submit", "Adicionar"))
+
+
 @permission_required('escola.can_populate_turma')
 def populate_alunos(request):
-    AlunosFormSet = formset_factory(AlunoCreateFormOutLabel, extra=35, max_num=40)
+    AlunosFormSet = formset_factory(AlunoCreateFormOutLabel, extra=5)
     formset = AlunosFormSet(data=request.POST or None)
+    helper = AlunosFormSetHelper()
     if request.method == "POST":
         usuarios = []
         if formset.is_valid():
             for form in formset:
-                # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
                 if 'nome' in form.cleaned_data:
                     senha, username = generate_aluno(form)
-                    usuarios.append((username, senha))
+                    usuarios.append((username, senha,))
             response = render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
-            mail_managers("Lista de Senhas para uma nova popuação de usarios, imprima", response.content)
             return response
 
     context = {
-        'formset': formset
+        'formset': formset,
+        'helper': helper
     }
     return render(request, 'escola/alunos/formPopulateAlunos.html', context)
 

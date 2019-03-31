@@ -2,14 +2,17 @@
 
 {% load guardian_tags %}
 
+{% load crispy_forms_tags %}
 {% block conteudo %}
 {% get_obj_perms user for turma as "turma_perm" %}
 {# turnos , DIAS_DA_SEMANA , DIAS_DA_SEMANA_N, ta[dia][turno.cod]#}
-<table>
+<div class="container">
+<div class="table-responsive">
+<table class="table">
   <tr>
       <th></th>
       {%for d in DIAS_DA_SEMANA%}
-         <th>
+         <th class="primary">>
           {{d}}
           </th>
       {%endfor%}
@@ -19,18 +22,9 @@
     <tr>
         <th>{{turno.nome}}</th>
         {%for dia in DIAS_DA_SEMANA_N%}
-        <th>
+        <td class="text-center">
             {%if dia == edit_dia and turno.cod == edit_turno%}
-                <form action="" method="post">
-                    {%csrf_token%}
-                    {{formset.management_form}}
-                    <table>
-                        {%for form in formset%}
-                            {{form.as_table}}
-                        {%endfor%}
-                    </table>
-                    <input type="submit" value="Enviar">
-                </form>
+                {% crispy formset helper%}
             {%else%}
 
                 {%dia_teste turno dia ta as verdade%}
@@ -38,17 +32,18 @@
                 {%for p in range%}
                     {%get_p turno dia p ta%} <br/>
                 {%endfor%}
-                {%if 'editar_horario' in turma_perm %}
-                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}">EDITAR</a>
-                {%endif%}
             {%else%}
-                Não há um horario cadastrado para esse horario
+                <br/><br/>
+                NADA
+                <br/><br/><br/>
             {%endif%}
             {%endif%}
-        </th>
+        </td>
         {%endfor%}
     </tr>
     {%endfor%}
 </table>
+</div>
+</div>
 
 {%endblock%}
