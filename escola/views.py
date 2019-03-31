@@ -1,7 +1,9 @@
 import datetime
 
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView
 
 from escola.models import Horario, Turno, TurnoAula
 from .decorators import *
@@ -57,3 +59,17 @@ def seguir_manager(request, pk):
     seguidor = SeguidorManager.objects.get(pk=pk)
     seguidor.adicionar_seguidor(request.user)
     return HttpResponseRedirect(request.GET.get('next', reverse('escola:index')))
+
+
+class NotificacaoListView(LoginRequiredMixin, ListView):
+    model = Notificacao
+    template_name = "escola/notificacoes_list.html"
+    context_object_name = 'notificacoes'
+
+    def get_queryset(self):
+        query = Notificacao.objects.filter(user=self.request.user).order_by('-dataCriado')
+        self.request.user.profile_escola.read_all_notifications()
+        return query
+
+
+

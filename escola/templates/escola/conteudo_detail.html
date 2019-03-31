@@ -7,21 +7,34 @@
 
 
 {% block conteudo %}
+<div class="container">
+  <div class="jumbotron">
 
-<h1>{{conteudo.nome}}</h1>
-<p>{{conteudo.descricao}}</p>
-<hr />
-{% for categoria in categorias%}
+    <h1 class="display-4">{{conteudo.nome}}</h1>
+    <p class="lead">{{conteudo.descricao}}</p>
+  </div>
+  <hr/>
 
-    <h2 style="color: {{categoria.obj.cor}}"> {{categoria.obj.nome}} </h2>
-    <ul>
-    {%for link in categoria.links%}
-        <li><a href="{{link.link}}">{{link.titulo}}</a>
-            <p>{{link.descricao}}</p>
-        </li>
-    {% endfor %}
-    </ul>
-
-{% endfor %}
-
+  {% for categoria in categorias%}
+    <div class="card">
+      <div class="card-body">
+      <h2 class="card-title" style="color: {{categoria.obj.cor}}"> {{categoria.obj.nome}} </h2>
+      <div class="list-group">
+        {%for link in categoria.links%}
+          <a href="{{link.link}}" class="list-group-item list-group-item-action">
+            <div class="d-flex justify-content-between">
+              <h5 class="mb-1">{{link.titulo}}
+                {%for tag in link.tags.names%}
+                  <span class="badge badge-secondary">{{tag}}</span>
+                {%endfor%}</h5>
+            </div>
+            <p class="mb-1">{{link.descricao}}</p>
+            <small>{{link.link}}</small>
+          </a>
+        {% endfor %}
+    </div>
+        </div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}

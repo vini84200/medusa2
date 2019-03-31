@@ -89,3 +89,9 @@ urlpatterns += \
         path('conteudo/add/<int:pk_parent>', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
         path('conteudo/add/', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
     ]
+
+# Notificações
+urlpatterns += \
+    [
+        path('notificacoes', escola.views.NotificacaoListView.as_view(), name='notificacoes-list')
+    ]

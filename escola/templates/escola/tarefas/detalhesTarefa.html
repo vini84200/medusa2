@@ -28,9 +28,9 @@ Você tem atê dia {{tarefa.deadline}} para terminar essa tarefa. <br>
 <hr>
     {% crispy form %}
 {%for comentario in comentarios%}
-    <strong>{{comentario.user.username}}:<br/></strong>
+    <strong>{{comentario.user.username}}: <br/></strong>
 {{comentario.texto}}<br/>
-<em>{{comentario.created_on}}</em><br/><br/>
+<small><em>{{comentario.created_on}}</em></small><br/><br/>
 {%endfor%}
 </div>
 {%endblock%}

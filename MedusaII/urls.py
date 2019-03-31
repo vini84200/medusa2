@@ -29,7 +29,8 @@ urlpatterns = [
     # path('escola/', include('escola.urls')),
     path('', include('escola.urls')),
     path('', include('django_prometheus.urls')),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('pages/', include('django.contrib.flatpages.urls')),
 
 ]
 if settings.DEBUG:
