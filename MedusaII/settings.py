@@ -10,12 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+import logging.config
 import os
+from pathlib import Path
+
 import raven
 from decouple import config
 from dj_database_url import parse as dburl
-import logging.config
-from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -54,8 +55,7 @@ INSTALLED_APPS = [
     'taggit_serializer',
     'mptt',
     'crispy_forms',
-    'django.contrib.sites',
-    'django.contrib.flatpages',
+    'bootstrap_modal_forms',
 ]
 
 MIDDLEWARE = [

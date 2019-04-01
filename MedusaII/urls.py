@@ -13,11 +13,9 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-import django
 from django.contrib import admin
 from django.http import HttpResponseServerError
 from django.urls import include, path
-from django.views.defaults import server_error
 
 from MedusaII import settings
 
@@ -30,7 +28,6 @@ urlpatterns = [
     path('', include('escola.urls')),
     path('', include('django_prometheus.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('pages/', include('django.contrib.flatpages.urls')),
 
 ]
 if settings.DEBUG:
