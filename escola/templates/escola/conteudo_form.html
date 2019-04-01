@@ -1,13 +1,13 @@
 {% extends "escola/base.html" %}
 {%load dict_key %}
-{% block title %} Home {% endblock %}
+{% load crispy_forms_tags %}
+{% block title %} Conteudos {% endblock %}
 
 
 {% block conteudo %}
 
-<form action="" method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Salvar" />
-</form>
+<div class="container">
+  {% crispy form %}
+</div>
+
 {% endblock %}

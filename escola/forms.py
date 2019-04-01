@@ -27,6 +27,11 @@ class CriarTurmaForm(forms.Form):
             VerificarMinimo(1940, msg='Ano invalido, por favor informe um ano posterior a {}.')
         ])
 
+    def __init__(self, *args, **kwargs):
+        super(CriarTurmaForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Criar"))
+
 
 class CargoForm(ModelForm):
     class Meta:
@@ -166,6 +171,9 @@ class TarefaForm(ModelForm):
     def __init__(self, turma, *args, **kwargs):
         super(TarefaForm, self).__init__(*args, **kwargs)
         self.fields['materia'].queryset = MateriaDaTurma.objects.filter(turma=turma)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
+
 
 
 class ComentarioTarefaForm(ModelForm):
@@ -191,6 +199,11 @@ class ConteudoForm(ModelForm):
         fields = ['nome', 'descricao', 'parent', ]
         widgets = {'parent': forms.HiddenInput(),
                    }
+
+    def __init__(self, *args, **kwargs):
+        super(ConteudoForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
 
 
 class LoginForm(AuthenticationForm):

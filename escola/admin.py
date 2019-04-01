@@ -17,3 +17,4 @@ admin.site.register(Notificacao)
 admin.site.register(Conteudo)
 admin.site.register(CategoriaConteudo)
 admin.site.register(LinkConteudo)
+

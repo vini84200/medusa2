@@ -5,28 +5,69 @@
 
 {% block title %} {{materia.nome}} {% endblock %}
 
+{% block styles %}
+<style>
+.just-padding {
+  padding: 15px;
+}
 
+.list-group.list-group-root {
+  padding: 0;
+  overflow: hidden;
+}
+
+.list-group.list-group-root .list-group {
+  margin-bottom: 0;
+}
+
+.list-group.list-group-root .list-group-item {
+  border-radius: 0;
+  border-width: 1px 0 0 0;
+}
+
+.list-group.list-group-root > .list-group-item:first-child {
+  border-top-width: 0;
+}
+
+.list-group.list-group-root > .list-group > .list-group-item {
+  padding-left: 40px;
+}
+
+.list-group.list-group-root > .list-group > .list-group > .list-group-item {
+  padding-left: 55px;
+}
+.list-group.list-group-root > .list-group > .list-group >  .list-group > .list-group-item {
+  padding-left: 70px;
+}
+
+</style>
+{% endblock %}
 {% block conteudo %}
 
-<h1>{{materia.nome}}</h1>
 
-Prof. {{materia.professor.nome}}
+<div class="container">
 
-{% if materia.conteudos.all %}
-<h3>Conteudos:</h3>
-<ul class="root">
-    {% recursetree materia.conteudos.all %}
-        <li>
-            <a href="{% url 'escola:conteudo-detail' node.pk%}">{{ node.nome }}</a>
-            {% if not node.is_leaf_node %}
-                <ul class="children">
-                    {{ children }}
-                </ul>
-            {% endif %}
-        </li>
-    {% endrecursetree %}
-</ul>
-{% endif %}
+  <h1>{{materia.nome}}</h1>
+
+  Prof. {{materia.professor.nome}}
+
+  {% if materia.conteudos.all %}
+  <h3>Conteudos:</h3>
+  <div class="just-padding">
+    <div class="list-group list-group-root well">
+      {% recursetree materia.conteudos.all %}
+      <a href="{% url 'escola:conteudo-detail' node.pk%}" class="list-group-item">{{ node.nome }}</a>
+      {% if not node.is_leaf_node %}
+      <div class="list-group">
+        {{ children }}
+      </div>
+      {% endif %}
+      {% endrecursetree %}
+    </div>
+
+    {% endif %}
+  </div>
+</div>
 
 
 {% endblock %}

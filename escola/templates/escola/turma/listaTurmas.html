@@ -2,16 +2,17 @@
 
 
 {%block conteudo%}
-
+<div class="container">
 <h1>Listagem de turmas</h1>
 {%if perms.escola.can_add_turma%}
-    <a href="{% url 'escola:add-turma' %}">Adicionar Turma</a>|
+    <a href="{% url 'escola:add-turma' %}" class="btn btn-primary">Adicionar Turma</a>
 {%endif%}
 {%if perms.escola.can_add_turma%}
-    <a href="{% url 'escola:populate-alunos' %}">Adicionar Lista de Alunos</a>
+    <a href="{% url 'escola:populate-alunos' %}" class="btn btn-primary">Adicionar Lista de Alunos</a>
 {%endif%}
-
-<table>
+<br><br>
+    <div class="table-responsive">
+<table class="table table-striped">
 <tr>
     <th>Numero</th>
     <th>Ano</th>
@@ -29,20 +30,23 @@
 </tr>
 {%for turma in turmas%}
 <tr>
-    <th>{{turma.numero}}</th>
-    <th>{{turma.ano}}</th>
-    <th><a href="{% url 'escola:list-cargos' turma.pk %}">CARGOS</a></th>
-    <th><a href="{% url 'escola:list-alunos' turma.pk %}">ALUNOS</a></th>
-    <th><a href="{% url 'escola:list-materias' turma.pk %}">MATERIAS</a></th>
-    <th><a href="{% url 'escola:show-horario' turma.pk %}">HORARIO</a></th>
-    <th><a href="{% url 'escola:list-tarefa' turma.pk %}">TAREFAS</a></th>
+    <td>{{turma.numero}}</td>
+    <td>{{turma.ano}}</td>
+    <div class="btn-group">
+    <td><a href="{% url 'escola:list-cargos' turma.pk %}" class="btn btn-secondary">Cargos</a></td>
+    <td><a href="{% url 'escola:list-alunos' turma.pk %}" class="btn btn-secondary">Alunos</a></td>
+    <td><a href="{% url 'escola:list-materias' turma.pk %}" class="btn btn-secondary">Materias</a></td>
+    <td><a href="{% url 'escola:show-horario' turma.pk %}" class="btn btn-secondary">Horario</a></td>
+    <td><a href="{% url 'escola:list-tarefa' turma.pk %}" class="btn btn-secondary">Tarefas</a></td>
     {%if perms.escola.can_edit_turma%}
-    <th><a href="{% url 'escola:edit-turma' turma.pk %}">EDIT</a></th>
+    <td><a href="{% url 'escola:edit-turma' turma.pk %}" class="btn btn-primary">Modificar</a></td>
     {%endif%}
     {%if perms.escola.can_delete_turma%}
-    <th><a href="{% url 'escola:delete-turma' turma.pk %}">DELETE</a></th>
+    <td><a href="{% url 'escola:delete-turma' turma.pk %}" class="btn btn-danger">DELETE</a></td>
     {%endif%}
+    </div>
 </tr>
 {%endfor%}
-</table>
+</table></div>
+</div>
 {%endblock%}
