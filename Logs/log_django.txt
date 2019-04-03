@@ -197,3 +197,137 @@ Traceback (most recent call last):
     self.status.split(' ',1)[0], self.bytes_sent
 AttributeError: 'NoneType' object has no attribute 'split'
 ----------------------------------------
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 02, 2019 - 19:42:16
+Django version 2.1.7, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-04-02 22:03:12,818 escola.views 7836 INFO     views:index; user_id: 1
+2019-04-02 22:03:12,833 escola.views 7836 INFO     views:index; user_id: 1 é aluno.
+2019-04-02 22:03:12,833 escola.views 7836 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-04-02 22:03:12,928 escola.views 7836 DEBUG    Encontrei 1 tarefas.
+2019-04-02 22:03:12,929 escola.views 7836 INFO     Antes de renderizar a view index, user: 1
+2019-04-02 22:03:13,477 escola.models 7836 DEBUG    horario:get_horario()
+2019-04-02 22:03:13,512 escola.models 7836 INFO     Puxou 3 turno(s) do banco de dados.
+2019-04-02 22:03:13,513 escola.models 7836 INFO     Preparando para entrar no loop de turnos...
+2019-04-02 22:03:13,513 escola.models 7836 DEBUG    Turno id:1
+2019-04-02 22:03:13,539 escola.models 7836 DEBUG    Turno id:3
+2019-04-02 22:03:13,548 escola.models 7836 DEBUG    Turno id:2
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+2019-04-03 12:02:05,412 django.server 7956 ERROR    "GET /accounts/login/?next=/ HTTP/1.1" 500 59
+----------------------------------------
+Exception happened during processing of request from ('10.0.0.102', 61662)
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
+    self.send_preamble()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
+    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
+    result = self.stdout.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
+    self._sock.sendall(b)
+ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 141, in run
+    self.handle_error()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 116, in handle_error
+    super().handle_error()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 368, in handle_error
+    self.finish_response()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
+    self.write(data)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
+    self.send_headers()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 331, in send_headers
+    if not self.origin_server or self.client_is_modern():
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 344, in client_is_modern
+    return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
+TypeError: 'NoneType' object is not subscriptable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 647, in process_request_thread
+    self.finish_request(request, client_address)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 357, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 717, in __init__
+    self.handle()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 169, in handle
+    self.handle_one_request()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 194, in handle_one_request
+    handler.run(self.server.get_app())
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 144, in run
+    self.close()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 111, in close
+    super().close()
+  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\simple_server.py", line 35, in close
+    self.status.split(' ',1)[0], self.bytes_sent
+AttributeError: 'NoneType' object has no attribute 'split'
+----------------------------------------
+2019-04-03 13:01:12,121 escola.views 20684 INFO     views:index; user_id: 1
+2019-04-03 13:01:12,161 escola.views 20684 INFO     views:index; user_id: 1 é aluno.
+2019-04-03 13:01:12,161 escola.views 20684 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-04-03 13:01:12,169 escola.views 20684 DEBUG    Encontrei 1 tarefas.
+2019-04-03 13:01:12,170 escola.views 20684 INFO     Antes de renderizar a view index, user: 1
+2019-04-03 13:01:13,228 escola.models 20684 DEBUG    horario:get_horario()
+2019-04-03 13:01:13,231 escola.models 20684 INFO     Puxou 3 turno(s) do banco de dados.
+2019-04-03 13:01:13,231 escola.models 20684 INFO     Preparando para entrar no loop de turnos...
+2019-04-03 13:01:13,231 escola.models 20684 DEBUG    Turno id:1
+2019-04-03 13:01:13,242 escola.models 20684 DEBUG    Turno id:3
+2019-04-03 13:01:13,251 escola.models 20684 DEBUG    Turno id:2
+Traceback (most recent call last):
+  File "C:/Programação/Medusa II/manage.py", line 15, in <module>
+    execute_from_command_line(sys.argv)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\__init__.py", line 381, in execute_from_command_line
+    utility.execute()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\__init__.py", line 375, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 316, in run_from_argv
+    self.execute(*args, **cmd_options)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\commands\runserver.py", line 60, in execute
+    super().execute(*args, **options)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 353, in execute
+    output = self.handle(*args, **options)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\commands\runserver.py", line 95, in handle
+    self.run(**options)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\commands\runserver.py", line 102, in run
+    autoreload.main(self.inner_run, None, options)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 323, in main
+    python_reloader(wrapped_main_func, args, kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 302, in python_reloader
+    reloader_thread()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 274, in reloader_thread
+    change = fn()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 204, in code_changed
+    stat = os.stat(filename)
+FileNotFoundError: [WinError 2] O sistema não pode encontrar o arquivo especificado: 'C:\\Programação\\Medusa II\\leituras\\migrations\\0039_auto_20190328_1132.py'
+Sentry is attempting to send 1 pending error messages
+Waiting up to 10 seconds
+Press Ctrl-Break to quit
