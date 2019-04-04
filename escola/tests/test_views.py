@@ -254,6 +254,10 @@ class _TestViewEspecificoModel(_TestView):
         self.obj = mixer.blend(self.obj_class)
 
 
+class _TestFormViewEspecificoModel(_TestViewEspecificoModel, _TestFormView):
+    pass
+
+
 # --------------------------------------------------
 #
 #   Inicio dos Testes Propriamente ditos
@@ -955,33 +959,135 @@ class TestAddMateria(_TestViewEspecificoModel, TestCase):
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.obj.pk, ]
+# TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
+#   TODO: Testa com dados invalidos
+#   TODO: Testa com dados validos
+class TestListMaterias(_TestViewEspecificaParaTurma):
+    page_name = 'escola:list-materias'
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    aluno_turma = Assert200AndTemplate('escola/materia/listMaterias.html')
+    professor = Assert200AndTemplate('escola/materia/listMaterias.html')
+    aluno_e_professor = Assert200AndTemplate('escola/materia/listMaterias.html')
+    admin = Assert200AndTemplate('escola/materia/listMaterias.html')
 
-#   TODO: Testa permissões
-#   TODO: Testa com dados invalidos
-#   TODO: Testa com dados validos
-# class TestListMaterias:
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.turma.pk, ]
 #   TODO: Testa que todas aparacem
-#   TODO: Testa links de permissões
-# class TestEditMateria:
-#   TODO: Testa permissões
+
+
+class TestEditMateria(_TestFormViewEspecificoModel, TestCase):
+    page_name = 'escola:edit-materia'
+
+    obj_class = MateriaDaTurma
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk, ]
+# TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
-# class TestDeleteMateria:
-#   TODO: Testa Permissão
+class TestDeleteMateria(_TestViewEspecificoModel):
+    page_name = 'escola:delete-materia'
+
+    obj_class = MateriaDaTurma
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk, ]
+    # TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa apagar
-# class TestAddTarefa:
+
+
+class TestAddTarefa(_TestFormViewEspecificoTurma):
+    page_name = 'escola:add-tarefa'
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.turma.pk, ]
+# TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa permissões
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
-# class TestListTarefa:
+
+
+class TestListTarefa(_TestFormViewEspecificoTurma):
+    page_name = 'escola:list-tarefa'
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    aluno_turma = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
+    professor = Assert200AndTemplate('escola/tarefas/listTarefas.html')
+    aluno_e_professor = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
+    admin = Assert200AndTemplate('escola/tarefas/listTarefas.html')
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.turma.pk, ]
+
 #   TODO: Testa que todas aparacem
-#   TODO: Testa links de permissões
-# class TestEditTarefa:
-#   TODO: Testa permissões
+class TestEditTarefa(_TestFormViewEspecificoModel, TestCase):
+    obj_class = Tarefa
+    page_name = 'escola:edit-tarefa'
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk, ]
+
+# TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
-# class TestDeleteTarefa:
+
+
+class TestDeleteTarefa(_TestViewEspecificoModel, TestCase):
+    obj_class = Tarefa
+    page_name='escola:delete-tarefa'
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk, ]
+
+
 #   TODO: Testa Permissão
+# TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa apagar
 class TestConcluirTarefa(TestCase):
     def test_permited(self):
@@ -1026,3 +1132,5 @@ class TestSeguirManager(TestCase):
         self.assertRedirects(response, reverse('escola:index'))
         # Garante que o usuario esta seguindo o Seguidor;
         assert seguidor.is_seguidor(aluno.user)
+
+#TODO: class test_detail-materia()
