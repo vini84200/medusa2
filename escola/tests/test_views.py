@@ -941,8 +941,9 @@ class TestDeleteProfessor(_TestViewEspecificoModel, TestCase):
 #   TODO: Testa apagar
 
 
-class TestAddMateria(_TestFormView, TestCase):
-    page_name = 'escola:edit-professor'
+class TestAddMateria(_TestViewEspecificoModel, TestCase):
+    obj_class = Turma
+    page_name = 'escola:add-materia'
 
     annonymous = AssertRedirectsLogin()
     loged_not_escola = AssertRedirectsLogin()
@@ -950,6 +951,10 @@ class TestAddMateria(_TestFormView, TestCase):
     professor = AssertRedirectsLogin()
     aluno_e_professor = AssertRedirectsLogin()
     admin = Assert200()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk, ]
 
 #   TODO: Testa permissões
 #   TODO: Testa com dados invalidos
