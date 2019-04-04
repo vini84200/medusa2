@@ -856,6 +856,10 @@ class TestAlterarHorario(_TestFormViewEspecificoTurma, TestCase):
 
 #   TODO: Aparecem apenas materias da turma certa;
 class TestDeleteAluno(_TestViewEspecificoModel, TestCase):
+    obj_class = Aluno
+    page_name = 'escola:delete-aluno'
+    aluno = AssertRedirects()
+
     def set_up(self):
         super(TestDeleteAluno, self).set_up()
         self.page_parameters = [self.obj.pk, ]
@@ -863,7 +867,15 @@ class TestDeleteAluno(_TestViewEspecificoModel, TestCase):
 
 #   TODO: Testa Permissão
 #   TODO: Testa apagar
-# class TestAddProfessor:
+class TestAddProfessor(_TestView, TestCase):
+    page_name = 'escola:add-professor'
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+
+
+
+    def set_up(self):
+        super(TestAddProfessor, self).set_up()
 #   TODO: Testa permissões
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
