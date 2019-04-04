@@ -100,6 +100,14 @@ class Assert200AndTemplate(ResponseAssert):
                           VerificationTemplate(template)]
 
 
+class Assert200(ResponseAssert):
+    """Verifica o status_code como 200, e que o template seja o mesmo."""
+
+    def __init__(self, *args, **kwargs):
+        super(Assert200, self).__init__(args, kwargs)
+        self.test_list = [Verification200()]
+
+
 class AssertRedirects(ResponseAssert):
     """Verifica um redirecionamento"""
     pass
@@ -843,9 +851,10 @@ class TestVerHorario(_TestViewEspecificaParaTurma, TestCase):
 
 class TestAlterarHorario(_TestFormViewEspecificoTurma, TestCase):
     page_name = 'escola:alterar-horario'
-    aluno_turma = Assert200AndTemplate('escola/horario/mostraHorario.html')
-    professor = Assert200AndTemplate('escola/horario/mostraHorario.html')
-    aluno_e_professor = Assert200AndTemplate('escola/horario/mostraHorario.html')
+    aluno = AssertRedirectsLogin()
+    aluno_turma = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
 
     def set_up(self):
         """Prepara adicionando a turma aos parametros"""
@@ -858,38 +867,90 @@ class TestAlterarHorario(_TestFormViewEspecificoTurma, TestCase):
 class TestDeleteAluno(_TestViewEspecificoModel, TestCase):
     obj_class = Aluno
     page_name = 'escola:delete-aluno'
-    aluno = AssertRedirects()
+    aluno = AssertRedirectsLogin()
 
     def set_up(self):
         super(TestDeleteAluno, self).set_up()
         self.page_parameters = [self.obj.pk, ]
 
-
-#   TODO: Testa Permissão
 #   TODO: Testa apagar
+
+
 class TestAddProfessor(_TestView, TestCase):
     page_name = 'escola:add-professor'
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
     aluno = AssertRedirectsLogin()
     professor = AssertRedirectsLogin()
-
-
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
 
     def set_up(self):
         super(TestAddProfessor, self).set_up()
-#   TODO: Testa permissões
+
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
-# class TestListProfessor:
+
+
+class TestListProfessor(_TestView, TestCase):
+    page_name = 'escola:list-professores'
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = Assert200AndTemplate('escola/professor/listProfessores.html')
+    professor = Assert200AndTemplate('escola/professor/listProfessores.html')
+    aluno_e_professor = Assert200AndTemplate('escola/professor/listProfessores.html')
+    admin = Assert200AndTemplate('escola/professor/listProfessores.html')
+
 #   TODO: Testa que todas aparacem
 #   TODO: Testa links de permissões
-# class TestEditProfessor:
-#   TODO: Testa permissões
+class TestEditProfessor(_TestViewEspecificoModel, TestCase):
+    page_name = 'escola:edit-professor'
+    obj_class = Professor
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk,]
+
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
-# class TestDeleteProfessor:
-#   TODO: Testa Permissão
+
+
+class TestDeleteProfessor(_TestViewEspecificoModel, TestCase):
+    page_name = 'escola:edit-professor'
+    obj_class = Professor
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = AssertRedirects()
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk, ]
+
 #   TODO: Testa apagar
-# class TestAddMateria:
+
+
+class TestAddMateria(_TestFormView, TestCase):
+    page_name = 'escola:edit-professor'
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = Assert200()
+
 #   TODO: Testa permissões
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
