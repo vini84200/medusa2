@@ -6,6 +6,7 @@ from helpers.utils import create_admin, create_aluno, create_professor, create_t
 from mixer.backend.django import mixer
 
 from escola.models import *
+from escola.utils import dar_permissao_user
 
 pytestmark = pytest.mark.django_db
 
@@ -125,7 +126,7 @@ class AssertRedirectsLogin(ResponseAssert):
 
 class _TestView:
     """Teste generico para views"""
-    page_name = ""
+    page_name = "Mude o PageName"
     page_parameters = []
 
     annonymous = ResponseAssert()
@@ -221,10 +222,42 @@ class _TestViewEspecificaParaTurma(_TestViewOnlyUserEscola):
     aluno_turma = ResponseAssert()
     aluno_e_professor = ResponseAssert()
 
+    aluno_lider = ResponseAssert()
+    aluno_vicelider = ResponseAssert()
+    aluno_suplente = ResponseAssert()
+    prof_regente = ResponseAssert()
+
+    def get_lider(self):
+        """Cria o líder da turma"""
+        a = mixer.blend(Aluno, turma=self.turma)
+        mixer.blend(Profile, user=a.user, is_aluno=True, is_professor=False)
+        c = mixer.blend(CargoTurma, ocupante=a.user, turma=self.turma, cod_especial=1)
+        dar_permissao_user(a.user, c)
+        self.lider = a
+
+    def get_vicelider(self):
+        """Cria o líder da turma"""
+        a = mixer.blend(Aluno, turma=self.turma)
+        mixer.blend(Profile, user=a.user, is_aluno=True, is_professor=False)
+        c = mixer.blend(CargoTurma, ocupante=a.user, turma=self.turma, cod_especial=2)
+        dar_permissao_user(a.user, c)
+        self.vicelider = a
+
+    def get_regente(self):
+        """Cria o líder da turma"""
+        p = mixer.blend(Professor)
+        mixer.blend(Profile, user=p.user, is_aluno=False, is_professor=True)
+        c = mixer.blend(CargoTurma, ocupante=p.user, turma=self.turma, cod_especial=5)
+        dar_permissao_user(p.user, c)
+        self.regente = p
+
     def set_up(self):
         """Inicia a turma"""
         super(_TestViewEspecificaParaTurma, self).set_up()
         self.turma = create_turma()
+        self.get_lider()
+        self.get_vicelider()
+        self.get_regente()
 
     def test_get_aluno(self):
         """ Teste com usuario logado, com perfil de aluno"""
@@ -237,6 +270,41 @@ class _TestViewEspecificaParaTurma(_TestViewOnlyUserEscola):
         response = self.get_response(c, self.aluno_turma)
         # test
         self.aluno_turma.verify(response)
+
+    def test_get_lider(self):
+        """Testa a visualização como lider"""
+        self.set_up()
+
+        c = Client()
+        c.force_login(self.lider.user)
+
+        response = self.get_response(c, self.aluno_lider)
+
+        self.aluno_lider.verify(response)
+
+    def test_get_vicelider(self):
+        """Testa a visualização como vicelider"""
+        self.set_up()
+
+        c = Client()
+        c.force_login(self.vicelider.user)
+
+        response = self.get_response(c, self.aluno_vicelider)
+
+        self.aluno_vicelider.verify(response)
+
+    def test_get_regente(self):
+        """Testa a visualização como regente"""
+        self.set_up()
+
+        c = Client()
+        c.force_login(self.regente.user)
+
+        response = self.get_response(c, self.prof_regente)
+
+        self.prof_regente.verify(response)
+
+
 
 
 class _TestFormViewEspecificoTurma(_TestViewEspecificaParaTurma, _TestFormView):
@@ -540,6 +608,8 @@ class TestDeleteTurmas(TestCase):
 #   TODO: Testa com dados, apenas nome e turma
 #   TODO: Testa com nome de usuario ja usado
 #   TODO: Testa com apenas nome de usuario
+
+
 class TestAddCargo(TestCase):
     def test_permission_anonymous(self):
         c = Client()
@@ -871,11 +941,17 @@ class TestAlterarHorario(_TestFormViewEspecificoTurma, TestCase):
 class TestDeleteAluno(_TestViewEspecificoModel, TestCase):
     obj_class = Aluno
     page_name = 'escola:delete-aluno'
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
     aluno = AssertRedirectsLogin()
+    professor = AssertRedirectsLogin()
+    aluno_e_professor = AssertRedirectsLogin()
+    admin = ResponseAssert()
 
     def set_up(self):
         super(TestDeleteAluno, self).set_up()
         self.page_parameters = [self.obj.pk, ]
+
 
 #   TODO: Testa apagar
 
@@ -892,6 +968,7 @@ class TestAddProfessor(_TestView, TestCase):
     def set_up(self):
         super(TestAddProfessor, self).set_up()
 
+
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
 
@@ -905,6 +982,7 @@ class TestListProfessor(_TestView, TestCase):
     professor = Assert200AndTemplate('escola/professor/listProfessores.html')
     aluno_e_professor = Assert200AndTemplate('escola/professor/listProfessores.html')
     admin = Assert200AndTemplate('escola/professor/listProfessores.html')
+
 
 #   TODO: Testa que todas aparacem
 #   TODO: Testa links de permissões
@@ -921,7 +999,8 @@ class TestEditProfessor(_TestViewEspecificoModel, TestCase):
 
     def set_up(self):
         super().set_up()
-        self.page_parameters = [self.obj.pk,]
+        self.page_parameters = [self.obj.pk, ]
+
 
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
@@ -942,6 +1021,7 @@ class TestDeleteProfessor(_TestViewEspecificoModel, TestCase):
         super().set_up()
         self.page_parameters = [self.obj.pk, ]
 
+
 #   TODO: Testa apagar
 
 
@@ -959,6 +1039,8 @@ class TestAddMateria(_TestViewEspecificoModel, TestCase):
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.obj.pk, ]
+
+
 # TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
@@ -975,6 +1057,8 @@ class TestListMaterias(_TestViewEspecificaParaTurma):
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.turma.pk, ]
+
+
 #   TODO: Testa que todas aparacem
 
 
@@ -993,6 +1077,8 @@ class TestEditMateria(_TestFormViewEspecificoModel, TestCase):
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.obj.pk, ]
+
+
 # TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
@@ -1012,6 +1098,8 @@ class TestDeleteMateria(_TestViewEspecificoModel):
         super().set_up()
         self.page_parameters = [self.obj.pk, ]
     # TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
+
+
 #   TODO: Testa apagar
 
 
@@ -1028,6 +1116,8 @@ class TestAddTarefa(_TestFormViewEspecificoTurma):
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.turma.pk, ]
+
+
 # TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa permissões
 #   TODO: Testa com dados invalidos
@@ -1049,6 +1139,7 @@ class TestListTarefa(_TestFormViewEspecificoTurma):
         super().set_up()
         self.page_parameters = [self.turma.pk, ]
 
+
 #   TODO: Testa que todas aparacem
 class TestEditTarefa(_TestFormViewEspecificoModel, TestCase):
     obj_class = Tarefa
@@ -1065,6 +1156,7 @@ class TestEditTarefa(_TestFormViewEspecificoModel, TestCase):
         super().set_up()
         self.page_parameters = [self.obj.pk, ]
 
+
 # TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
@@ -1072,7 +1164,7 @@ class TestEditTarefa(_TestFormViewEspecificoModel, TestCase):
 
 class TestDeleteTarefa(_TestViewEspecificoModel, TestCase):
     obj_class = Tarefa
-    page_name='escola:delete-tarefa'
+    page_name = 'escola:delete-tarefa'
 
     annonymous = AssertRedirectsLogin()
     loged_not_escola = AssertRedirectsLogin()
@@ -1098,13 +1190,37 @@ class TestConcluirTarefa(TestCase):
         self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:concluir-tarefa', args=[1, ]))
 
 
-# class TestDetalhesTarefa:
+class TestDetalhesTarefa(_TestViewEspecificoModel, TestCase):
+    obj_class = Tarefa
+    page_name = 'escola:detalhes-tarefa'
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = Assert200AndTemplate('escola/tarefas/detalhesTarefa.html')
+    professor = Assert200AndTemplate('escola/tarefas/detalhesTarefa.html')
+    aluno_e_professor = Assert200AndTemplate('escola/tarefas/detalhesTarefa.html')
+    admin = Assert200AndTemplate('escola/tarefas/detalhesTarefa.html')
+
+    def set_up(self):
+        super().set_up()
+        self.page_parameters = [self.obj.pk, ]
+
+
 #   TODO: testa que existe
 #   TODO: Testa permisões
 #   TODO: Testa que comentarios aparecem
 #   TODO: Testa comenta vazio
 #   TODO: Testa Comenta valido
-# class TestSobre:
+class TestSobre(_TestView, TestCase):
+    page_name = 'escola:sobre'
+    annonymous = Assert200AndTemplate('escola/sobre.html')
+    loged_not_escola = Assert200AndTemplate('escola/sobre.html')
+    aluno = Assert200AndTemplate('escola/sobre.html')
+    professor = Assert200AndTemplate('escola/sobre.html')
+    aluno_e_professor = Assert200AndTemplate('escola/sobre.html')
+    admin = Assert200AndTemplate('escola/sobre.html')
+
+
 #     # Hãn?
 #   TODO: Testa que aparece, e que o template coreto foi usado
 class TestSeguirManager(TestCase):
@@ -1133,4 +1249,20 @@ class TestSeguirManager(TestCase):
         # Garante que o usuario esta seguindo o Seguidor;
         assert seguidor.is_seguidor(aluno.user)
 
-#TODO: class test_detail-materia()
+
+# TODO: class test_detail-materia()
+class TestDetalhesMateria(_TestViewEspecificoModel, TestCase):
+    page_name = 'escola:detail-materia'
+    obj_class = MateriaDaTurma
+
+    annonymous = AssertRedirectsLogin()
+    loged_not_escola = AssertRedirectsLogin()
+    aluno = Assert200AndTemplate('escola/materiadaturma_detail.html')
+    professor = Assert200AndTemplate('escola/materiadaturma_detail.html')
+    aluno_e_professor = Assert200AndTemplate('escola/materiadaturma_detail.html')
+    admin = Assert200AndTemplate('escola/materiadaturma_detail.html')
+
+    def set_up(self):
+        super(TestDetalhesMateria, self).set_up()
+        self.turma = self.obj.turma
+        self.page_parameters = [self.obj.pk, ]

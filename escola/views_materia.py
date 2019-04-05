@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -71,7 +72,7 @@ def delete_materia(request, materia_pk):
     return HttpResponseRedirect(reverse('escola:list-materias', args=[turma.pk]))
 
 
-class MateriaDaTurmaDetailView(DetailView):
+class MateriaDaTurmaDetailView(LoginRequiredMixin, DetailView):
     """View de detalhes sobre a materia"""
     model = MateriaDaTurma
     context_object_name = 'materia'

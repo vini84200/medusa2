@@ -3,7 +3,7 @@ import datetime
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView
+from django.views.generic import ListView, TemplateView
 
 from escola.models import Horario, Turno, TurnoAula
 from .decorators import *
@@ -49,8 +49,10 @@ def delete_aluno(request, aluno_pk):
     return HttpResponseRedirect(reverse('escola:list-alunos', args=[turma.pk]))
 
 
-def sobre(request):
-    return render(request, 'escola/sobre.html')
+class SobreView(TemplateView):
+    template_name = "escola/sobre.html"
+
+
 
 
 @is_user_escola
