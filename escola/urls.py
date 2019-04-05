@@ -95,3 +95,9 @@ urlpatterns += \
     [
         path('notificacoes', escola.views.NotificacaoListView.as_view(), name='notificacoes-list')
     ]
+
+# Pagina de sobre
+urlpatterns += \
+    [
+        path('sobre', escola.views.SobreView.as_view(), name='sobre')
+    ]

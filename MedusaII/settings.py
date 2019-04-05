@@ -29,15 +29,13 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
 
-ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104', 
-                 '10.0.0.105', '10.0.0.106', '127.0.0.1', 'medusa2-brancha.herokuapp.com']
+ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104',
+                 '10.0.0.105', '10.0.0.106', '127.0.0.1', 'medusa2-brancha.herokuapp.com', '*']
 
 # Application definition
 
 
 INSTALLED_APPS = [
-    'leituras.apps.LeiturasConfig',
-    'voting.apps.VotingConfig',
     'escola.apps.EscolaConfig',
     'django_prometheus',
     'django.contrib.admin',

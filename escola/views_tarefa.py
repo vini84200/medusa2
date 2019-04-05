@@ -41,9 +41,10 @@ def add_tarefa(request, turma_pk):
     return render(request, 'escola/tarefas/formTarefa.html', context=context)
 
 
+@login_required
 def list_tarefa(request, turma_pk):
     tarefas = Tarefa.objects.filter(turma__pk=turma_pk)
-    if request.user.profile_escola.is_aluno:
+    if request.user.is_authenticated and request.user.profile_escola.is_aluno:
         tarefas_c = []
         for tarefa in tarefas:
             tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))

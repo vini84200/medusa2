@@ -7,9 +7,9 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="{% url 'escola:index'%}">Home</a></li>
-      <li class="breadcrumb-item"><a href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">{{tarefa.turma}}</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'escola:list-tarefa' tarefa.turma.id %}">{{tarefa.turma}}</a></li>
       <!--TODO Quando houver uma pagina especfica para cada turma com details, adicionar aqui ^ -->
-    <li class="breadcrumb-item"><a href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'escola:list-tarefa' tarefa.turma.pk %}">Tarefas</a></li>
     <li class="breadcrumb-item active" aria-current="page">{{tarefa.titulo|truncatechars:18}}</li>
   </ol>
 </nav>

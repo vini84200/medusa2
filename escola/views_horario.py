@@ -25,7 +25,7 @@ class PeriodoFormSetHelper(FormHelper):
 
 
 @is_user_escola
-@permission_required_obj('escola.edit_horario', (Turma, 'pk', 'turma_pk'))
+@permission_required_obj('escola.editar_horario', (Turma, 'pk', 'turma_pk'))
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
 
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)

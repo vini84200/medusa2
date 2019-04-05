@@ -5,10 +5,10 @@ import logging
 
 from django.contrib.auth.models import User, Group
 from django.db import models
-from django_prometheus.models import ExportModelOperationsMixin
 from django.urls import reverse
-from mptt.models import MPTTModel, TreeForeignKey
+from django_prometheus.models import ExportModelOperationsMixin
 from guardian.shortcuts import assign_perm
+from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
 
 import escola
@@ -346,7 +346,7 @@ class Notificacao(models.Model, ExportModelOperationsMixin('Alerta')):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     visualizado = models.BooleanField(default=False)
     dataCriado = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=80)
+    title = models.CharField(max_length=160)
     msg = models.TextField()
     link = models.URLField(blank=True, null=True)
 
