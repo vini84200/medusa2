@@ -74,18 +74,32 @@ class VerificationLoginInUrl(VerificationResponse):
         assert reverse('login') in response.url
 
 
+class VerificationDeleted(VerificationResponse):
+
+    def __init__(self):
+        super(VerificationDeleted, self).__init__()
+
+    def verify(self, response, *args, **kwargs):
+        # try:
+        obj__pk = kwargs['obj_pk']
+        obj__class = kwargs['obj_class']
+        # except:
+        # with pytest.raises(Exception):
+        obj__class.object.get(pk=obj__pk)
+
+
 class ResponseAssert:
     """Verifica uma resposta com uma list de verifications prefeita"""
     test_list = []
     follow = True
 
     def __init__(self, *args, **kwargs):
-        pass
+        test_list = []
 
     def verify(self, response, *args, **kwargs):
         """Realiza a verificação"""
         for test in self.test_list:
-            test.verify(response)
+            test.verify(response, args, kwargs)
 
     def get_follow(self):
         """ Retorna o valor de follow para o uso quando ocorer o request"""
@@ -121,7 +135,13 @@ class AssertRedirectsLogin(ResponseAssert):
 
     def __init__(self, *args, **kwargs):
         super(AssertRedirectsLogin, self).__init__(args, kwargs)
-        self.test_list = [VerificationStatusCode(302)]
+        self.test_list = [VerificationStatusCode(302), VerificationLoginInUrl(login_page=self.login_pagename)]
+
+
+class AssertDeletesAndRedirects(AssertRedirects):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.test_list += [VerificationDeleted()]
 
 
 class _TestView:
@@ -259,7 +279,7 @@ class _TestViewEspecificaParaTurma(_TestViewOnlyUserEscola):
         self.get_vicelider()
         self.get_regente()
 
-    def test_get_aluno(self):
+    def test_get_aluno_turma(self):
         """ Teste com usuario logado, com perfil de aluno"""
         self.set_up()
         # Get Client
@@ -305,8 +325,6 @@ class _TestViewEspecificaParaTurma(_TestViewOnlyUserEscola):
         self.prof_regente.verify(response)
 
 
-
-
 class _TestFormViewEspecificoTurma(_TestViewEspecificaParaTurma, _TestFormView):
     def set_up(self):
         super(_TestFormViewEspecificoTurma, self).set_up()
@@ -324,6 +342,7 @@ class _TestViewEspecificoModel(_TestView):
 
 class _TestFormViewEspecificoModel(_TestViewEspecificoModel, _TestFormView):
     pass
+
 
 
 # --------------------------------------------------
@@ -911,9 +930,14 @@ class TestListAlunos(_TestView, TestCase):
 
 class TestVerHorario(_TestViewEspecificaParaTurma, TestCase):
     page_name = 'escola:show-horario'
+    aluno = Assert200AndTemplate('escola/horario/mostraHorario.html')
     aluno_turma = Assert200AndTemplate('escola/horario/mostraHorario.html')
     professor = Assert200AndTemplate('escola/horario/mostraHorario.html')
     aluno_e_professor = Assert200AndTemplate('escola/horario/mostraHorario.html')
+    aluno_lider = Assert200AndTemplate('escola/horario/mostraHorario.html')
+    aluno_vicelider = Assert200AndTemplate('escola/horario/mostraHorario.html')
+    aluno_suplente = Assert200AndTemplate('escola/horario/mostraHorario.html')
+    prof_regente = Assert200AndTemplate('escola/horario/mostraHorario.html')
 
     def set_up(self):
         """Prepara adicionando a turma aos parametros"""
@@ -929,6 +953,11 @@ class TestAlterarHorario(_TestFormViewEspecificoTurma, TestCase):
     aluno_turma = AssertRedirectsLogin()
     professor = AssertRedirectsLogin()
     aluno_e_professor = AssertRedirectsLogin()
+    aluno_lider = Assert200AndTemplate('escola/horario/editarHorario.html')
+    admin = Assert200AndTemplate('escola/horario/editarHorario.html')
+    aluno_suplente = AssertRedirectsLogin()
+    aluno_vicelider = Assert200AndTemplate('escola/horario/editarHorario.html')
+    prof_regente = Assert200AndTemplate('escola/horario/editarHorario.html')
 
     def set_up(self):
         """Prepara adicionando a turma aos parametros"""
@@ -946,7 +975,7 @@ class TestDeleteAluno(_TestViewEspecificoModel, TestCase):
     aluno = AssertRedirectsLogin()
     professor = AssertRedirectsLogin()
     aluno_e_professor = AssertRedirectsLogin()
-    admin = ResponseAssert()
+    admin = AssertDeletesAndRedirects()
 
     def set_up(self):
         super(TestDeleteAluno, self).set_up()
@@ -1025,8 +1054,7 @@ class TestDeleteProfessor(_TestViewEspecificoModel, TestCase):
 #   TODO: Testa apagar
 
 
-class TestAddMateria(_TestViewEspecificoModel, TestCase):
-    obj_class = Turma
+class TestAddMateria(_TestFormViewEspecificoTurma, TestCase):
     page_name = 'escola:add-materia'
 
     annonymous = AssertRedirectsLogin()
@@ -1036,23 +1064,35 @@ class TestAddMateria(_TestViewEspecificoModel, TestCase):
     aluno_e_professor = AssertRedirectsLogin()
     admin = Assert200()
 
+    aluno_lider = Assert200AndTemplate('escola/materia/formMateria.html')
+    aluno_vicelider = Assert200AndTemplate('escola/materia/formMateria.html')
+    aluno_suplente = AssertRedirectsLogin()
+    prof_regente = Assert200AndTemplate('escola/materia/formMateria.html')
+
+    aluno_turma = AssertRedirectsLogin()
+
+
     def set_up(self):
         super().set_up()
-        self.page_parameters = [self.obj.pk, ]
+        self.page_parameters = [self.turma.pk, ]
 
 
-# TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
 class TestListMaterias(_TestViewEspecificaParaTurma):
     page_name = 'escola:list-materias'
     annonymous = AssertRedirectsLogin()
     loged_not_escola = AssertRedirectsLogin()
-    aluno = AssertRedirectsLogin()
+    aluno = Assert200AndTemplate('escola/materia/listMaterias.html')
     aluno_turma = Assert200AndTemplate('escola/materia/listMaterias.html')
     professor = Assert200AndTemplate('escola/materia/listMaterias.html')
     aluno_e_professor = Assert200AndTemplate('escola/materia/listMaterias.html')
     admin = Assert200AndTemplate('escola/materia/listMaterias.html')
+
+    aluno_lider = Assert200AndTemplate('escola/materia/listMaterias.html')
+    aluno_vicelider = Assert200AndTemplate('escola/materia/listMaterias.html')
+    aluno_suplente = Assert200AndTemplate('escola/materia/listMaterias.html')
+    prof_regente = Assert200AndTemplate('escola/materia/listMaterias.html')
 
     def set_up(self):
         super().set_up()
@@ -1113,12 +1153,18 @@ class TestAddTarefa(_TestFormViewEspecificoTurma):
     aluno_e_professor = AssertRedirectsLogin()
     admin = Assert200()
 
+    aluno_turma = AssertRedirectsLogin()
+
+    aluno_lider = Assert200AndTemplate('escola/tarefas/formTarefa.html')
+    aluno_vicelider = Assert200AndTemplate('escola/tarefas/formTarefa.html')
+    aluno_suplente = Assert200AndTemplate('escola/tarefas/formTarefa.html')
+    prof_regente = Assert200AndTemplate('escola/tarefas/formTarefa.html')
+
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.turma.pk, ]
+# TODO: 05/04/2019 por wwwvi: Professor deve poder adicionar tarefas em sua propria materia;
 
-
-# TODO 04/04/2019 vini Adicionar testes de permissoões para lideres e Regentes;
 #   TODO: Testa permissões
 #   TODO: Testa com dados invalidos
 #   TODO: Testa com dados validos
@@ -1129,11 +1175,16 @@ class TestListTarefa(_TestFormViewEspecificoTurma):
 
     annonymous = AssertRedirectsLogin()
     loged_not_escola = AssertRedirectsLogin()
-    aluno = AssertRedirectsLogin()
+    aluno = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
     aluno_turma = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
     professor = Assert200AndTemplate('escola/tarefas/listTarefas.html')
     aluno_e_professor = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
     admin = Assert200AndTemplate('escola/tarefas/listTarefas.html')
+
+    aluno_lider = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
+    aluno_vicelider = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
+    aluno_suplente = Assert200AndTemplate('escola/tarefas/listTarefasParaAluno.html')
+    prof_regente = Assert200AndTemplate('escola/tarefas/listTarefas.html')
 
     def set_up(self):
         super().set_up()
