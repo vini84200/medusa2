@@ -64,6 +64,7 @@ class ConteudoDetail(DetailView):
 
 class LinkConteudoCreateView(CreateView):
     model = LinkConteudo
+    fields = ['titulo','link','categoria','descricao','conteudo','tags']
     # TODO: 06/04/2019 por wwwvi: Test
 
 

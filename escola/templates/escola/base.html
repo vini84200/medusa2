@@ -10,7 +10,6 @@
   <!-- Favicon -->
 
 
-
   <!-- Arquivos CSS -->
   <!--Botstrap-->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -37,50 +36,60 @@
       <li class="nav-item">
         <a class="nav-item nav-link active" href="{% url 'escola:index' %}">Home</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-item nav-link" href="{% url 'escola:list-turmas' %}">Lista de turmas</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-item nav-link" href="{% url 'escola:list-professores' %}">Lista de Professores</a>
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle"
+           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Escola
+        </a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'escola:list-turmas' %}">Lista de turmas</a>
+            <a class="dropdown-item" href="{% url 'escola:list-professores' %}">Lista de Professores</a>
+        </div>
       </li>
       {% if user.profile_escola.is_aluno %}
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="{% url 'escola:list-materias' user.aluno.turma.id %}">Materias</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>
-        </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:list-materias' user.aluno.turma.id %}">Materias</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>
+      </li>
       {%endif%}
       {% if user.profile_escola.is_professor%}
-        <li class="nav-item">
-          <a href="{%url 'escola:materias_professor'%}" class="nav-item nav-link">Minhas Disciplinas</a>
-        </li>
-        <li class="nav-item">
-          <a href="{%url 'escola:conteudos-professor'%}" class="nav-item nav-link">Meus Conteudos</a>
-        </li>
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown"
+           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Area do Professor
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a href="{%url 'escola:materias_professor'%}" class="dropdown-item">Minhas Disciplinas</a>
+            <a href="{%url 'escola:conteudos-professor'%}" class="dropdown-item">Meus Conteudos</a>
+        </div>
+      </li>
+
       {%endif%}
 
       {%if user.is_staff%}
-        <li class="nav-item">
-          <a class="nav-item nav-link" href="{% url 'admin:index'%}">Admin</a>
-        </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'admin:index'%}">Admin</a>
+      </li>
       {%endif%}
     </ul>
-    </div>
-      {% if user.is_authenticated%}
-      <span class="navbar-text">Ola, {{user.username}} </span>
+  </div>
+  {% if user.is_authenticated%}
+  <span class="navbar-text">Ola, {{user.username}} </span>
 
-      <a class="nav-item nav-link" href="{% url 'logout'%}">Sair</a>
-      <a class="nav-item nav-link" href="{% url 'password_change'%}">Alterar senha</a>
-      {%else%}
-       <button class="btn btn-outline-success" type="button" onclick="window.location.href = '{%url 'login' %}';">Login</button>
-      {% endif %}
-      <div><a href="{% url 'escola:notificacoes-list'%}">
-      <i class="fas fa-bell" style="color:Dodgerblue; font-size:21.5px;"></i>
-      {%if user.profile_escola.template_data.notificacao_count != 0%}
-        <span class="badge badge-light">{{user.profile_escola.template_data.notificacao_count}}</span>
-      {%endif%}</a>
-      </div>
+  <a class="nav-item nav-link" href="{% url 'logout'%}">Sair</a>
+  <a class="nav-item nav-link" href="{% url 'password_change'%}">Alterar senha</a>
+  {%else%}
+  <button class="btn btn-outline-success" type="button" onclick="window.location.href = '{%url 'login' %}';">Login
+  </button>
+  {% endif %}
+  <div><a href="{% url 'escola:notificacoes-list'%}">
+    <i class="fas fa-bell" style="color:Dodgerblue; font-size:21.5px;"></i>
+    {%if user.profile_escola.template_data.notificacao_count != 0%}
+    <span class="badge badge-light">{{user.profile_escola.template_data.notificacao_count}}</span>
+    {%endif%}</a>
+  </div>
   </div>
 </nav>
 
@@ -91,23 +100,22 @@
 
 
 <!-- Scripts.js -->
-  <!--JQuerry-->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-          crossorigin="anonymous"></script>
-  <!--Bootstrap-->
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-          crossorigin="anonymous"></script>
-  <!--Popper.js-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-          crossorigin="anonymous"></script>
+<!--JQuerry-->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<!--Bootstrap-->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<!--Popper.js-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
 <!--Bootstrap Modal-->
 <script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>
 <!-- Bloco de scripts -->
 {% block scripts %}{% endblock %}
-
 
 
 </body>

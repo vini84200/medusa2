@@ -88,7 +88,9 @@ urlpatterns += \
         path('conteudo/<int:pk>', escola.views_conteudo.ConteudoDetail.as_view(), name='conteudo-detail'),
         path('conteudo/add/<int:pk_parent>', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
         path('conteudo/add/', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
-        path('materia/<int:materia>/addConteudos', escola.views_conteudo.addConteudosAMateria.as_view(), name='add-conteudo-materia')
+        path('materia/<int:materia>/addConteudos', escola.views_conteudo.addConteudosAMateria.as_view(), name='add-conteudo-materia'),
+        path('conteudo/<int:pk>/add', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
+        path('conteudo/<int:pk>/add/<int:cat>', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
     ]
 
 # Notificações
