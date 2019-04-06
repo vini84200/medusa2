@@ -5,6 +5,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, PasswordChangeForm
 from django.forms import ModelForm
 from django.utils.safestring import mark_safe
+from mptt.forms import TreeNodeChoiceField, TreeNodeMultipleChoiceField
 
 from escola.verificacao_forms import VerificarMinimo, VerificarPositivo, VerificarNomeUsuario, VerificarSenha, verificar
 from .models import *
@@ -243,3 +244,29 @@ class MyPasswordChangeForm(PasswordChangeForm):
         strip=False,
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
     )
+
+
+class SelectConteudosForm(forms.Form):
+    conteudos = TreeNodeMultipleChoiceField(queryset=Conteudo.objects.all())
+
+    def __init__(self, professor, materia, *args, **kwargs):
+        super(SelectConteudosForm, self).__init__(*args, **kwargs)
+        self.fields['conteudos'].queryset = Conteudo.objects.filter(professor=professor)
+        self.materia = materia
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
+
+    def add_materia(self):
+        conteudos = self.cleaned_data['conteudos']
+        for conteudo in conteudos:
+            # TODO: 06/04/2019 por wwwvi: Adicionar forma de retirar conteudos
+            self.add_conteudo_na_materia(conteudo)
+
+    def add_conteudo_na_materia(self, conteudo):
+
+        if conteudo not in self.materia.conteudos.all():
+            if conteudo.parent:
+                if conteudo.parent not in self.materia.conteudos.all():
+                    self.add_conteudo_na_materia(conteudo.parent)
+            self.materia.conteudos.add(conteudo)
+

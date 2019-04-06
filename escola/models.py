@@ -202,7 +202,7 @@ class Conteudo(MPTTModel):
 
     def get_absolute_url(self):
         """Retorna Url do conteudo."""
-        return reverse('conteudo-detail', kwargs={'pk': self.pk})
+        return reverse('escola:conteudo-detail', kwargs={'pk': self.pk})
 
     class Meta:
         verbose_name = "Conteudo"
@@ -258,7 +258,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     conteudos = models.ManyToManyField(Conteudo)
 
     def __str__(self):
-        return self.nome
+        return f"{self.nome}/{self.turma.numero}"
 
     class Meta:
         """Meta"""

@@ -110,7 +110,7 @@ class Assert200AndTemplate(ResponseAssert):
     """Verifica o status_code como 200, e que o template seja o mesmo."""
 
     def __init__(self, template, *args, **kwargs):
-        super(Assert200AndTemplate, self).__init__(args, kwargs)
+        super(Assert200AndTemplate, self).__init__(*args, **kwargs)
         self.test_list = [Verification200(),
                           VerificationTemplate(template)]
 
@@ -119,7 +119,7 @@ class Assert200(ResponseAssert):
     """Verifica o status_code como 200, e que o template seja o mesmo."""
 
     def __init__(self, *args, **kwargs):
-        super(Assert200, self).__init__(args, kwargs)
+        super(Assert200, self).__init__(*args, **kwargs)
         self.test_list = [Verification200()]
 
 
@@ -134,13 +134,13 @@ class AssertRedirectsLogin(ResponseAssert):
     follow = False
 
     def __init__(self, *args, **kwargs):
-        super(AssertRedirectsLogin, self).__init__(args, kwargs)
+        super(AssertRedirectsLogin, self).__init__(*args, **kwargs)
         self.test_list = [VerificationStatusCode(302), VerificationLoginInUrl(login_page=self.login_pagename)]
 
 
 class AssertDeletesAndRedirects(AssertRedirects):
     def __init__(self, *args, **kwargs):
-        super().__init__(args, kwargs)
+        super().__init__(*args, **kwargs)
         self.test_list += [VerificationDeleted()]
 
 

@@ -51,6 +51,15 @@
           <a class="nav-item nav-link" href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>
         </li>
       {%endif%}
+      {% if user.profile_escola.is_professor%}
+        <li class="nav-item">
+          <a href="{%url 'escola:materias_professor'%}" class="nav-item nav-link">Minhas Disciplinas</a>
+        </li>
+        <li class="nav-item">
+          <a href="{%url 'escola:conteudos-professor'%}" class="nav-item nav-link">Meus Conteudos</a>
+        </li>
+      {%endif%}
+
       {%if user.is_staff%}
         <li class="nav-item">
           <a class="nav-item nav-link" href="{% url 'admin:index'%}">Admin</a>
