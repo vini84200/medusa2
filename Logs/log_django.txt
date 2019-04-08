@@ -1,222 +1,75 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-April 03, 2019 - 21:04:31
-Django version 2.1.7, using settings 'MedusaII.settings'
+April 07, 2019 - 09:23:31
+Django version 2.1.8, using settings 'MedusaII.settings'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CTRL-BREAK.
-2019-04-03 21:05:05,709 escola.views 18912 INFO     views:index; user_id: 1
-2019-04-03 21:05:05,818 escola.views 18912 INFO     views:index; user_id: 1 é aluno.
-2019-04-03 21:05:05,818 escola.views 18912 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
-2019-04-03 21:05:05,898 escola.views 18912 DEBUG    Encontrei 1 tarefas.
-2019-04-03 21:05:05,899 escola.views 18912 INFO     Antes de renderizar a view index, user: 1
-2019-04-03 21:05:06,336 escola.models 18912 DEBUG    horario:get_horario()
-2019-04-03 21:05:06,352 escola.models 18912 INFO     Puxou 3 turno(s) do banco de dados.
-2019-04-03 21:05:06,352 escola.models 18912 INFO     Preparando para entrar no loop de turnos...
-2019-04-03 21:05:06,352 escola.models 18912 DEBUG    Turno id:1
-2019-04-03 21:05:06,367 escola.models 18912 DEBUG    Turno id:3
-2019-04-03 21:05:06,376 escola.models 18912 DEBUG    Turno id:2
+2019-04-07 09:23:40,789 django.request 13756 ERROR    Internal Server Error: /conteudo/334/add
 Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
-    self.finish_response()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
-    self.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
-    self.send_headers()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
-    self.send_preamble()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
-    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
-    result = self.stdout.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
-    self._sock.sendall(b)
-ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
-2019-04-04 12:38:38,992 django.server 10336 ERROR    "GET / HTTP/1.1" 500 59
-----------------------------------------
-Exception happened during processing of request from ('10.0.0.102', 59567)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\base.py", line 68, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\base.py", line 88, in dispatch
+    return handler(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 168, in get
+    return super().get(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 133, in get
+    return self.render_to_response(self.get_context_data())
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 66, in get_context_data
+    kwargs['form'] = self.get_form()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 33, in get_form
+    return form_class(**self.get_form_kwargs())
+TypeError: 'NoneType' object is not callable
+2019-04-07 09:23:40,792 django.server 13756 ERROR    "GET /conteudo/334/add HTTP/1.1" 500 374
+2019-04-07 09:23:56,076 escola.views 13756 INFO     views:index; user_id: 1
+2019-04-07 09:23:56,079 escola.views 13756 INFO     views:index; user_id: 1 é aluno.
+2019-04-07 09:23:56,079 escola.views 13756 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-04-07 09:23:56,080 escola.views 13756 DEBUG    Encontrei 0 tarefas.
+2019-04-07 09:23:56,081 escola.views 13756 INFO     Antes de renderizar a view index, user: 1
+2019-04-07 09:23:56,195 escola.models 13756 DEBUG    horario:get_horario()
+2019-04-07 09:23:56,197 escola.models 13756 INFO     Puxou 3 turno(s) do banco de dados.
+2019-04-07 09:23:56,197 escola.models 13756 INFO     Preparando para entrar no loop de turnos...
+2019-04-07 09:23:56,197 escola.models 13756 DEBUG    Turno id:1
+2019-04-07 09:23:56,209 escola.models 13756 DEBUG    Turno id:3
+2019-04-07 09:23:56,219 escola.models 13756 DEBUG    Turno id:2
+2019-04-07 09:24:44,119 django.request 13756 ERROR    Internal Server Error: /conteudo/20/add
 Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
-    self.finish_response()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
-    self.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
-    self.send_headers()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
-    self.send_preamble()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
-    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
-    result = self.stdout.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
-    self._sock.sendall(b)
-ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 141, in run
-    self.handle_error()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 116, in handle_error
-    super().handle_error()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 368, in handle_error
-    self.finish_response()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
-    self.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
-    self.send_headers()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 331, in send_headers
-    if not self.origin_server or self.client_is_modern():
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 344, in client_is_modern
-    return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
-TypeError: 'NoneType' object is not subscriptable
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 647, in process_request_thread
-    self.finish_request(request, client_address)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 357, in finish_request
-    self.RequestHandlerClass(request, client_address, self)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 717, in __init__
-    self.handle()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 169, in handle
-    self.handle_one_request()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 194, in handle_one_request
-    handler.run(self.server.get_app())
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 144, in run
-    self.close()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 111, in close
-    super().close()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\simple_server.py", line 35, in close
-    self.status.split(' ',1)[0], self.bytes_sent
-AttributeError: 'NoneType' object has no attribute 'split'
-----------------------------------------
-2019-04-04 16:18:36,440 django.request 18544 WARNING  Not Found: //favicon.ico
-2019-04-04 16:18:36,661 django.server 18544 WARNING  "GET //favicon.ico HTTP/1.1" 404 9770
-2019-04-04 16:31:09,376 escola.views 6544 INFO     views:index; user_id: 1
-2019-04-04 16:31:09,430 escola.views 6544 INFO     views:index; user_id: 1 é aluno.
-2019-04-04 16:31:09,430 escola.views 6544 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
-2019-04-04 16:31:09,526 escola.views 6544 DEBUG    Encontrei 0 tarefas.
-2019-04-04 16:31:09,528 escola.views 6544 INFO     Antes de renderizar a view index, user: 1
-2019-04-04 16:31:09,836 escola.models 6544 DEBUG    horario:get_horario()
-2019-04-04 16:31:09,915 escola.models 6544 INFO     Puxou 3 turno(s) do banco de dados.
-2019-04-04 16:31:09,915 escola.models 6544 INFO     Preparando para entrar no loop de turnos...
-2019-04-04 16:31:09,915 escola.models 6544 DEBUG    Turno id:1
-2019-04-04 16:31:10,039 escola.models 6544 DEBUG    Turno id:3
-2019-04-04 16:31:10,060 escola.models 6544 DEBUG    Turno id:2
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\base.py", line 68, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\base.py", line 88, in dispatch
+    return handler(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 168, in get
+    return super().get(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 133, in get
+    return self.render_to_response(self.get_context_data())
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 66, in get_context_data
+    kwargs['form'] = self.get_form()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 33, in get_form
+    return form_class(**self.get_form_kwargs())
+TypeError: 'NoneType' object is not callable
+2019-04-07 09:24:44,124 django.server 13756 ERROR    "GET /conteudo/20/add HTTP/1.1" 500 374
 Performing system checks...
 
 System check identified no issues (0 silenced).
-April 04, 2019 - 22:03:06
-Django version 2.1.7, using settings 'MedusaII.settings'
-Starting development server at http://0.0.0.0:8000/
-Quit the server with CTRL-BREAK.
-2019-04-05 12:17:47,898 escola.views 14080 INFO     views:index; user_id: 1
-2019-04-05 12:17:48,140 escola.views 14080 INFO     views:index; user_id: 1 é aluno.
-2019-04-05 12:17:48,141 escola.views 14080 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
-2019-04-05 12:17:48,532 django.request 1572 WARNING  Not Found: /favicon.ico
-2019-04-05 12:17:48,549 escola.views 14080 DEBUG    Encontrei 0 tarefas.
-2019-04-05 12:17:48,551 escola.views 14080 INFO     Antes de renderizar a view index, user: 1
-2019-04-05 12:17:52,378 escola.models 14080 DEBUG    horario:get_horario()
-2019-04-05 12:17:52,548 escola.models 14080 INFO     Puxou 3 turno(s) do banco de dados.
-2019-04-05 12:17:52,548 escola.models 14080 INFO     Preparando para entrar no loop de turnos...
-2019-04-05 12:17:52,548 escola.models 14080 DEBUG    Turno id:1
-2019-04-05 12:17:52,860 escola.models 14080 DEBUG    Turno id:3
-2019-04-05 12:17:52,867 escola.models 14080 DEBUG    Turno id:2
-2019-04-05 12:17:54,030 django.request 22212 WARNING  Not Found: /favicon.ico
-2019-04-05 12:18:16,990 django.request 14080 WARNING  Not Found: /favicon.ico
-2019-04-05 12:18:19,805 django.server 1572 WARNING  "GET /favicon.ico HTTP/1.1" 404 9766
-2019-04-05 12:18:19,807 django.server 22212 WARNING  "GET /favicon.ico HTTP/1.1" 404 9766
-2019-04-05 12:18:19,820 django.server 14080 WARNING  "GET /favicon.ico HTTP/1.1" 404 9766
-Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
-    self.finish_response()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
-    self.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
-    self.send_headers()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
-    self.send_preamble()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
-    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
-    result = self.stdout.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
-    self._sock.sendall(b)
-ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
-2019-04-05 12:18:19,850 django.server 1572 ERROR    "GET /favicon.ico HTTP/1.1" 500 59
-----------------------------------------
-Exception happened during processing of request from ('127.0.0.1', 55676)
-Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 138, in run
-    self.finish_response()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
-    self.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
-    self.send_headers()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 332, in send_headers
-    self.send_preamble()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 255, in send_preamble
-    ('Date: %s\r\n' % format_date_time(time.time())).encode('iso-8859-1')
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 453, in _write
-    result = self.stdout.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 796, in write
-    self._sock.sendall(b)
-ConnectionAbortedError: [WinError 10053] Uma conexão estabelecida foi anulada pelo software no computador host
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 141, in run
-    self.handle_error()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 116, in handle_error
-    super().handle_error()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 368, in handle_error
-    self.finish_response()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 180, in finish_response
-    self.write(data)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 274, in write
-    self.send_headers()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 331, in send_headers
-    if not self.origin_server or self.client_is_modern():
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 344, in client_is_modern
-    return self.environ['SERVER_PROTOCOL'].upper() != 'HTTP/0.9'
-TypeError: 'NoneType' object is not subscriptable
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 647, in process_request_thread
-    self.finish_request(request, client_address)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 357, in finish_request
-    self.RequestHandlerClass(request, client_address, self)
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\socketserver.py", line 717, in __init__
-    self.handle()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 169, in handle
-    self.handle_one_request()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 194, in handle_one_request
-    handler.run(self.server.get_app())
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\handlers.py", line 144, in run
-    self.close()
-  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\servers\basehttp.py", line 111, in close
-    super().close()
-  File "c:\users\wwwvi\appdata\local\programs\python\python37-32\Lib\wsgiref\simple_server.py", line 35, in close
-    self.status.split(' ',1)[0], self.bytes_sent
-AttributeError: 'NoneType' object has no attribute 'split'
-----------------------------------------
-2019-04-05 12:43:29,513 django.request 18224 WARNING  Not Found: /HNAP1/
-2019-04-05 12:43:29,520 django.server 18224 WARNING  "GET /HNAP1/ HTTP/1.1" 404 9747
-Performing system checks...
-
-System check identified no issues (0 silenced).
-April 05, 2019 - 13:14:36
-Django version 2.1.7, using settings 'MedusaII.settings'
+April 07, 2019 - 09:38:00
+Django version 2.1.8, using settings 'MedusaII.settings'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CTRL-BREAK.
 Performing system checks...
 
-Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x044422B8>
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x04441300>
 Traceback (most recent call last):
   File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 225, in wrapper
     fn(*args, **kwargs)
@@ -250,7 +103,7 @@ Traceback (most recent call last):
   File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
   File "<frozen importlib._bootstrap_external>", line 728, in exec_module
   File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
-  File "C:\Programação\Medusa II\MedusaII\urls.py", line 26, in <module>
+  File "C:\Programação\Medusa II\MedusaII\urls.py", line 27, in <module>
     path('', include('escola.urls')),
   File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\conf.py", line 34, in include
     urlconf_module = import_module(urlconf_module)
@@ -262,15 +115,192 @@ Traceback (most recent call last):
   File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
   File "<frozen importlib._bootstrap_external>", line 728, in exec_module
   File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
-  File "C:\Programação\Medusa II\escola\urls.py", line 7, in <module>
-    import escola.views_materia
-  File "C:\Programação\Medusa II\escola\views_materia.py", line 74, in <module>
-    class MateriaDaTurmaDetailView(DetailView, LoginRequieredMixin):
-NameError: name 'LoginRequieredMixin' is not defined
+  File "C:\Programação\Medusa II\escola\urls.py", line 11, in <module>
+    import escola.views_conteudo
+  File "C:\Programação\Medusa II\escola\views_conteudo.py", line 72
+    form_class.fields['conteudo'].widget = 
+                                          ^
+SyntaxError: invalid syntax
+Performing system checks...
+
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x04441300>
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\commands\runserver.py", line 117, in inner_run
+    self.check(display_num_errors=True)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 379, in check
+    include_deployment_checks=include_deployment_checks,
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 366, in _run_checks
+    return checks.run_checks(**kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\registry.py", line 71, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 13, in check_url_config
+    return check_resolver(resolver)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 23, in check_resolver
+    return check_method()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 396, in check
+    for pattern in self.url_patterns:
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 533, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 526, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\MedusaII\urls.py", line 27, in <module>
+    path('', include('escola.urls')),
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\escola\urls.py", line 11, in <module>
+    import escola.views_conteudo
+  File "C:\Programação\Medusa II\escola\views_conteudo.py", line 83
+    class addConteudosAMateria(FormView):
+    ^
+IndentationError: expected an indented block
+Performing system checks...
+
+Unhandled exception in thread started by <function check_errors.<locals>.wrapper at 0x04441300>
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\autoreload.py", line 225, in wrapper
+    fn(*args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\commands\runserver.py", line 117, in inner_run
+    self.check(display_num_errors=True)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 379, in check
+    include_deployment_checks=include_deployment_checks,
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\management\base.py", line 366, in _run_checks
+    return checks.run_checks(**kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\registry.py", line 71, in run_checks
+    new_errors = check(app_configs=app_configs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 13, in check_url_config
+    return check_resolver(resolver)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\checks\urls.py", line 23, in check_resolver
+    return check_method()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 396, in check
+    for pattern in self.url_patterns:
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 533, in url_patterns
+    patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\utils\functional.py", line 37, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\resolvers.py", line 526, in urlconf_module
+    return import_module(self.urlconf_name)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\MedusaII\urls.py", line 27, in <module>
+    path('', include('escola.urls')),
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\urls\conf.py", line 34, in include
+    urlconf_module = import_module(urlconf_module)
+  File "C:\Programação\Medusa II\.vEnv\lib\importlib\__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "C:\Programação\Medusa II\escola\urls.py", line 11, in <module>
+    import escola.views_conteudo
+  File "C:\Programação\Medusa II\escola\views_conteudo.py", line 74
+    def get_form_class(self):
+      ^
+IndentationError: expected an indented block
 Performing system checks...
 
 System check identified no issues (0 silenced).
-April 05, 2019 - 13:34:21
-Django version 2.1.7, using settings 'MedusaII.settings'
+April 07, 2019 - 09:44:46
+Django version 2.1.8, using settings 'MedusaII.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CTRL-BREAK.
+2019-04-07 09:44:47,335 escola.views 5780 INFO     views:index; user_id: 1
+2019-04-07 09:44:47,338 escola.views 5780 INFO     views:index; user_id: 1 é aluno.
+2019-04-07 09:44:47,338 escola.views 5780 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-04-07 09:44:47,339 escola.views 5780 DEBUG    Encontrei 0 tarefas.
+2019-04-07 09:44:47,340 escola.views 5780 INFO     Antes de renderizar a view index, user: 1
+2019-04-07 09:44:47,420 escola.models 5780 DEBUG    horario:get_horario()
+2019-04-07 09:44:47,422 escola.models 5780 INFO     Puxou 3 turno(s) do banco de dados.
+2019-04-07 09:44:47,422 escola.models 5780 INFO     Preparando para entrar no loop de turnos...
+2019-04-07 09:44:47,422 escola.models 5780 DEBUG    Turno id:1
+2019-04-07 09:44:47,429 escola.models 5780 DEBUG    Turno id:3
+2019-04-07 09:44:47,436 escola.models 5780 DEBUG    Turno id:2
+2019-04-07 09:50:42,546 django.request 13704 ERROR    Internal Server Error: /conteudo/20/add
+Traceback (most recent call last):
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\exception.py", line 34, in inner
+    response = get_response(request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 126, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\core\handlers\base.py", line 124, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\base.py", line 68, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\base.py", line 88, in dispatch
+    return handler(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 168, in get
+    return super().get(request, *args, **kwargs)
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 133, in get
+    return self.render_to_response(self.get_context_data())
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 66, in get_context_data
+    kwargs['form'] = self.get_form()
+  File "C:\Programação\Medusa II\.vEnv\lib\site-packages\django\views\generic\edit.py", line 32, in get_form
+    form_class = self.get_form_class()
+  File "C:\Programação\Medusa II\escola\views_conteudo.py", line 76, in get_form_class
+    form_class.fields['conteudo'].widget = forms.HiddenInput()
+AttributeError: type object 'LinkConteudoForm' has no attribute 'fields'
+2019-04-07 09:50:42,550 django.server 13704 ERROR    "GET /conteudo/20/add HTTP/1.1" 500 374
+2019-04-07 10:45:46,473 django.request 2204 ERROR    Internal Server Error: /conteudo/
+2019-04-07 10:45:46,519 django.server 2204 ERROR    "GET /conteudo/ HTTP/1.1" 500 374
+2019-04-07 10:45:52,258 escola.views 2204 INFO     views:index; user_id: 1
+2019-04-07 10:45:52,267 escola.views 2204 INFO     views:index; user_id: 1 é aluno.
+2019-04-07 10:45:52,267 escola.views 2204 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-04-07 10:45:52,274 escola.views 2204 DEBUG    Encontrei 0 tarefas.
+2019-04-07 10:45:52,280 escola.views 2204 INFO     Antes de renderizar a view index, user: 1
+2019-04-07 10:45:52,766 escola.models 2204 DEBUG    horario:get_horario()
+2019-04-07 10:45:52,768 escola.models 2204 INFO     Puxou 3 turno(s) do banco de dados.
+2019-04-07 10:45:52,768 escola.models 2204 INFO     Preparando para entrar no loop de turnos...
+2019-04-07 10:45:52,768 escola.models 2204 DEBUG    Turno id:1
+2019-04-07 10:45:52,862 escola.models 2204 DEBUG    Turno id:3
+2019-04-07 10:45:52,879 escola.models 2204 DEBUG    Turno id:2
+2019-04-07 12:56:49,030 django.request 16476 ERROR    Internal Server Error: /HNAP1/
+2019-04-07 12:56:49,054 django.server 16476 ERROR    "GET /HNAP1/ HTTP/1.1" 500 374
+2019-04-07 13:43:07,779 escola.views 5388 INFO     views:index; user_id: 1
+2019-04-07 13:43:07,783 escola.views 5388 INFO     views:index; user_id: 1 é aluno.
+2019-04-07 13:43:07,783 escola.views 5388 INFO     Lembre-se de retirar as tarefas daqui e generalizar;
+2019-04-07 13:43:07,786 escola.views 5388 DEBUG    Encontrei 0 tarefas.
+2019-04-07 13:43:07,787 escola.views 5388 INFO     Antes de renderizar a view index, user: 1
+2019-04-07 13:43:07,833 escola.models 5388 DEBUG    horario:get_horario()
+2019-04-07 13:43:07,835 escola.models 5388 INFO     Puxou 3 turno(s) do banco de dados.
+2019-04-07 13:43:07,835 escola.models 5388 INFO     Preparando para entrar no loop de turnos...
+2019-04-07 13:43:07,835 escola.models 5388 DEBUG    Turno id:1
+2019-04-07 13:43:07,889 escola.models 5388 DEBUG    Turno id:3
+2019-04-07 13:43:07,900 escola.models 5388 DEBUG    Turno id:2
+Performing system checks...
+
+System check identified no issues (0 silenced).
+April 07, 2019 - 14:53:07
+Django version 2.1.8, using settings 'MedusaII.settings'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CTRL-BREAK.

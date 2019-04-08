@@ -146,6 +146,8 @@ class AssertDeletesAndRedirects(AssertRedirects):
 
 class _TestView:
     """Teste generico para views"""
+    # TODO: 07/04/2019 por wwwvi: Adicionar parametrização de uma função de teste, com os parametros semdo dados por
+    #  outra função
     page_name = "Mude o PageName"
     page_parameters = []
 

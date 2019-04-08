@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.views.defaults import server_error, page_not_found
 from django.contrib import admin
 from django.http import HttpResponseServerError
 from django.urls import include, path
@@ -29,4 +30,8 @@ urlpatterns = [
 
 ]
 if settings.DEBUG:
-    urlpatterns.append(path('500', lambda request: HttpResponseServerError()))
+    urlpatterns.append(path('500', server_error))
+    urlpatterns.append(path('404', page_not_found))
+
+handler404 = 'escola.views.handler404'
+handler500 = 'escola.views.handler500'

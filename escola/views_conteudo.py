@@ -10,6 +10,7 @@ from .forms import *
 from .models import *
 from .decorators import *
 
+
 class ConteudoCreate(CreateView):
     """View para criar um Conteudo."""
     model = Conteudo
@@ -64,8 +65,23 @@ class ConteudoDetail(DetailView):
 
 class LinkConteudoCreateView(CreateView):
     model = LinkConteudo
-    fields = ['titulo','link','categoria','descricao','conteudo','tags']
+    fields = ['titulo', 'link', 'categoria', 'descricao', 'tags', 'conteudo']
+
     # TODO: 06/04/2019 por wwwvi: Test
+
+    # @method_decorator(permission_required_obj('escola.'))
+    # def dispatch(self, request, *args, **kwargs):
+
+    def get_form_class(self):
+        form_class = super(LinkConteudoCreateView, self).get_form_class()
+        form_class.fields['conteudo'].widget = forms.HiddenInput()
+        form_class.helper = FormHelper()
+        form_class.helper.add_input(Submit('submit', 'Salvar'))
+        return form_class
+
+    def get_initial(self):
+        a = super(LinkConteudoCreateView, self).get_initial()
+        # a.update({'conteudo':})
 
 
 class addConteudosAMateria(FormView):
@@ -92,7 +108,7 @@ class addConteudosAMateria(FormView):
 
 
 class moveConteudoTree(FormView):
-    pass #form_class = MoveNodeForm
+    pass  # form_class = MoveNodeForm
     # TODO: 06/04/2019 por wwwvi: Acabar formulario de mudar de lugar
     # TODO: 06/04/2019 por wwwvi: Test
 
@@ -101,6 +117,7 @@ class MeusConteudosListView(ListView):
     model = Conteudo
     context_object_name = 'conteudos'
     template_name = 'escola/professor/listConteudos.html'
+
     # TODO: 06/04/2019 por wwwvi: Terminar
 
     def dispatch(self, request, *args, **kwargs):
