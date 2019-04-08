@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'taggit_serializer',
     'mptt',
     'crispy_forms',
-    'bootstrap_modal_forms',
 ]
 
 MIDDLEWARE = [

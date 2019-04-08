@@ -64,24 +64,40 @@ class ConteudoDetail(DetailView):
 
 
 class LinkConteudoCreateView(CreateView):
+    """View para professores adicionarem links em um conteudo."""
     model = LinkConteudo
-    fields = ['titulo', 'link', 'categoria', 'descricao', 'tags', 'conteudo']
+    fields = ['titulo', 'link', 'categoria', 'descricao', 'tags']
+    success_url = reverse_lazy('escola:conteudos-professor')
 
     # TODO: 06/04/2019 por wwwvi: Test
 
-    # @method_decorator(permission_required_obj('escola.'))
-    # def dispatch(self, request, *args, **kwargs):
+    @method_decorator(is_professor)
+    def dispatch(self, request, *args, **kwargs):
+        self.conteudo = Conteudo.objects.get(pk=kwargs.get('pk'))
+        self.categoria = kwargs.get('cat')
+        if not request.user == self.conteudo.professor.user:
+            logger.debug(request.user)
+            logger.debug(self.conteudo)
+            raise PermissionDenied("Você não tem permissão para adicionar um link aqui.")
+        return super(LinkConteudoCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_form_class(self):
         form_class = super(LinkConteudoCreateView, self).get_form_class()
-        form_class.fields['conteudo'].widget = forms.HiddenInput()
         form_class.helper = FormHelper()
         form_class.helper.add_input(Submit('submit', 'Salvar'))
         return form_class
 
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.conteudo = self.conteudo
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
     def get_initial(self):
-        a = super(LinkConteudoCreateView, self).get_initial()
-        # a.update({'conteudo':})
+        kwargs = super(LinkConteudoCreateView, self).get_initial()
+        if self.categoria:
+            kwargs.update({'categoria': self.categoria})
+        return kwargs
 
 
 class addConteudosAMateria(FormView):

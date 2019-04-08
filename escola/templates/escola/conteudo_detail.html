@@ -15,12 +15,16 @@
   </div>
   <hr/>
 
+  {%if conteudo.professor == user.professor%}
+      <a href="{%url 'escola:add-link-conteudo' conteudo.pk%}" class="btn btn-primary">Novo Link</a>
+  {%endif%}
+
   {% for categoria in categorias%}
   <div class="card">
     <div class="card-body">
       <h2 class="card-title" style="color: {{categoria.obj.cor}}"> {{categoria.obj.nome}} </h2>
       {%if conteudo.professor == user.professor%}
-      <a href="{%url 'escola:add-link-conteudo' conteudo.pk%}" class="btn btn-primary">Novo Link</a>
+      <a href="{%url 'escola:add-link-conteudo' conteudo.pk categoria.obj.id%}" class="btn btn-primary">Novo Link</a>
       {%endif%}
       <div class="list-group">
         {%for link in categoria.links%}
