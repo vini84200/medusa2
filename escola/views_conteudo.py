@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, FormView, ListView
+from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, FormView, ListView, DeleteView
 from mptt.forms import MoveNodeForm
 
 from .forms import *
@@ -17,6 +17,7 @@ class ConteudoCreate(CreateView):
     form_class = ConteudoForm
 
     def dispatch(self, request, *args, **kwargs):
+        """Pega valores dos args"""
         if 'pk_parent' in kwargs.keys():
             self.parent = kwargs['pk_parent']
         return super(ConteudoCreate, self).dispatch(request, *args, **kwargs)
@@ -28,7 +29,7 @@ class ConteudoCreate(CreateView):
         if self.parent:
             logger.debug('ConteudoCreate:get_initial():in if loop.')
             initial['parent'] = self.parent
-            # FIXME: 28/03/2019 por wwwvi: Isso não esta funcionando
+            # TODO: 10/04/2019 por wwwvi: Adicionar Teste;
         return initial
 
     def form_valid(self, form):
@@ -45,6 +46,7 @@ class ConteudoUpdate(UpdateView):
     model = Conteudo
     form_class = ConteudoForm
     context_object_name = 'conteudo'
+    # TODO: 10/04/2019 por wwwvi: Testar
 
 
 class ConteudoDetail(DetailView):
@@ -61,6 +63,7 @@ class ConteudoDetail(DetailView):
                                })
         context['categorias'] = categorias
         return context
+    # TODO: 10/04/2019 por wwwvi: Testar
 
 
 class LinkConteudoCreateView(CreateView):
@@ -137,6 +140,7 @@ class MeusConteudosListView(ListView):
     # TODO: 06/04/2019 por wwwvi: Terminar
 
     def dispatch(self, request, *args, **kwargs):
+        """Regista o usuario."""
         self.user = request.user
         return super(MeusConteudosListView, self).dispatch(request, *args, **kwargs)
 
@@ -144,3 +148,15 @@ class MeusConteudosListView(ListView):
         return Conteudo.objects.filter(professor=self.user.professor).all()
 
 # TODO: 06/04/2019 por wwwvi: Test
+
+
+class RemoveLinkFromConteudoView(DeleteView):
+    """Remove o link de algum conteudo"""
+    pass  # TODO: 10/04/2019 por wwwvi: Terminar
+    # SOBRESCREVER CODIGO QUE REALIZA EXCLUSÂO PARA RETIRAR DA LISTA.
+
+
+class RemoveConteudoFromMateriaView(DeleteView):
+    """Remove o conteudo de uma materia"""
+    pass  # TODO: 10/04/2019 por wwwvi: Terminar
+    # SOBRESCREVER CODIGO QUE REALIZA EXCLUSÂO PARA RETIRAR DA LISTA.
