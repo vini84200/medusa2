@@ -4,10 +4,12 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView
 
-from escola.decorators import is_user_escola
+from escola.decorators import is_user_escola, is_professor
 from escola.forms import ProfessorCreateForm
-from escola.models import Profile, Professor
+from escola.models import Profile, Professor, MateriaDaTurma
 from escola.utils import username_present, generate_username, genarate_password
 
 
@@ -79,3 +81,16 @@ def delete_professor(request, pk):
     prof = get_object_or_404(Professor, pk=pk)
     prof.delete()
     return HttpResponseRedirect(reverse('escola:list-professores'))
+
+class MateriaProfessorListView(ListView):
+    model = MateriaDaTurma
+    template_name = 'escola/professor/listMaterias.html'
+    context_object_name = 'materias'
+
+    @method_decorator(is_professor)
+    def dispatch(self, request, *args, **kwargs):
+        self.professor = request.user
+        self.queryset = MateriaDaTurma.objects.filter(professor=request.user.professor)
+        return super(MateriaProfessorListView, self).dispatch(request, *args, **kwargs)
+
+

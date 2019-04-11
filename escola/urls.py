@@ -88,16 +88,26 @@ urlpatterns += \
         path('conteudo/<int:pk>', escola.views_conteudo.ConteudoDetail.as_view(), name='conteudo-detail'),
         path('conteudo/add/<int:pk_parent>', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
         path('conteudo/add/', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
+        path('materia/<int:materia>/addConteudos', escola.views_conteudo.addConteudosAMateria.as_view(), name='add-conteudo-materia'),
+        path('conteudo/<int:pk>/add', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
+        path('conteudo/<int:pk>/add/<int:cat>', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
     ]
 
 # Notificações
 urlpatterns += \
     [
-        path('notificacoes', escola.views.NotificacaoListView.as_view(), name='notificacoes-list')
+        path('notificacoes', escola.views.NotificacaoListView.as_view(), name='notificacoes-list'),
     ]
 
 # Pagina de sobre
 urlpatterns += \
     [
-        path('sobre', escola.views.SobreView.as_view(), name='sobre')
+        path('sobre', escola.views.SobreView.as_view(), name='sobre'),
+    ]
+
+# Paginas do professor
+urlpatterns += \
+    [
+        path('self/materias', escola.views_professor.MateriaProfessorListView.as_view(), name='materias_professor'),
+        path('self/conteudos', escola.views_conteudo.MeusConteudosListView.as_view(), name='conteudos-professor'),
     ]
