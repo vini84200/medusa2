@@ -33,5 +33,5 @@ if settings.DEBUG:
     urlpatterns.append(path('500', server_error))
     urlpatterns.append(path('404', page_not_found))
 
-handler404 = 'escola.views.handler404'
+
 handler500 = 'escola.views.handler500'
