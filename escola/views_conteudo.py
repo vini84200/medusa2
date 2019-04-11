@@ -53,6 +53,10 @@ class ConteudoDetail(DetailView):
     """ Detalhes do Conteudo"""
     model = Conteudo
 
+    @method_decorator(is_user_escola)
+    def dispatch(self, request, *args, **kwargs):
+        return super(ConteudoDetail, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         """ Adiciona itens ao Context """
         context = super(ConteudoDetail, self).get_context_data(**kwargs)
@@ -63,7 +67,6 @@ class ConteudoDetail(DetailView):
                                })
         context['categorias'] = categorias
         return context
-    # TODO: 10/04/2019 por wwwvi: Testar
 
 
 class LinkConteudoCreateView(CreateView):
