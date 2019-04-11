@@ -1,8 +1,11 @@
+"""Teste de unidade de todas as Views, seja ela de qualquer arquivo"""
+import warnings
+
 import pytest
 from django.contrib.auth import authenticate
 from django.test.client import Client
 from django.test.testcases import TestCase
-from helpers.utils import create_admin, create_aluno, create_professor, create_turma
+from helpers.utils import create_admin, create_aluno, create_professor, create_turma  # OK
 from mixer.backend.django import mixer
 
 from escola.models import *
@@ -12,6 +15,13 @@ pytestmark = pytest.mark.django_db
 
 
 # TODO Test username_present()
+
+# EXEPTIONS:
+class ImproperlyConfigured(Exception):
+    """É criado quando à alguma configuração que não foi feita adequadamente."""
+
+
+# Verificações
 
 
 class Verificaton:
@@ -88,6 +98,8 @@ class VerificationDeleted(VerificationResponse):
         obj__class.object.get(pk=obj__pk)
 
 
+# Asserts de resposta
+
 class ResponseAssert:
     """Verifica uma resposta com uma list de verifications prefeita"""
     test_list = []
@@ -144,6 +156,124 @@ class AssertDeletesAndRedirects(AssertRedirects):
         self.test_list += [VerificationDeleted()]
 
 
+# Clientes de teste, usados nos testes para obter um cliente
+
+class ClienteTeste:
+    """Um cliente que esta a acessar o Site, usado para os testes"""
+
+    def get_client(self):
+        """
+        :return: Client
+        :rtype Client
+        :raises
+        ImproperlyConfigured: Chamado na classe base
+        """
+        raise ImproperlyConfigured
+
+
+class AnnonymousClienteTeste(ClienteTeste):
+    """CLiente que acessa o site sem estar logado"""
+
+    def get_client(self):
+        """ Retorna um Client para este Cliente
+        :return: Client
+        :rtype: Client
+        """
+        return Client()
+
+
+class UserNotEscolaClienteTeste(ClienteTeste):
+    """Cliente que acessa o site, estando logado,
+     mas não possuindo nenhuma possição no site
+     """
+
+    def get_client(self):
+        """
+        Retorna o client de um usuario não logado.
+        :return: Client
+        :rtype: Client
+        """
+        client = Client()
+        client.login(username='cazuza', password='senha1234')
+        return client
+
+
+class AlunoClienteTeste(ClienteTeste):
+    """Cliente que acessa o site possuindo um Profie, este que o marca como aluno,
+    e possuido o atributo Aluno
+    """
+
+    def get_client(self):
+        """
+        Retorna o Client deste ClienteTeste
+        :return: Client
+        :rtype: Client
+        """
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        return c
+
+
+class ProfessorClienteTeste(ClienteTeste):
+    """Cliente que acessa o site com um Profile, este o marcando como professor,
+    tambem possui um atributo Professor
+    """
+
+    def get_client(self):
+        """
+        Retorna o Client de um ProfessorCliente
+        :return: Client
+        :rtype: Client
+        """
+        c = Client()
+        prof = create_professor()
+        c.force_login(prof.user)
+        return c
+
+
+class PadraoPermisaoVisualizacao:
+    """Um padrão de Permissões para teste, para verificar uma view"""
+
+    def get_parameters(self):
+        """
+        Retorna lista de parametros desse padrao
+        :return: Uma lista de parameters como são dessa permissão
+        :raise ImproperlyConfigured:
+        """
+        raise ImproperlyConfigured
+
+
+class PadraoAbertoVisualizacao(PadraoPermisaoVisualizacao):
+    """Permite qualquer um, até mesmo alguem não logado acessar a pagina"""
+
+    def __init__(self, *args, **kwargs):
+        super(PadraoPermisaoVisualizacao, self).__init__(*args, **kwargs)
+        if kwargs.get('template200'):
+            self.template200 = kwargs.get('template200')
+
+    def get_parameters(self):
+        return [("GET", [], AnnonymousClienteTeste, Assert200AndTemplate(template=self.template200), None),
+                ("GET", [], UserNotEscolaClienteTeste, Assert200AndTemplate(template=self.template200), None),
+                ("GET", [], AlunoClienteTeste, Assert200AndTemplate(template=self.template200), None),
+                ("GET", [], ProfessorClienteTeste, Assert200AndTemplate(template=self.template200), None), ]
+
+
+class PadraoApenasUserEscolaVisualizacao(PadraoPermisaoVisualizacao):
+    """Permite apenas usuarios logados com role dentro da escola"""
+
+    def __init__(self, *args, **kwargs):
+        super(PadraoPermisaoVisualizacao, self).__init__(*args, **kwargs)
+        if kwargs.get('template200'):
+            self.template200 = kwargs.get('template200')
+
+    def get_parameters(self):
+        return [("GET", [], AnnonymousClienteTeste, AssertRedirectsLogin(), None),
+                ("GET", [], UserNotEscolaClienteTeste, AssertRedirectsLogin(), None),
+                ("GET", [], AlunoClienteTeste, Assert200AndTemplate(template=self.template200), None),
+                ("GET", [], ProfessorClienteTeste, Assert200AndTemplate(template=self.template200), None), ]
+
+
 class _TestView:
     """Teste generico para views"""
     # TODO: 07/04/2019 por wwwvi: Adicionar parametrização de uma função de teste, com os parametros semdo dados por
@@ -162,7 +292,7 @@ class _TestView:
         """Inicia tudo, é chamada no inicio"""
         pass
 
-    def get_response(self, client, response_assert):
+    def get_response(self, client: Client, response_assert: ResponseAssert):
         """ Retorna um response com metodo GET e com dados do response_assert"""
         r = client.get(reverse(self.page_name, args=self.page_parameters), follow=response_assert.get_follow())
         print(r.status_code)
@@ -173,46 +303,65 @@ class _TestView:
         """Testa com Anonimo"""
         self.set_up()
         # Get Client
-        client = Client()
+        client = self.get_annonymous_client()
         # Get response
         response = self.get_response(client, self.annonymous)
         # Test response
         self.annonymous.verify(response)
+        warnings.warn('To be deprecated', DeprecationWarning)
+
+    def get_annonymous_client(self):
+        return Client()
 
     def test_get_user_not_escola(self):
         """ Testa com usuario logado, mas não há perfil"""
         self.set_up()
         # Get Client
-        client = Client()
-        client.login(username='cazuza', password='senha1234')
+        client = self.get_user_not_escola_client()
         # response
         response = self.get_response(client, self.loged_not_escola)
         # test
         self.loged_not_escola.verify(response)
+        warnings.warn('To be deprecated', DeprecationWarning)
+
+    def get_user_not_escola_client(self):
+        client = Client()
+        client.login(username='cazuza', password='senha1234')
+        return client
 
     def test_get_aluno(self):
         """ Teste com usuario logado, com perfil de aluno"""
         self.set_up()
         # Get Client
-        c = Client()
-        aluno = create_aluno()
-        c.force_login(aluno.user)
+        c = self.get_aluno_client()
         # Response
         response = self.get_response(c, self.aluno)
         # test
         self.aluno.verify(response)
+        warnings.warn('To be deprecated', DeprecationWarning)
+
+    def get_aluno_client(self):
+        c = Client()
+        aluno = create_aluno()
+        c.force_login(aluno.user)
+        return c
 
     def test_get_professor(self):
         """ Teste com usuario logado, com perfil de professor"""
         self.set_up()
         # Get Client
-        c = Client()
-        prof = create_professor()
-        c.force_login(prof.user)
+        c = self.get_professor_client()
         # Response
         response = self.get_response(c, self.professor)
         # tests
         self.professor.verify(response)
+        warnings.warn('To be deprecated', DeprecationWarning)
+
+    def get_professor_client(self):
+        c = Client()
+        prof = create_professor()
+        c.force_login(prof.user)
+        return c
 
     @pytest.mark.skip('Não foi adicionado uma função que permita isso.')
     def test_get_professor_aluno(self):
@@ -222,11 +371,13 @@ class _TestView:
         # Get Client
         c = Client()
         prof = create_professor()
+        # Transformar professor em aluno e professor.
         c.force_login(prof.user)
         # Response
         response = self.get_response(c, self.aluno_e_professor)
         # tests
         self.professor.verify(response)
+        warnings.warn('To be deprecated', DeprecationWarning)
 
 
 class _TestFormView(_TestView):
@@ -344,7 +495,6 @@ class _TestViewEspecificoModel(_TestView):
 
 class _TestFormViewEspecificoModel(_TestViewEspecificoModel, _TestFormView):
     pass
-
 
 
 # --------------------------------------------------
@@ -1073,7 +1223,6 @@ class TestAddMateria(_TestFormViewEspecificoTurma, TestCase):
 
     aluno_turma = AssertRedirectsLogin()
 
-
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.turma.pk, ]
@@ -1165,6 +1314,8 @@ class TestAddTarefa(_TestFormViewEspecificoTurma):
     def set_up(self):
         super().set_up()
         self.page_parameters = [self.turma.pk, ]
+
+
 # TODO: 05/04/2019 por wwwvi: Professor deve poder adicionar tarefas em sua propria materia;
 
 #   TODO: Testa permissões
@@ -1319,3 +1470,8 @@ class TestDetalhesMateria(_TestViewEspecificoModel, TestCase):
         super(TestDetalhesMateria, self).set_up()
         self.turma = self.obj.turma
         self.page_parameters = [self.obj.pk, ]
+
+
+# class TestConteudoDetail(_TestView, TestCase):
+#    page_name = '' # TODO: 10/04/2019 por wwwvi: TERMINAR
+
