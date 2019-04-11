@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
@@ -11,6 +13,7 @@ def get_login_redirect(request):
 
 
 def is_user_escola(function):
+    @wraps(function)
     def wrap(request, *args, **kwargs):
         user = request.user
         if not user.is_authenticated:
@@ -23,13 +26,12 @@ def is_user_escola(function):
             return function(request, *args, **kwargs)
         else:
             raise PermissionDenied
-    wrap.__doc__ = function.__doc__
-    wrap.__name__ = function.__name__
     return wrap
 
 
 def is_aluno(function):
     """Decorator, adiconado ao Dispatch, verifica se o usario é um aluno"""
+    @wraps(function)
     def wrap(request, *args, **kwargs):
         user = request
         if not user.is_authenticated:
@@ -38,13 +40,12 @@ def is_aluno(function):
         if not profile.is_aluno:
             return get_login_redirect(request)
         return function(request, *args, **kwargs)
-    wrap.__doc__ = function.__doc__
-    wrap.__name__ = function.__name__
     return wrap
 
 
 def is_professor(function):
     """Decorator, adiconado ao Dispatch, verifica se o usario é um professor"""
+    @wraps(function)
     def wrap(request, *args, **kwargs):
         user = request.user
         if not user.is_authenticated:
@@ -53,5 +54,4 @@ def is_professor(function):
         if not profile.is_professor:
             return get_login_redirect(request)
         return function(request, *args, **kwargs)
-    wrap.__doc__ = function.__doc__
     return wrap
