@@ -3,6 +3,10 @@
 # It is also provided as a convenience to those who want to deploy these URLs
 # elsewhere.
 
+#  Developed by Vinicius José Fritzen
+#  Last Modified 12/04/19 13:19.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 from django.contrib.auth import views
 from django.urls import path
 

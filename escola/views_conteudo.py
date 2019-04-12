@@ -1,4 +1,8 @@
 """Exibe conteudos de uma materia."""
+#  Developed by Vinicius José Fritzen
+#  Last Modified 12/04/19 13:19.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy

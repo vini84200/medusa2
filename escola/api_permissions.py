@@ -1,4 +1,8 @@
 """ Permissões personalizadas da API"""
+#  Developed by Vinicius José Fritzen
+#  Last Modified 12/04/19 13:19.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 from django.views import View
 from rest_framework.permissions import BasePermission, DjangoModelPermissions
 from rest_framework.request import Request
