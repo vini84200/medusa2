@@ -1,6 +1,7 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 13:18.
+#  Last Modified 13/04/19 14:45.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import pytest
 from decouple import config
 from django.contrib.auth.models import User
 from django.test import LiveServerTestCase
@@ -10,6 +11,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 
 
+# @pytest.mark.selenium
 class SeleniumTestCase(LiveServerTestCase):
     """
     A base test case for Selenium, providing hepler methods for generating
