@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 13/04/19 10:16.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.urls import path, include
@@ -90,8 +90,8 @@ urlpatterns = [
 urlpatterns += \
     [
         path('conteudo/<int:pk>', escola.views_conteudo.ConteudoDetail.as_view(), name='conteudo-detail'),
-        path('conteudo/add/<int:pk_parent>', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
-        path('conteudo/add/', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),
+        path('conteudo/add/<int:pk_parent>', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),# TODO: 13/04/2019 por wwwvi: Nomenclatura errada, mudar para add-conteudo
+        path('conteudo/add/', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'), #TODO TAMBEM
         path('materia/<int:materia>/addConteudos', escola.views_conteudo.addConteudosAMateria.as_view(), name='add-conteudo-materia'),
         path('conteudo/<int:pk>/add', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
         path('conteudo/<int:pk>/add/<int:cat>', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
@@ -112,6 +112,6 @@ urlpatterns += \
 # Paginas do professor
 urlpatterns += \
     [
-        path('self/materias', escola.views_professor.MateriaProfessorListView.as_view(), name='materias_professor'),
+        path('self/materias', escola.views_professor.MateriaProfessorListView.as_view(), name='materias_professor'), # TODO: 13/04/2019 por wwwvi: Alterar name, nomeclatura esta errada
         path('self/conteudos', escola.views_conteudo.MeusConteudosListView.as_view(), name='conteudos-professor'),
     ]
