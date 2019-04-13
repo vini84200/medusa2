@@ -3,7 +3,7 @@ python:
   - '3.6'
   - '3.7-dev'
 addons:
-  firefox:
+  firefox: "66.0.3"
 services:
   - postgresql
   - redis-server
