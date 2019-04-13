@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 16:47.
+#  Last Modified 13/04/19 17:10.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import pytest
@@ -21,7 +21,7 @@ def browser(request):
     if config('MOZ_HEADLESS', 0) == 1:
         options.add_argument('-headless')
 
-    browser_ = CustomWebDriver(firefox_options=options)
+    browser_: CustomWebDriver = CustomWebDriver(firefox_options=options)
 
     yield browser_
 
@@ -38,8 +38,9 @@ def pedrinho(db):
     """Add a test user to the database."""
     user_ = mixer.blend(User,
         name='Pedrinho',
-        email=username,
+        username=username,
         password=make_password(senha),
+        is_staff = True,
         )
     return user_, username, senha
 

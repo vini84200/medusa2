@@ -1,9 +1,15 @@
 {% extends "../base.html" %}
 
-
+{%block title%}Lista de Turmas{%endblock%}
 {%block conteudo%}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 13/04/19 17:30.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
 <div class="container">
-<h1>Listagem de turmas</h1>
+<h1>Lista de Turmas</h1>
 {%if perms.escola.can_add_turma%}
     <a href="{% url 'escola:add-turma' %}" class="btn btn-primary">Adicionar Turma</a>
 {%endif%}

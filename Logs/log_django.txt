@@ -1,14 +1,7 @@
 Performing system checks...
 
 System check identified no issues (0 silenced).
-April 13, 2019 - 14:16:15
-Django version 2.1.8, using settings 'MedusaII.settings'
-Starting development server at http://0.0.0.0:8000/
-Quit the server with CTRL-BREAK.
-Performing system checks...
-
-System check identified no issues (0 silenced).
-April 13, 2019 - 14:58:11
+April 13, 2019 - 17:33:08
 Django version 2.1.8, using settings 'MedusaII.settings'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CTRL-BREAK.
