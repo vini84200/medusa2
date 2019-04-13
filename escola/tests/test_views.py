@@ -1,4 +1,8 @@
 """Teste de unidade de todas as Views, seja ela de qualquer arquivo"""
+#  Developed by Vinicius José Fritzen
+#  Last Modified 13/04/19 08:36.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 import warnings
 
 import pytest
@@ -764,7 +768,7 @@ class _TestViewObjMixin(_TestView):
     obj = None
     obj_class = None
     arg_obj = False
-    
+
     def set_up(self):
         """Adiciona o pk do obj nos parameters"""
         if self.arg_obj:
@@ -1894,5 +1898,37 @@ class TestConteudoDetail(_TestViewObjPermissionMixin, TestCase):
     arg_obj = True
 
 
+# Testing Conteudos
 
+# Test Conteudo Create
+class TestConteudoCreate():
+    """Realiza testes da view para criar um conteudo"""
+    pass
+#   Permssions
+#   Blank and Valid
+#   Verify It's Created
+#   Verify Professor it's right
+#   Verify it doesn't have a parent
+#   Verify it haves a parent when it's in the rigth URL
+#   Verify there is a button
 
+# Test Conteudo Update
+#   Permssions
+#   Make sure if the professor altering it isn't it's creator, he is not permited in.
+#   Blank and Valid
+#   Verify It's Created
+#   Verify Professor it's right
+#   Verify it doesn't have a parent
+#   Verify it haves a parent when it's in the rigth URL
+#   Verify there is a button
+
+# Test Conteudo Detail
+#   Permisions ( Alunos, e professores, e admins)
+#   Verify the right Categorias are in the context
+#   Verify Categoria links list.
+
+# Test LinkConteudoCreate
+#   Permissions
+#   Blank and valid
+#   Verify it's created
+#   Verify all with categoria and Verify it's added in the form field.
