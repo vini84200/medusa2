@@ -1,10 +1,12 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 11:19.
+#  Last Modified 13/04/19 13:18.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+from decouple import config
 from django.contrib.auth.models import User
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 
 
@@ -15,7 +17,11 @@ class SeleniumTestCase(LiveServerTestCase):
     """
 
     def setUp(self):
-        self.browser = CustomWebDriver()
+        options = Options()
+        if config('MOZ_HEADLESS', 0) == 1:
+            options.add_argument('-headless')
+
+        self.browser = CustomWebDriver(firefox_options=options)
 
     def tearDown(self):
         self.browser.quit()
