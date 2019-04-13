@@ -1,10 +1,10 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 14:45.
+#  Last Modified 13/04/19 16:04.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import pytest
 from decouple import config
 from django.contrib.auth.models import User
-from django.test import LiveServerTestCase
+from django.test import LiveServerTestCase, TestCase
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.options import Options

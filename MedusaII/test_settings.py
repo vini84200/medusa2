@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 14:48.
+#  Last Modified 13/04/19 16:13.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from .settings import *
@@ -7,8 +7,7 @@ from .settings import *
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
-        'TEST_NAME': os.path.join(BASE_DIR, 'test_sqlite.db'),
+        "NAME": os.path.join(BASE_DIR, 'test_sqlite.db'),
     }
 }
 # DATABASES = {
