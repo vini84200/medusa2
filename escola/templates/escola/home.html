@@ -1,7 +1,7 @@
 {% extends "escola/base.html" %}
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 13/04/19 17:02.
+  ~ Last Modified 16/04/19 23:09.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
@@ -43,8 +43,8 @@
     {%if perms.escola.can_add_tarefa%}
         <a href="{% url 'escola:add-tarefa' turma.pk %}">Adicionar Tarefa</a>
     {%endif%}
-
-    <table>
+    <div class="table-responsive">
+    <table class="table table-striped">
     <tr>
         <th>Titulo</th>
         <th>Materia</th>
@@ -78,6 +78,7 @@
         </tr>
     {%endfor%}
     </table>
+        </div>
 </article> <br/>
 <article  class="container">
     <h2>Proximas Provas:</h2>

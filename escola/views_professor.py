@@ -1,9 +1,9 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 17/04/19 22:10.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -17,6 +17,7 @@ from escola.models import Profile, Professor, MateriaDaTurma
 from escola.utils import username_present, generate_username, genarate_password
 
 
+@login_required()
 @permission_required('escola.can_add_professor')
 def add_professor(request):
     if request.method == 'POST':
@@ -74,12 +75,14 @@ def list_professores(request):
     return render(request, 'escola/professor/listProfessores.html', context={'professores': professores})
 
 
+@login_required()
 @permission_required("escola.can_edit_professor")
 def edit_professor():
     # TODO Implement edit professor
     raise NotImplementedError
 
 
+@login_required()
 @permission_required('escola.can_delete_professor')
 def delete_professor(request, pk):
     prof = get_object_or_404(Professor, pk=pk)

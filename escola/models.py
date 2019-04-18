@@ -2,7 +2,7 @@
 Models gerais do aplicativo Escola.
 """
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 17/04/19 22:31.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import logging
@@ -17,6 +17,7 @@ from taggit.managers import TaggableManager
 
 import escola
 from escola.customFields import ColorField
+from escola.permission_utils import permission_names_to_objects
 
 logger = logging.getLogger(__name__)
 
@@ -63,59 +64,60 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
 
     class Meta:
         """Meta das Models"""
-        permissions = (('can_add_turma', "Pode criar turmas"),
-                       ('can_edit_turma', "Pode editar turmas"),
-                       ('can_delete_turma', "Pode deletar turmas"),
-                       ('can_populate_turma', "Pode popular turmas"),
-                       ('can_add_aluno', "Pode adicionar um aluno a turma."),
-                       ('editar_horario', "Pode editar o horario."),
-                       ('can_add_materia', 'Pode adicionar uma materia a turma.'),
-                       ('can_add_tarefa', "Pode adicionar uma tarefa."))
+        permissions = (
+            ('can_populate_turma', "Pode popular turmas"                ),
+            ('can_add_aluno'     , "Pode adicionar um aluno a turma."   ),
+            ('mudar_horario'     , "Pode editar o horario."             ),
+            ('can_add_materia'   , 'Pode adicionar uma materia a turma.'),
+            ('can_add_tarefa'    , "Pode adicionar uma tarefa."         ),
+        )
 
     def get_or_create_lider_group(self):
         """Retorna o grupo de lider, que deve possuir apenas um usuario."""
-        if self.lider:
-            return self.lider
-        else:
-            print(Group.objects.filter(name=f'lider_turma_{self.pk}'))
-            print(len(Group.objects.filter(name=f'lider_turma_{self.pk}')))
+        if not self.lider:
+            logging.info(Group.objects.filter(name=f'lider_turma_{self.pk}'))
+            logging.info(len(Group.objects.filter(name=f'lider_turma_{self.pk}')))
             if not len(Group.objects.filter(name=f'lider_turma_{self.pk}')) == 0:
                 self.lider = Group.objects.get(name=f'lider_turma_{self.pk}')
             else:
                 self.lider = Group.objects.create(name=f'lider_turma_{self.pk}')
-            assign_perm('escola.editar_horario', self.lider, obj=self)
-            assign_perm('escola.can_add_materia', self.lider, obj=self)
-            assign_perm('escola.can_add_tarefa', self.lider, obj=self)
-            return self.lider
+        assign_perm('escola.mudar_horario', self.lider, obj=self)
+        assign_perm('escola.can_add_materia', self.lider, obj=self)
+        assign_perm('escola.can_add_tarefa', self.lider, obj=self)
+        return self.lider
 
     def get_or_create_vicelider_group(self):
         """Retorna o grupo de vicelider, que deve ter apenas um usuario."""
-        if self.vicelider:
-            return self.vicelider
-        else:
+        if not self.vicelider:
+            logging.info(Group.objects.filter(name=f'vicelider_turma_{self.pk}'))
+            logging.info(len(Group.objects.filter(name=f'vicelider_turma_{self.pk}')))
             if len(Group.objects.filter(name=f'vicelider_turma_{self.pk}').all()) != 0:
                 self.vicelider = Group.objects.get(name=f'vicelider_turma_{self.pk}')
             else:
                 self.vicelider = Group.objects.create(name=f'vicelider_turma_{self.pk}')
-            assign_perm('escola.editar_horario', self.vicelider, obj=self)
-            assign_perm('escola.can_add_materia', self.vicelider, obj=self)
-            assign_perm('escola.can_add_tarefa', self.vicelider, obj=self)
-            return self.vicelider
+        assign_perm('escola.mudar_horario', self.vicelider, obj=self)
+        assign_perm('escola.can_add_materia', self.vicelider, obj=self)
+        assign_perm('escola.can_add_tarefa', self.vicelider, obj=self)
+        return self.vicelider
 
     def get_or_create_regente_group(self):
         """ Retorna o grupo de regente, que deve ter apenas um usuario. """
-        if self.regente:
-            return self.regente
-        else:
+        if not self.regente:
+            logging.info(f"Grupos regente da turma:{Group.objects.filter(name=f'regente_turma_{self.pk}')}")
+            logging.info(f"QNT:{len(Group.objects.filter(name=f'regente_turma_{self.pk}'))}")
             if len(Group.objects.filter(name=f'regente_turma_{self.pk}')) > 0:
                 self.regente = Group.objects.get(name=f'regente_turma_{self.pk}')
             else:
                 self.regente = Group.objects.create(name=f'regente_turma_{self.pk}')
-            assign_perm('escola.can_add_aluno', self.regente, obj=self)
-            assign_perm('escola.editar_horario', self.regente, obj=self)
-            assign_perm('escola.can_add_materia', self.regente, obj=self)
-            assign_perm('escola.can_add_tarefa', self.regente, obj=self)
-            return self.regente
+        logging.info(permission_names_to_objects(['escola.can_add_aluno',
+                                                  'escola.mudar_horario',
+                                                  'escola.can_add_materia',
+                                                  'escola.can_add_tarefa']))
+        assign_perm('escola.can_add_aluno', self.regente, obj=self)
+        assign_perm('escola.mudar_horario', self.regente, obj=self)
+        assign_perm('escola.can_add_materia', self.regente, obj=self)
+        assign_perm('escola.can_add_tarefa', self.regente, obj=self)
+        return self.regente
 
     def get_or_create_horario(self):
         """Retorna ou cria e retorna o horario."""

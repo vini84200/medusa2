@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 14/04/19 17:31.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import datetime
@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from guardian.decorators import permission_required as permission_required_obj
 
+from escola import user_utils
 from escola.decorators import is_user_escola
 from escola.forms import AlunoCreateFormOutLabel, AlunoCreateForm
 from escola.models import Profile, Aluno, Turma
@@ -41,8 +42,7 @@ def populate_alunos(request):
                 if 'nome' in form.cleaned_data:
                     senha, username = generate_aluno(form)
                     usuarios.append((username, senha,))
-            response = render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
-            return response
+            return render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
 
     context = {
         'formset': formset,
@@ -60,23 +60,12 @@ def generate_aluno(form):
     senha = form.cleaned_data['senha']
     if not senha:
         senha = genarate_password()
-    user = User.objects.create_user(username, password=senha)
-    user.first_name = nome.split(" ")[0]
-    user.last_name = nome.split(" ")[-1]
-    user.save()
-    profile = Profile(user=user, is_aluno=True, is_professor=False)
-    profile.save()
-    aluno = Aluno()
-    aluno.chamada = form.cleaned_data['num_chamada']
-    aluno.nome = nome
-    aluno.user = user
     turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
-    aluno.turma = turma
-    aluno.save()
+    user = user_utils.create_aluno_user(username, senha, turma, nome, n_chamda=form.cleaned_data['num_chamada'])
     return senha, username
 
 
-@permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'))
+@permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'), accept_global_perms=True)
 def add_aluno(request, turma_pk):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
@@ -86,7 +75,7 @@ def add_aluno(request, turma_pk):
         # Check if the form is valid:
         if form.is_valid():
             turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
-            if request.user.has_perm('escola.can_add_aluno',turma):
+            if request.user.has_perm('escola.can_add_aluno', turma) or request.user.has_perm('escola.add_aluno'):
                 senha, username = generate_aluno(form)
                 # redirect to a new URL:
                 if form.cleaned_data['senha']:

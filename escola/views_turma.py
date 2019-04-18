@@ -1,10 +1,10 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 17/04/19 22:05.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import datetime
 
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -13,8 +13,8 @@ from escola.decorators import is_user_escola
 from escola.forms import CriarTurmaForm
 from escola.models import Turma, Horario
 
-
-@permission_required('escola.can_add_turma')
+@login_required
+@permission_required('escola.add_turma')
 def add_turma(request):
     if request.method == 'POST':
 
@@ -53,6 +53,7 @@ def list_turmas(request):
     return render(request, 'escola/turma/listaTurmas.html', context={'turmas': turmas})
 
 
+@login_required()
 @permission_required('escola.can_edit_turma')
 def edit_turma(request, pk):
     turma: Turma = get_object_or_404(Turma, pk=pk)
@@ -83,6 +84,7 @@ def edit_turma(request, pk):
     return render(request, 'escola/turma/criarForm.html', context)
 
 
+@login_required()
 @permission_required('escola.can_delete_turma')
 def delete_turma(request, pk):
     # TODO: Add confirmation message.

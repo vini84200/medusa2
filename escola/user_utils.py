@@ -1,12 +1,12 @@
 """Mantem funções para criar usuarios, e seus grupos padrões."""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 23:00.
+#  Last Modified 14/04/19 16:12.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 
 from django.contrib.auth.models import User, Group
 
-from escola.models import Profile, Aluno, Professor
+from escola.models import Profile, Aluno, Professor, Turma
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,16 @@ def get_admin_group() -> Group:
     return g
 
 
-def create_aluno_user(username, senha, turma, nome):
+def create_aluno_user(username, senha, turma: Turma, nome, *args, **kwargs):
+    """
+    Cria um usuario como aluno
+    :param username: Nome de usuario
+    :param senha: senha
+    :param turma: Turma do aluno
+    :param nome: Nome completo do aluno
+    :keyword n_chamda: Numero da chmada do aluno.
+    :return:
+    """
     u = create_user(username, senha)
     p = u.profile_escola
     p.is_aluno = True
@@ -79,6 +88,8 @@ def create_aluno_user(username, senha, turma, nome):
     a.user = u
     a.turma = turma
     a.nome = nome
+    if kwargs.get('n_chamda'):
+        a.chamada = kwargs.get('n_chamda')
     a.save()
     u.groups.add(get_all_alunos_group())
     u.groups.add(get_turma_alunos_group(turma.pk))

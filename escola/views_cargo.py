@@ -1,8 +1,8 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 17/04/19 22:06.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
-from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -12,6 +12,7 @@ from escola.models import Turma, CargoTurma
 from escola.utils import dar_permissao_user
 
 
+@login_required()
 @permission_required('escola.can_add_cargo')
 def add_cargo(request, turma_pk):
     if request.method == 'POST':
@@ -56,6 +57,7 @@ def list_cargos(request, pk_turma):
     return render(request, 'escola/cargos/listCargos.html', context={'cargos': cargos, 'turma': turma})
 
 
+@login_required()
 @permission_required('escola.can_edit_cargo')
 def edit_cargo(request, pk):
     cargo = get_object_or_404(CargoTurma, pk=pk)
@@ -92,6 +94,7 @@ def edit_cargo(request, pk):
     return render(request, 'escola/cargos/formCargos.html', context)
 
 
+@login_required()
 @permission_required('escola.can_delete_cargo')
 def delete_cargo(request, pk):
     a = get_object_or_404(CargoTurma, pk=pk)

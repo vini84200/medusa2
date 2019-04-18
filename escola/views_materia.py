@@ -1,7 +1,7 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 17/04/19 22:10.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
-
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
@@ -15,6 +15,7 @@ from escola.models import Turma, MateriaDaTurma
 from escola.utils import dar_permissao_perm_a_user_of_level
 
 
+@login_required()
 @permission_required_obj('escola.can_add_materia', (Turma, 'pk', 'turma_pk'))
 def add_materia(request, turma_pk):
     # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
@@ -46,6 +47,7 @@ def list_materias(request, turma_pk):
     return render(request, 'escola/materia/listMaterias.html', context={'materias': materias, 'turma': turma})
 
 
+@login_required()
 @permission_required_obj('escola.can_edit_materia', (MateriaDaTurma, 'pk', 'materia_pk'))
 def edit_materia(request, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
@@ -68,6 +70,7 @@ def edit_materia(request, materia_pk):
     return render(request, 'escola/materia/formMateria.html', context=context)
 
 
+@login_required()
 @permission_required_obj('escola.can_delete_materia', (MateriaDaTurma, 'pk', 'materia_pk'))
 def delete_materia(request, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)

@@ -13,6 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+#  Developed by Vinicius José Fritzen
+#  Last Modified 16/04/19 21:42.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 from django.views.defaults import server_error, page_not_found
 from django.contrib import admin
 from django.http import HttpResponseServerError
@@ -27,6 +31,7 @@ urlpatterns = [
     path('', include('escola.urls')),
     path('', include('django_prometheus.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('', include('pwa.urls')),
 
 ]
 if settings.DEBUG:

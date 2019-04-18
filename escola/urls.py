@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 17:01.
+#  Last Modified 16/04/19 22:10.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.urls import path, include
@@ -114,6 +114,11 @@ urlpatterns += \
     [
         path('self/materias', escola.views_professor.MateriaProfessorListView.as_view(), name='materias_professor'), # TODO: 13/04/2019 por wwwvi: Alterar name, nomeclatura esta errada
         path('self/conteudos', escola.views_conteudo.MeusConteudosListView.as_view(), name='conteudos-professor'),
+    ]
+
+urlpatterns += \
+    [
+        path('base_layout', escola.views.base_layout, name='base_layout'),
     ]
 
 #Temporarias

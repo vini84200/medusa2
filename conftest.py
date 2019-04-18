@@ -1,17 +1,24 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 17:10.
+#  Last Modified 17/04/19 14:28.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import pytest
 from decouple import config
 from django.contrib.auth.models import User
+from django.utils.datetime_safe import datetime
+from faker import Faker
+from faker.providers import internet, misc
 from mixer.backend.django import mixer
-from selenium.webdriver.firefox import webdriver
 from selenium.webdriver.firefox.options import Options
 
+from escola import user_utils
+from escola.models import Turma, Horario, MateriaDaTurma, Aluno, CargoTurma
 from escola.tests.selenium_test_case import CustomWebDriver
-from django.contrib.auth.hashers import make_password
+from escola.utils import dar_permissao_user
 
+fake = Faker('pt_BR')
+fake.add_provider(internet)
+fake.add_provider(misc)
 
 @pytest.fixture(scope='module')
 def browser(request):
@@ -36,19 +43,14 @@ senha = '123456'
 @pytest.fixture()
 def pedrinho(db):
     """Add a test user to the database."""
-    user_ = mixer.blend(User,
-        name='Pedrinho',
-        username=username,
-        password=make_password(senha),
-        is_staff = True,
-        )
+    user_ = user_utils.create_admin_user(username, senha)
     return user_, username, senha
 
 
 @pytest.fixture()
 def authenticated_pedrinho_browser(browser, client, live_server, pedrinho):
     """Return a browser instance with logged-in user session."""
-    client.login(email=TESTEMAIL, password=TESTPASSWORD)
+    client.login(username=username, password=senha)
     cookie = client.cookies['sessionid']
 
     browser.get(live_server.url)
@@ -56,3 +58,4 @@ def authenticated_pedrinho_browser(browser, client, live_server, pedrinho):
     browser.refresh()
 
     return browser
+

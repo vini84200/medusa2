@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 17/04/19 22:10.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.contrib.auth.decorators import login_required
@@ -13,6 +13,7 @@ from escola.models import Turma, Tarefa, TarefaComentario
 from escola.utils import dar_permissao_perm_a_user_of_level
 
 
+@login_required()
 @permission_required_obj('escola.can_add_tarefa', (Turma, 'pk', 'turma_pk'))
 def add_tarefa(request, turma_pk):
     # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
@@ -45,7 +46,7 @@ def add_tarefa(request, turma_pk):
     return render(request, 'escola/tarefas/formTarefa.html', context=context)
 
 
-@login_required
+@login_required()
 def list_tarefa(request, turma_pk):
     tarefas = Tarefa.objects.filter(turma__pk=turma_pk)
     if request.user.is_authenticated and request.user.profile_escola.is_aluno:
@@ -58,6 +59,7 @@ def list_tarefa(request, turma_pk):
         return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas})
 
 
+@login_required()
 @permission_required_obj('escola.can_edit_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
 def edit_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
@@ -83,6 +85,7 @@ def edit_tarefa(request, tarefa_pk):
     return render(request, 'escola/tarefas/formTarefa.html', context=context)
 
 
+@login_required()
 @permission_required_obj('escola.can_delete_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
 def delete_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
@@ -90,7 +93,7 @@ def delete_tarefa(request, tarefa_pk):
     return HttpResponseRedirect(reverse('escola:index'))
 
 
-@login_required
+@login_required()
 def concluir_tarefa(request, tarefa_pk):
     tarefa: Tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     conclusao = tarefa.get_completacao(request.user.aluno)
@@ -99,7 +102,7 @@ def concluir_tarefa(request, tarefa_pk):
     return HttpResponseRedirect(reverse('escola:index'))
 
 
-@login_required
+@login_required()
 def detalhes_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     turma = tarefa.turma
