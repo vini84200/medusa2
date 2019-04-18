@@ -64,13 +64,14 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
 
     class Meta:
         """Meta das Models"""
-        permissions = (
-            ('can_populate_turma', "Pode popular turmas"                ),
-            ('can_add_aluno'     , "Pode adicionar um aluno a turma."   ),
-            ('mudar_horario'     , "Pode editar o horario."             ),
-            ('can_add_materia'   , 'Pode adicionar uma materia a turma.'),
-            ('can_add_tarefa'    , "Pode adicionar uma tarefa."         ),
-        )
+        permissions = (('can_add_turma', "Pode criar turmas"),
+                       ('can_edit_turma', "Pode editar turmas"),
+                       ('can_delete_turma', "Pode deletar turmas"),
+                       ('can_populate_turma', "Pode popular turmas"),
+                       ('can_add_aluno', "Pode adicionar um aluno a turma."),
+                       ('editar_horario', "Pode editar o horario."),
+                       ('can_add_materia', 'Pode adicionar uma materia a turma.'),
+                       ('can_add_tarefa', "Pode adicionar uma tarefa."))
 
     def get_or_create_lider_group(self):
         """Retorna o grupo de lider, que deve possuir apenas um usuario."""
