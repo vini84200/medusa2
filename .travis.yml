@@ -27,6 +27,7 @@ install:
   - export MOZ_HEADLESS=1
   - pip install -r requirements.txt
   - pip install pytest-cov
+  - python manage.py makemigrations
 
   # - cat "class Mixin(object):pass" >> .vEnv/Lib/site-packages/django_prometheus/models.py
 script:
