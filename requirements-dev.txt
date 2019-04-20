@@ -22,3 +22,6 @@ django-taggit-labels==0.6.0
 django-taggit-serializer==0.1.7
 django-mptt==0.9.1
 django-crispy-forms==1.7.2
+selenium
+django-debug-permissions==1.0.0
+django-progressive-web-app==0.1.1

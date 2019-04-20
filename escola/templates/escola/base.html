@@ -1,14 +1,26 @@
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 20/04/19 11:01.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
 <!DOCTYPE html>
 <html>
 {% load static %}
+{% load pwa %}
 <head>
   <!-- Title -->
   <title>
     {% block title %}Sistema Escola{% endblock %}
   </title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <!-- Favicon -->
-
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'escola/icons/apple-touch-icon.png'%}">
+  <link rel="shortcut icon" href="{% static 'escola/icons/favicon.ico'%}" />
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'escola/icons//favicon-32x32.png'%}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'escola/icons//favicon-16x16.png'%}">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#343a40">
 
   <!-- Arquivos CSS -->
   <!--Botstrap-->
@@ -21,6 +33,9 @@
 
   <!-- Bloco de Estilos -->
   {% block styles %}{% endblock %}
+  <!--Progresive Web App-->
+  {% progressive_web_app_meta %}
+
 </head>
 
 <body>
@@ -101,15 +116,15 @@
 
 <!-- Scripts.js -->
 <!--JQuerry-->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+<script async src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
 <!--Bootstrap-->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+<script async src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 <!--Popper.js-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
 <!--Bootstrap Modal-->

@@ -1,4 +1,8 @@
 """Exibe conteudos de uma materia."""
+#  Developed by Vinicius José Fritzen
+#  Last Modified 12/04/19 22:06.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -12,7 +16,13 @@ from .decorators import *
 
 
 class ConteudoCreate(CreateView):
-    """View para criar um Conteudo."""
+    """
+    View para criar um Conteudo.
+
+    Dispatch Args:
+
+    pk_parent : int - opicional
+    """
     model = Conteudo
     form_class = ConteudoForm
 
@@ -70,7 +80,13 @@ class ConteudoDetail(DetailView):
 
 
 class LinkConteudoCreateView(CreateView):
-    """View para professores adicionarem links em um conteudo."""
+    """
+    View para professores adicionarem links em um conteudo.
+
+    Dispatch args;
+    pk : int - obrigatorio - PK do conteudo em que dee ser criado
+    cat : int - opicional - PK da categoria inicial. Se nao passado, o campo é iniciado em branco;
+    """
     model = LinkConteudo
     fields = ['titulo', 'link', 'categoria', 'descricao', 'tags']
     success_url = reverse_lazy('escola:conteudos-professor')

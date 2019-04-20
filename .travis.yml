@@ -1,7 +1,14 @@
+dist: xenial
 language: python
 python:
   - '3.6'
   - '3.7-dev'
+  - '3.7'
+  - '3.8-dev'
+env:
+  MOZ_HEADLESS=1
+addons:
+  firefox: latest
 services:
   - postgresql
   - redis-server
@@ -12,8 +19,15 @@ before_install:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 install:
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+  - mkdir geckodriver
+  - tar -xzf geckodriver-v0.24.0-linux64.tar.gz -C geckodriver
+  - export PATH=$PATH:$PWD/geckodriver
+  - geckodriver --version
+  - export MOZ_HEADLESS=1
   - pip install -r requirements.txt
   - pip install pytest-cov
+
   # - cat "class Mixin(object):pass" >> .vEnv/Lib/site-packages/django_prometheus/models.py
 script:
   - pytest --cov-report xml

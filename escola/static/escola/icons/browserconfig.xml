@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 20/04/19 10:17.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square150x150logo src="/mstile-150x150.png"/>
+            <TileColor>#343a40</TileColor>
+        </tile>
+    </msapplication>
+</browserconfig>

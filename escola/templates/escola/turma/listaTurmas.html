@@ -1,9 +1,15 @@
 {% extends "../base.html" %}
 
-
+{%block title%}Lista de Turmas{%endblock%}
 {%block conteudo%}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 20/04/19 08:56.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
 <div class="container">
-<h1>Listagem de turmas</h1>
+<h1>Lista de Turmas</h1>
 {%if perms.escola.can_add_turma%}
     <a href="{% url 'escola:add-turma' %}" class="btn btn-primary">Adicionar Turma</a>
 {%endif%}
@@ -29,9 +35,9 @@
     {%endif%}
 </tr>
 {%for turma in turmas%}
-<tr>
-    <td>{{turma.numero}}</td>
-    <td>{{turma.ano}}</td>
+<tr class="turma_{{turma.numero}}">
+    <td class="turma_n">{{turma.numero}}</td>
+    <td class="turma_id">{{turma.ano}}</td>
     <div class="btn-group">
     <td><a href="{% url 'escola:list-cargos' turma.pk %}" class="btn btn-secondary">Cargos</a></td>
     <td><a href="{% url 'escola:list-alunos' turma.pk %}" class="btn btn-secondary">Alunos</a></td>

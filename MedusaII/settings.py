@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+#  Developed by Vinicius José Fritzen
+#  Last Modified 20/04/19 10:58.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 import logging.config
 import os
 from pathlib import Path
@@ -53,6 +57,8 @@ INSTALLED_APPS = [
     'taggit_serializer',
     'mptt',
     'crispy_forms',
+    'debug_permissions',
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -143,6 +149,25 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Login info
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+SECURE_SSL_REDIRECT = config('HTTPS_OKAY', 0)
+
+# Progresive Web App Settings:
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'escola/static/escola', 'service-worker.js')
+PWA_APP_NAME = 'Medusa II'
+PWA_APP_DESCRIPTION = "Site Escolar, criado por Vinicius J F"
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_START_URL = ''
+PWA_APP_THEME_COLOR = '#343a40'
+PWA_APP_ICONS = [
+    {'src': '/static/escola/icons/icon-v1-hr-128.png', 'sizes': '128x128'},
+    {'src': '/static/escola/icons/icon-v1-hr-144.png', 'sizes': '144x144'},
+    {'src': '/static/escola/icons/icon-v1-hr-152.png', 'sizes': '152x152'},
+    {'src': '/static/escola/icons/icon-v1-hr-192.png', 'sizes': '192x192'},
+    {'src': '/static/escola/icons/icon-v1-hr-512.png', 'sizes': '512x512'},
+]
+
 
 
 def get_release():
