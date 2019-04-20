@@ -4,7 +4,7 @@
 {%block conteudo%}
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 13/04/19 17:30.
+  ~ Last Modified 20/04/19 08:56.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
@@ -35,9 +35,9 @@
     {%endif%}
 </tr>
 {%for turma in turmas%}
-<tr>
-    <td>{{turma.numero}}</td>
-    <td>{{turma.ano}}</td>
+<tr class="turma_{{turma.numero}}">
+    <td class="turma_n">{{turma.numero}}</td>
+    <td class="turma_id">{{turma.ano}}</td>
     <div class="btn-group">
     <td><a href="{% url 'escola:list-cargos' turma.pk %}" class="btn btn-secondary">Cargos</a></td>
     <td><a href="{% url 'escola:list-alunos' turma.pk %}" class="btn btn-secondary">Alunos</a></td>

@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 17:01.
+#  Last Modified 20/04/19 09:00.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import datetime
@@ -89,6 +89,11 @@ def handler500(request, template_name="500.html"):
     response = render_to_response('500.html', {'request': request})
     response.status_code = 500
     return response
+
+
+def base_layout(request):
+    template = 'escola/base.html'
+    return render(request, template)
 
 
 # class UserListView(ListView):
