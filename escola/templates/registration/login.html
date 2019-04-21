@@ -1,6 +1,6 @@
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 20/04/19 08:58.
+  ~ Last Modified 21/04/19 16:00.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
@@ -10,6 +10,18 @@
 {% load pwa %}
 <html lang="pt-br">
 <head>
+  {% if GA_TRACKING_ID %}
+    <script>alert("Ativado GA")</script>
+      <!-- Etiqueta global do site (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_TRACKING_ID}}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '{{GA_TRACKING_ID}}');
+    </script>
+  {%endif%}
   <meta charset="UTF-8">
   <title>Login</title>
    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -45,6 +57,27 @@
   </form>
   <p><a href="{% url 'password_reset' %}">Esqueceu sua senha?</a></p>
 </div>
+<script>
+  // Get a reference to the form element, assuming
+// it contains the ID attribute "signup-form".
+var form = document.getElementsByTagName("form")[0]
+
+// Add a listener for the "submit" event.
+form.addEventListener('submit', function(event) {
+
+  // Prevent the browser from submitting the form
+  // and thus unloading the current page.
+  event.preventDefault();
+
+  // Send the event to Google Analytics and
+  // resubmit the form once the hit is done.
+  gtag('event', 'login_form_complete', {
+    'event_callback': function() {
+      form.submit();
+    }
+  });
+});
+</script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
           integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
           crossorigin="anonymous"></script>
