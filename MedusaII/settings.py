@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 #  Developed by Vinicius José Fritzen
-#  Last Modified 20/04/19 10:58.
+#  Last Modified 21/04/19 16:00.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import logging.config
@@ -91,6 +91,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'escola.context_processors.google_analytics',
             ],
         },
     },
@@ -158,7 +159,8 @@ PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'escola/static/escola', 'servic
 PWA_APP_NAME = 'Medusa II'
 PWA_APP_DESCRIPTION = "Site Escolar, criado por Vinicius J F"
 PWA_APP_DISPLAY = 'standalone'
-PWA_APP_START_URL = ''
+PWA_APP_START_URL = '/'
+PWA_APP_SCOPE = '/'
 PWA_APP_THEME_COLOR = '#343a40'
 PWA_APP_ICONS = [
     {'src': '/static/escola/icons/icon-v1-hr-128.png', 'sizes': '128x128'},
@@ -168,6 +170,9 @@ PWA_APP_ICONS = [
     {'src': '/static/escola/icons/icon-v1-hr-512.png', 'sizes': '512x512'},
 ]
 
+# Google Analytics
+
+GA_TRACKING_ID = config("GA_TRACKING_ID", None)
 
 
 def get_release():

@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 16:13.
+#  Last Modified 21/04/19 16:00.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from .settings import *
@@ -19,3 +19,5 @@ DATABASES = {
 # }
 
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
+
+GA_TRACKING_ID = None
