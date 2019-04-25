@@ -167,3 +167,4 @@ def AssertAlunoInTheList(nome, num, browser):
     tc.assertIn(num, [n.text for n in alunos_n])
     alunos_nome = browser.find_elements_by_class_name('aluno_nome')
     tc.assertIn(nome, [row.text for row in alunos_nome])
+ 
