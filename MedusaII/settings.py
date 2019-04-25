@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 13:55.
+#  Last Modified 25/04/19 16:34.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import logging.config
@@ -80,6 +80,8 @@ AUTHENTICATION_BACKENDS = (
 )
 
 ROLEPERMISSIONS_MODULE = 'escola.roles'
+
+ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True
 
 ROOT_URLCONF = 'MedusaII.urls'
 

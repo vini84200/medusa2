@@ -1,6 +1,6 @@
 """Teste de unidade de todas as Views, seja ela de qualquer arquivo"""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 08:36.
+#  Last Modified 25/04/19 16:42.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import warnings
@@ -1402,7 +1402,7 @@ class TestAddAluno(TestCase):
         c.force_login(prof.user)
         turma = create_turma()
         cargo = mixer.blend(CargoTurma, turma=turma, ocupante=prof.user, cod_especial=5, ativo=True)
-        assign_perm('escola.can_add_aluno', prof.user, turma)  # FIXME ISSO NÃO DEVE ACONTECER AQUI
+        dar_permissao_user(prof.user, cargo)
         turma__pk = turma.pk
         response = c.get(reverse('escola:add-aluno', args=[turma__pk, ]))
         self.assertEqual(200, response.status_code)

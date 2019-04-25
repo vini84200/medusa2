@@ -1,19 +1,19 @@
 {% extends "../base.html" %}
-
+{% load permission_tags %}
 {%block title%}Lista de Turmas{%endblock%}
 {%block conteudo%}
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 20/04/19 08:56.
+  ~ Last Modified 25/04/19 14:33.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
 <div class="container">
 <h1>Lista de Turmas</h1>
-{%if perms.escola.can_add_turma%}
+{%if  user|can:'add_turma'%}
     <a href="{% url 'escola:add-turma' %}" class="btn btn-primary">Adicionar Turma</a>
 {%endif%}
-{%if perms.escola.can_add_turma%}
+{%if user|can:'populate_alunos'%}
     <a href="{% url 'escola:populate-alunos' %}" class="btn btn-primary">Adicionar Lista de Alunos</a>
 {%endif%}
 <br><br>
