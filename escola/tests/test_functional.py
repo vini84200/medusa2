@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 22/04/19 18:34.
+#  Last Modified 22/04/19 19:27.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import time
 
@@ -167,4 +167,4 @@ def AssertAlunoInTheList(nome, num, browser):
     tc.assertIn(num, [n.text for n in alunos_n])
     alunos_nome = browser.find_elements_by_class_name('aluno_nome')
     tc.assertIn(nome, [row.text for row in alunos_nome])
-                                                                              
+ 
