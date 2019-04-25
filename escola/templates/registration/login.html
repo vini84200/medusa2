@@ -1,134 +1,93 @@
-""" Codec for the Punicode encoding, as specified in RFC 3492
-
-Written by Martin v. Löwis.
-"""
-
-import codecs
-
-##################### Encoding #####################################
-
-def segregate(str):
-    """3.1 Basic code point segregation"""
-    base = bytearray()
-    extended = set()
-    for c in str:
-        if ord(c) < 128:
-            base.append(ord(c))
-        else:
-            extended.add(c)
-    extended = sorted(extended)
-    return bytes(base), extended
-
-def selective_len(str, max):
-    """Return the length of str, considering only characters below max."""
-    res = 0
-    for c in str:
-        if ord(c) < max:
-            res += 1
-    return res
-
-def selective_find(str, char, index, pos):
-    """Return a pair (index, pos), indicating the next occurrence of
-    char in str. index is the position of the character considering
-    only ordinals up to and including char, and pos is the position in
-    the full string. index/pos is the starting position in the full
-    string."""
-
-    l = len(str)
-    while 1:
-        pos += 1
-        if pos == l:
-            return (-1, -1)
-        c = str[pos]
-        if c == char:
-            return index+1, pos
-        elif c < char:
-            index += 1
-
-def insertion_unsort(str, extended):
-    """3.2 Insertion unsort coding"""
-    oldchar = 0x80
-    result = []
-    oldindex = -1
-    for c in extended:
-        index = pos = -1
-        char = ord(c)
-        curlen = selective_len(str, char)
-        delta = (curlen+1) * (char - oldchar)
-        while 1:
-            index,pos = selective_find(str,c,index,pos)
-            if index == -1:
-                break
-            delta += index - oldindex
-            result.append(delta-1)
-            oldindex = index
-            delta = 0
-        oldchar = char
-
-    return result
-
-def T(j, bias):
-    # Punycode parameters: tmin = 1, tmax = 26, base = 36
-    res = 36 * (j + 1) - bias
-    if res < 1: return 1
-    if res > 26: return 26
-    return res
-
-digits = b"abcdefghijklmnopqrstuvwxyz0123456789"
-def generate_generalized_integer(N, bias):
-    """3.3 Generalized variable-length integers"""
-    result = bytearray()
-    j = 0
-    while 1:
-        t = T(j, bias)
-        if N < t:
-            result.append(digits[N])
-            return bytes(result)
-        result.append(digits[t + ((N - t) % (36 - t))])
-        N = (N - t) // (36 - t)
-        j += 1
-
-def adapt(delta, first, numchars):
-    if first:
-        delta //= 700
-    else:
-        delta //= 2
-    delta += delta // numchars
-    # ((base - tmin) * tmax) // 2 == 455
-    divisions = 0
-    while delta > 455:
-        delta = delta // 35 # base - tmin
-        divisions += 36
-    bias = divisions + (36 * delta // (delta + 38))
-    return bias
-
-
-def generate_integers(baselen, deltas):
-    """3.4 Bias adaptation"""
-    # Punycode parameters: initial bias = 72, damp = 700, skew = 38
-    result = bytearray()
-    bias = 72
-    for points, delta in enumerate(deltas):
-        s = generate_generalized_integer(delta, bias)
-        result.extend(s)
-        bias = adapt(delta, points==0, baselen+points+1)
-    return bytes(result)
-
-def punycode_encode(text):
-    base, extended = segregate(text)
-    deltas = insertion_unsort(text, extended)
-    extended = generate_integers(len(base), deltas)
-    if base:
-        return base + b"-" + extended
-    return extended
-
-##################### Decoding #####################################
-
-def decode_generalized_number(extended, extpos, bias, errors):
-    """3.3 Generalized <!--
+<!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 22/04/19 18:34.
+  ~ Last Modified 24/04/19 21:48.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
-var
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load static%}
+{% load pwa %}
+<html lang="pt-br">
+<head>
+  {% if GA_TRACKING_ID %}
+    <script>alert("Ativado GA")</script>
+      <!-- Etiqueta global do site (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{GA_TRACKING_ID}}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', '{{GA_TRACKING_ID}}');
+    </script>
+  {%endif%}
+  <meta charset="UTF-8">
+  <title>Login</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Scripts.js -->
+  <!--JQuerry-->
+
+
+  <!-- Arquivos CSS -->
+  <!--Botstrap-->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!--Fontawesome - go get icons in https://fontawesome.com -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+  <!--Progresive Web App-->
+  {% progressive_web_app_meta %}
+
+</head>
+<body class="text-center" style="display: -ms-flexbox;  display: flex;  -ms-flex-align: center;
+  align-items: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #f5f5f5;">
+<!-- templates/registration/login.html -->
+<div style="width: 100%;  max-width: 330px;  padding: 15px;  margin: auto;">
+  <h2>Medusa II</h2>
+  <form method="post">
+    {% csrf_token %}
+    <!--{{ form.as_p }}-->
+    {{form|crispy}}
+    <button type="submit" class="btn btn-lg btn-primary btn-block">Entrar</button>
+    <!--TODO Procurar tentar e instalar as Floating Labels https://getbootstrap.com/docs/4.3/examples/floating-labels/-->
+  </form>
+  <p><a href="{% url 'password_reset' %}">Esqueceu sua senha?</a></p>
+</div>
+<script>
+  // Get a reference to the form element, assuming
+// it contains the ID attribute "signup-form".
+var form = document.getElementsByTagName("form")[0]
+
+// Add a listener for the "submit" event.
+form.addEventListener('submit', function(event) {
+
+  // Prevent the browser from submitting the form
+  // and thus unloading the current page.
+  event.preventDefault();
+
+  // Send the event to Google Analytics and
+  // resubmit the form once the hit is done.
+  gtag('event', 'login_form_complete', {
+    'event_callback': function() {
+      form.submit();
+    }
+  });
+});
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+          integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+          crossorigin="anonymous"></script>
+  <!--Bootstrap-->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"></script>
+  <!--Popper.js-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"></script>
+</body>
+</html>
