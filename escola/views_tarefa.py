@@ -1,19 +1,17 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 25/04/19 13:44.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from guardian.decorators import permission_required as permission_required_obj
 
 from escola.forms import TarefaForm, ComentarioTarefaForm
 from escola.models import Turma, Tarefa, TarefaComentario
-from escola.utils import dar_permissao_perm_a_user_of_level
 
 
-@permission_required_obj('escola.can_add_tarefa', (Turma, 'pk', 'turma_pk'))
+# FIXME: 25/04/2019 por wwwvi: Pedir permissão
 def add_tarefa(request, turma_pk):
     # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
     turma = get_object_or_404(Turma, pk=turma_pk)
@@ -32,8 +30,7 @@ def add_tarefa(request, turma_pk):
             seg.adicionar_seguidor(request.user)
             seg.adicionar_seguidor(tarefa.materia.professor.user)
 
-            dar_permissao_perm_a_user_of_level('can_edit_tarefa', 1, turma, tarefa)
-            dar_permissao_perm_a_user_of_level('can_delete_tarefa', 2, turma, tarefa)
+            # TODO: 25/04/2019 por wwwvi: Dar permissão para o criador
 
             return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
@@ -58,7 +55,7 @@ def list_tarefa(request, turma_pk):
         return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas})
 
 
-@permission_required_obj('escola.can_edit_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
+# FIXME: 25/04/2019 por wwwvi: Pedir Permissão
 def edit_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     turma = tarefa.turma
@@ -83,7 +80,7 @@ def edit_tarefa(request, tarefa_pk):
     return render(request, 'escola/tarefas/formTarefa.html', context=context)
 
 
-@permission_required_obj('escola.can_delete_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
+# TODO: 25/04/2019 por wwwvi: Adicionar permissões
 def delete_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     tarefa.delete()

@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 #  Developed by Vinicius José Fritzen
-#  Last Modified 21/04/19 16:00.
+#  Last Modified 25/04/19 13:55.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import logging.config
@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
-    'guardian',
     'rest_framework',
     'rest_framework.authtoken',
     'taggit',
@@ -59,6 +58,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'debug_permissions',
     'pwa',
+    'rules',
+    'rolepermissions',
 ]
 
 MIDDLEWARE = [
@@ -74,9 +75,11 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
+    'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',  # default
-    'guardian.backends.ObjectPermissionBackend',
 )
+
+ROLEPERMISSIONS_MODULE = 'escola.roles'
 
 ROOT_URLCONF = 'MedusaII.urls'
 

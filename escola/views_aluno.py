@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 25/04/19 14:26.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import datetime
@@ -9,12 +9,10 @@ from crispy_forms.layout import Submit
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
-from django.core.mail import mail_managers
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from guardian.decorators import permission_required as permission_required_obj
 
 from escola.decorators import is_user_escola
 from escola.forms import AlunoCreateFormOutLabel, AlunoCreateForm
@@ -76,7 +74,7 @@ def generate_aluno(form):
     return senha, username
 
 
-@permission_required_obj('escola.can_add_aluno', (Turma, 'pk', 'turma_pk'))
+ # FIXME Adicionar rrequisito de Permissão
 def add_aluno(request, turma_pk):
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms

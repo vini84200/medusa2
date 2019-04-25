@@ -1,6 +1,6 @@
 """Mantem funções para criar usuarios, e seus grupos padrões."""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 23:00.
+#  Last Modified 25/04/19 13:24.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 
@@ -66,8 +66,12 @@ def get_admin_group() -> Group:
     """
     g, c = Group.objects.get_or_create(name="Admin")
     if c:
-        logger.warning("Por algum motivo o Grupo admin não havia sido criado.")
+        give_admin_group_permissions()
     return g
+
+
+def give_admin_group_permissions():
+    pass
 
 
 def create_aluno_user(username, senha, turma, nome):
@@ -85,8 +89,14 @@ def create_aluno_user(username, senha, turma, nome):
     return u
 
 
+def alunos_group_assert_permission():
+    pass
+
+
 def get_all_alunos_group():
     g, created = Group.objects.get_or_create(name='Todos_Alunos')
+    if created:
+        alunos_group_assert_permission()
     return g
 
 

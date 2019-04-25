@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 25/04/19 14:26.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from crispy_forms.helper import FormHelper
@@ -8,11 +8,10 @@ from django.forms import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
-from guardian.decorators import permission_required as permission_required_obj
 
 from escola.decorators import is_user_escola
 from escola.forms import PeriodoForm
-from escola.models import Turma, MateriaDaTurma, Horario, Turno, TurnoAula
+from escola.models import Turma, MateriaDaTurma, Horario, Turno
 
 
 @is_user_escola
@@ -29,7 +28,7 @@ class PeriodoFormSetHelper(FormHelper):
 
 
 @is_user_escola
-@permission_required_obj('escola.editar_horario', (Turma, 'pk', 'turma_pk'))
+# FIXME: 25/04/2019 por wwwvi: Adicionar requisito de permissão
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
 
     horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)

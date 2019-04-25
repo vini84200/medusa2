@@ -1,16 +1,11 @@
-from django.test.client import Client
+#  Developed by Vinicius José Fritzen
+#  Last Modified 25/04/19 14:26.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
 import pytest
-from django.utils.datetime_safe import datetime
-from guardian.shortcuts import assign_perm
-from escola.models import *
-from django.contrib.auth.models import User
-from mixer.backend.django import mixer
-from django.urls import reverse
 from django.test.testcases import TestCase
 
-from helpers.utils import create_admin, create_aluno, create_professor, create_turma, create_cargo, cargo_muda_ocupante
-
-from escola.utils import dar_permissao_user
+from helpers.utils import create_aluno, create_turma, create_cargo, cargo_muda_ocupante
 
 pytestmark = pytest.mark.django_db
 
