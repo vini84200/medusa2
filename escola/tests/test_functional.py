@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 22/04/19 19:27.
+#  Last Modified 24/04/19 21:37.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import time
 
@@ -13,7 +13,6 @@ from escola.tests.selenium_test_case import CustomWebDriver
 TIME_LOAD = 2
 
 
-@pytest.mark.xfail(reason="Not finished")
 @pytest.mark.live_server_no_flush
 def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alunos_and_simple_add(live_server, browser,
                                                                                                    pedrinho):
