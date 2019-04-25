@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 24/04/19 21:37.
+#  Last Modified 24/04/19 23:48.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import time
 
@@ -7,8 +7,6 @@ import pytest
 from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-
-from escola.tests.selenium_test_case import CustomWebDriver
 
 TIME_LOAD = 2
 
@@ -36,6 +34,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     senha_input.send_keys(pedrinho[2])
     button = browser.find_element_by_tag_name('button')
     button.click()
+    time.sleep(TIME_LOAD)
     # Ele é redirecionado a pagina inicial do site,
     # Pedro Verifica que a pagina possui o titulo de 'Pagina Inicial'
     AssertHeader('Página Inicial', browser)

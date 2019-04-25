@@ -1,6 +1,6 @@
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 24/04/19 21:48.
+  ~ Last Modified 24/04/19 21:52.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
@@ -57,6 +57,7 @@
   </form>
   <p><a href="{% url 'password_reset' %}">Esqueceu sua senha?</a></p>
 </div>
+{% if GA_TRACKING_ID %}
 <script>
   // Get a reference to the form element, assuming
 // it contains the ID attribute "signup-form".
@@ -78,6 +79,7 @@ form.addEventListener('submit', function(event) {
   });
 });
 </script>
+{%endif%}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
           integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
           crossorigin="anonymous"></script>
