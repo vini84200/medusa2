@@ -1,7 +1,7 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 17:02.
+#  Last Modified 25/04/19 18:06.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
-from rolepermissions.checkers import has_role
+from rolepermissions.checkers import has_role, has_permission
 from rolepermissions.permissions import register_object_checker
 
 from escola.models import MateriaDaTurma
@@ -28,13 +28,29 @@ def create_tarefa(role, user, materia: MateriaDaTurma):
 
 @register_object_checker()
 def add_aluno(role, user, turma):
+    """Verifica se pode adicionar aluno na turma"""
     if user.is_superuser:
         return True
 
     if user == turma.regente:
         return True
 
-    if has_role(user, 'admin'):
+    if has_permission(user, 'add_aluno_g'):
+        return True
+
+    return False
+
+
+@register_object_checker()
+def edit_horario(role, user, turma):
+    """Verifica se pode mudar o horario da turma"""
+    if user.is_superuser:
+        return True
+
+    if has_permission(user, 'edit_horario_g'):
+        return True
+
+    if user == turma.regente or user == turma.lider or user == turma.vicelider:
         return True
 
     return False

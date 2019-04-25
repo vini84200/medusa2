@@ -1,13 +1,15 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 14:26.
+#  Last Modified 25/04/19 18:00.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+from django.contrib.auth.views import redirect_to_login
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from rolepermissions.checkers import has_object_permission
 
 from escola.decorators import is_user_escola
 from escola.forms import PeriodoForm
@@ -30,8 +32,10 @@ class PeriodoFormSetHelper(FormHelper):
 @is_user_escola
 # FIXME: 25/04/2019 por wwwvi: Adicionar requisito de permissão
 def alterar_horario(request, turno_cod, dia_cod, turma_pk):
-
-    horario: Horario = get_object_or_404(Horario, turma_id=turma_pk)
+    turma = get_object_or_404(Turma, pk=turma_pk)
+    if not has_object_permission('edit_horario', request.user, turma):
+        return redirect_to_login(request.get_full_path())
+    horario: Horario = get_object_or_404(Horario, turma=turma)
 
     PeriodoFormSet = formset_factory(PeriodoForm, extra=5, max_num=5)
 

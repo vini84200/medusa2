@@ -1,7 +1,8 @@
 {%load dict_key %}
+{% load permission_tags %}
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 25/04/19 13:51.
+  ~ Last Modified 25/04/19 18:11.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
@@ -24,11 +25,13 @@
 
 
            {%dia_teste turno dia ta as verdade%}
+          {% can "edit_horario" turma as edit_hor%}
             {%if verdade%}
                 {%for p in range%}
                     {%get_p turno dia p ta%} <br />
                 {%endfor%}
-                {%if True%}
+
+                {%if edit_hor%}
           <!--FIXME Verificar as permissões na linha superior-->
                 <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">EDITAR</a>
                 {%endif%}
@@ -36,7 +39,7 @@
                 <br/><br/>
                 NADA
                 <br/><br/><br/>
-                {%if True%}
+                {%if edit_hor%}
           <!--FIXME Verificar as permissões na linha superior-->
                 <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">EDITAR</a>
                 {%endif%}

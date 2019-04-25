@@ -1,11 +1,15 @@
 {% extends "../base.html" %}
 
-{% load guardian_tags %}
 
 {% load crispy_forms_tags %}
 {% block conteudo %}
-{% get_obj_perms user for turma as "turma_perm" %}
 {# turnos , DIAS_DA_SEMANA , DIAS_DA_SEMANA_N, ta[dia][turno.cod]#}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 25/04/19 17:49.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
 <div class="container">
 <div class="table-responsive">
 <table class="table">
