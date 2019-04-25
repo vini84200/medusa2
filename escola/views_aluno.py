@@ -1,8 +1,9 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 17:02.
+#  Last Modified 25/04/19 17:47.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import datetime
+import logging
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -22,6 +23,7 @@ from escola.forms import AlunoCreateFormOutLabel, AlunoCreateForm
 from escola.models import Aluno, Turma
 from escola.utils import genarate_password, generate_username
 
+logger = logging.getLogger(__name__)
 
 class AlunosFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
@@ -82,6 +84,8 @@ def generate_aluno(form):
 def add_aluno(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
     if not has_object_permission('add_aluno', request.user, turma):
+        logger.debug(f"Usuario não utorizado, tem, o regente da turma é {turma.regente},"
+                     f" e o usuario entrando é {request.user}")
         return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
