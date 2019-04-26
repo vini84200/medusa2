@@ -1,6 +1,6 @@
 """Teste de unidade de todas as Views, seja ela de qualquer arquivo"""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 08:36.
+#  Last Modified 25/04/19 23:16.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import warnings
@@ -1402,7 +1402,8 @@ class TestAddAluno(TestCase):
         c.force_login(prof.user)
         turma = create_turma()
         cargo = mixer.blend(CargoTurma, turma=turma, ocupante=prof.user, cod_especial=5, ativo=True)
-        assign_perm('escola.can_add_aluno', prof.user, turma)  # FIXME ISSO NÃO DEVE ACONTECER AQUI
+        logger.info(f"Irá dar permissões ao usuario")
+        dar_permissao_user(prof.user, cargo)
         turma__pk = turma.pk
         response = c.get(reverse('escola:add-aluno', args=[turma__pk, ]))
         self.assertEqual(200, response.status_code)
@@ -1631,8 +1632,8 @@ class TestAddMateria(_TestFormViewEspecificoTurma, TestCase):
     aluno_e_professor = AssertRedirectsLogin()
     admin = Assert200()
 
-    aluno_lider = Assert200AndTemplate('escola/materia/formMateria.html')
-    aluno_vicelider = Assert200AndTemplate('escola/materia/formMateria.html')
+    aluno_lider = AssertRedirectsLogin()
+    aluno_vicelider = AssertRedirectsLogin()
     aluno_suplente = AssertRedirectsLogin()
     prof_regente = Assert200AndTemplate('escola/materia/formMateria.html')
 
@@ -1803,8 +1804,7 @@ class TestDeleteTarefa(_TestViewEspecificoModel, TestCase):
 class TestConcluirTarefa(TestCase):
     def test_permited(self):
         c = Client()
-        turma = create_turma()
-        tarefa = mixer.blend(Tarefa, turma=turma, materia=turma.materiadaturma_set.all()[0])
+        tarefa = mixer.blend(Tarefa)
         response = c.get(reverse('escola:concluir-tarefa', args=[tarefa.pk, ]))
         self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:concluir-tarefa', args=[1, ]))
 

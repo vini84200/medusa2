@@ -1,22 +1,22 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 25/04/19 23:11.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from guardian.decorators import permission_required as permission_required_obj
+from rolepermissions.checkers import has_object_permission
 
 from escola.forms import TarefaForm, ComentarioTarefaForm
 from escola.models import Turma, Tarefa, TarefaComentario
-from escola.utils import dar_permissao_perm_a_user_of_level
 
 
-@permission_required_obj('escola.can_add_tarefa', (Turma, 'pk', 'turma_pk'))
 def add_tarefa(request, turma_pk):
-    # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
     turma = get_object_or_404(Turma, pk=turma_pk)
+    if not has_object_permission('add_tarefa', request.user, turma):
+        return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
         form = TarefaForm(turma, request.POST)
         if form.is_valid():
@@ -24,6 +24,8 @@ def add_tarefa(request, turma_pk):
             tarefa.titulo = form.cleaned_data['titulo']
             tarefa.turma = turma
             tarefa.materia = form.cleaned_data['materia']
+            if not has_object_permission('add_tarefa_mat', request.user, form.cleaned_data['materia']):
+                return redirect_to_login(request.get_full_path())
             tarefa.tipo = form.cleaned_data['tipo']
             tarefa.descricao = form.cleaned_data['descricao']
             tarefa.deadline = form.cleaned_data['deadline']
@@ -31,10 +33,6 @@ def add_tarefa(request, turma_pk):
             seg = tarefa.get_seguidor_manager()
             seg.adicionar_seguidor(request.user)
             seg.adicionar_seguidor(tarefa.materia.professor.user)
-
-            dar_permissao_perm_a_user_of_level('can_edit_tarefa', 1, turma, tarefa)
-            dar_permissao_perm_a_user_of_level('can_delete_tarefa', 2, turma, tarefa)
-
             return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
         form = TarefaForm(turma=turma)
@@ -58,10 +56,12 @@ def list_tarefa(request, turma_pk):
         return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas})
 
 
-@permission_required_obj('escola.can_edit_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
+# FIXME: 25/04/2019 por wwwvi: Pedir Permissão
 def edit_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
     turma = tarefa.turma
+    if not has_object_permission('edit_tarefa', request.user, tarefa):
+        return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
         form = TarefaForm(turma, request.POST)
         if form.is_valid():
@@ -83,9 +83,10 @@ def edit_tarefa(request, tarefa_pk):
     return render(request, 'escola/tarefas/formTarefa.html', context=context)
 
 
-@permission_required_obj('escola.can_delete_tarefa', (Tarefa, 'pk', 'tarefa_pk'))
 def delete_tarefa(request, tarefa_pk):
     tarefa = get_object_or_404(Tarefa, pk=tarefa_pk)
+    if not has_object_permission('delete_tarefa', request.user, tarefa):
+        return redirect_to_login(request.get_full_path())
     tarefa.delete()
     return HttpResponseRedirect(reverse('escola:index'))
 

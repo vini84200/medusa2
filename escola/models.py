@@ -2,16 +2,15 @@
 Models gerais do aplicativo Escola.
 """
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 25/04/19 23:13.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import logging
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django_prometheus.models import ExportModelOperationsMixin
-from guardian.shortcuts import assign_perm
 from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
 
@@ -56,10 +55,10 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
     """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
     numero = models.IntegerField()
     ano = models.IntegerField()
-    lider = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
-    vicelider = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True, blank=True,
+    lider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
+    vicelider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True,
                                   related_name='turma_vicelider')
-    regente = models.ForeignKey(Group, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
+    regente = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
 
     class Meta:
         """Meta das Models"""
@@ -71,51 +70,6 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
                        ('editar_horario', "Pode editar o horario."),
                        ('can_add_materia', 'Pode adicionar uma materia a turma.'),
                        ('can_add_tarefa', "Pode adicionar uma tarefa."))
-
-    def get_or_create_lider_group(self):
-        """Retorna o grupo de lider, que deve possuir apenas um usuario."""
-        if self.lider:
-            return self.lider
-        else:
-            print(Group.objects.filter(name=f'lider_turma_{self.pk}'))
-            print(len(Group.objects.filter(name=f'lider_turma_{self.pk}')))
-            if not len(Group.objects.filter(name=f'lider_turma_{self.pk}')) == 0:
-                self.lider = Group.objects.get(name=f'lider_turma_{self.pk}')
-            else:
-                self.lider = Group.objects.create(name=f'lider_turma_{self.pk}')
-            assign_perm('escola.editar_horario', self.lider, obj=self)
-            assign_perm('escola.can_add_materia', self.lider, obj=self)
-            assign_perm('escola.can_add_tarefa', self.lider, obj=self)
-            return self.lider
-
-    def get_or_create_vicelider_group(self):
-        """Retorna o grupo de vicelider, que deve ter apenas um usuario."""
-        if self.vicelider:
-            return self.vicelider
-        else:
-            if len(Group.objects.filter(name=f'vicelider_turma_{self.pk}').all()) != 0:
-                self.vicelider = Group.objects.get(name=f'vicelider_turma_{self.pk}')
-            else:
-                self.vicelider = Group.objects.create(name=f'vicelider_turma_{self.pk}')
-            assign_perm('escola.editar_horario', self.vicelider, obj=self)
-            assign_perm('escola.can_add_materia', self.vicelider, obj=self)
-            assign_perm('escola.can_add_tarefa', self.vicelider, obj=self)
-            return self.vicelider
-
-    def get_or_create_regente_group(self):
-        """ Retorna o grupo de regente, que deve ter apenas um usuario. """
-        if self.regente:
-            return self.regente
-        else:
-            if len(Group.objects.filter(name=f'regente_turma_{self.pk}')) > 0:
-                self.regente = Group.objects.get(name=f'regente_turma_{self.pk}')
-            else:
-                self.regente = Group.objects.create(name=f'regente_turma_{self.pk}')
-            assign_perm('escola.can_add_aluno', self.regente, obj=self)
-            assign_perm('escola.editar_horario', self.regente, obj=self)
-            assign_perm('escola.can_add_materia', self.regente, obj=self)
-            assign_perm('escola.can_add_tarefa', self.regente, obj=self)
-            return self.regente
 
     def get_or_create_horario(self):
         """Retorna ou cria e retorna o horario."""
@@ -257,7 +211,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='materias')
     abreviacao = models.CharField(max_length=5)
     conteudos = models.ManyToManyField(Conteudo)
 
@@ -290,7 +244,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     """Tarefa para com prazo, como um tema, ou pesquisa"""
     titulo = models.CharField(max_length=60)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
-    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
+    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     TIPOS = (
         (1, 'Tema'),
         (2, 'Trabalho'),

@@ -1,12 +1,12 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 23:02.
+#  Last Modified 25/04/19 17:02.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import pytest
+from django.contrib.auth.models import User, Group
 from mixer.backend.django import mixer
+from rolepermissions.checkers import has_role
 
 from escola import user_utils
-from django.contrib.auth.models import User, Group
-
 from escola.models import Turma, Profile, Aluno, Professor
 
 pytestmark = pytest.mark.django_db
@@ -86,11 +86,8 @@ class TestCreateAlunoUser:
     def test_has_a_AlunoObject(self, user):
         assert isinstance(user[0].aluno, Aluno)
 
-    def test_is_in_all_alunos_group(self, user):
-        assert user_utils.get_all_alunos_group() in user[0].groups.all()
-
-    def test_is_in_turma_alunos_group(self, user):
-        assert user_utils.get_turma_alunos_group(user[1].pk) in user[0].groups.all()
+    def test_is_with_aluno_role(self, user):
+        assert has_role(user[0], 'aluno')
 
 
 class TestGetAllAlunosGroup:

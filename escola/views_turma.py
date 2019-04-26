@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 25/04/19 17:02.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import datetime
@@ -8,13 +8,14 @@ from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from rolepermissions.decorators import has_permission_decorator
 
 from escola.decorators import is_user_escola
 from escola.forms import CriarTurmaForm
 from escola.models import Turma, Horario
 
 
-@permission_required('escola.can_add_turma')
+@has_permission_decorator('add_turma', redirect_to_login=True)
 def add_turma(request):
     if request.method == 'POST':
 

@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 20/04/19 08:44.
+#  Last Modified 25/04/19 16:47.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import time
 
@@ -8,12 +8,10 @@ from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-from escola.tests.selenium_test_case import CustomWebDriver
-
 TIME_LOAD = 2
 
 
-@pytest.mark.xfail(reason="Not finished")
+@pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
 def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alunos_and_simple_add(live_server, browser,
                                                                                                    pedrinho):
@@ -80,6 +78,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     browser.find_css('#id_num_chamada').send_keys('14')
     browser.find_css('#id_nome').send_keys('Silas S Abdi')
     browser.find_css('#id_nome').send_keys(Keys.ENTER)
+    time.sleep(TIME_LOAD)
     # Pedro preciona enter e redirecionado para uma pagina que mostra que seu novo usuario possui uma senha
     # e nome de usuario, pedro os imprime e volta para pagina inicial
     browser.get(live_server.url)
@@ -88,10 +87,9 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     dropdown.click()
     list_turmas = browser.find_element_by_link_text('Lista de turmas')
     list_turmas.click()
-    time.sleep(TIME_LOAD)
     turma_row = browser.find_element_by_class_name('turma_302')
     turma_row.find_element_by_link_text('Alunos').click()
-    time.sleep(TIME_LOAD)
+
     # e seus olhos brilham quando vê, lá está, na lista que estava vazia, há um nome.
     rows = browser.find_elements_by_tag_name('tr')
     ## Um para o header da tebela
@@ -106,10 +104,10 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     dropdown.click()
     list_turmas = browser.find_element_by_link_text('Lista de turmas')
     list_turmas.click()
-    time.sleep(TIME_LOAD)
+
     # e lá ele clica no botão Popular Turmas,
     browser.find_element_by_link_text('Adicionar Lista de Alunos').click()
-    time.sleep(TIME_LOAD)
+
     # Quando a pagina carega, ele sorri, ali esta tudo o que ele precisa, uma lista de campos para ele adicionar
     # alunos, ele comeca a adicionar varios:
     # 2 | Eligia A Borkowska | 302
@@ -129,7 +127,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     browser.find_css('#submit-id-submit').click()
     # ele vê então uma pagina com senhas e cartões para serem distribuidos, ele esta feliz,
     # ele mais uma vez volta a pagina inicial
-    time.sleep(TIME_LOAD)
+
     browser.get(live_server.url)
     # e então volta a lista de alunos
     dropdown = browser.find_element_by_link_text('Escola')
@@ -138,7 +136,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     list_turmas.click()
     turma_row = browser.find_element_by_class_name('turma_302')
     turma_row.find_element_by_link_text('Alunos').click()
-    time.sleep(TIME_LOAD)
+
     #  e ele está satisfeito, há 4 alunos na lista, todos os nomes que ele havia adicionado.
     ## Um para o header da tebela
     rows = browser.find_elements_by_tag_name('tr')
@@ -167,3 +165,4 @@ def AssertAlunoInTheList(nome, num, browser):
     tc.assertIn(num, [n.text for n in alunos_n])
     alunos_nome = browser.find_elements_by_class_name('aluno_nome')
     tc.assertIn(nome, [row.text for row in alunos_nome])
+ 

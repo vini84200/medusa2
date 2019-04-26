@@ -1,10 +1,11 @@
 """Mantem funções para criar usuarios, e seus grupos padrões."""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 13/04/19 23:00.
+#  Last Modified 25/04/19 17:02.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 
 from django.contrib.auth.models import User, Group
+from rolepermissions.roles import assign_role
 
 from escola.models import Profile, Aluno, Professor
 
@@ -66,11 +67,15 @@ def get_admin_group() -> Group:
     """
     g, c = Group.objects.get_or_create(name="Admin")
     if c:
-        logger.warning("Por algum motivo o Grupo admin não havia sido criado.")
+        give_admin_group_permissions()
     return g
 
 
-def create_aluno_user(username, senha, turma, nome):
+def give_admin_group_permissions():
+    pass
+
+
+def create_aluno_user(username, senha, turma, nome, num=0):
     u = create_user(username, senha)
     p = u.profile_escola
     p.is_aluno = True
@@ -79,14 +84,20 @@ def create_aluno_user(username, senha, turma, nome):
     a.user = u
     a.turma = turma
     a.nome = nome
+    a.chamada = num
     a.save()
-    u.groups.add(get_all_alunos_group())
-    u.groups.add(get_turma_alunos_group(turma.pk))
+    assign_role(u, 'aluno')
     return u
+
+
+def alunos_group_assert_permission():
+    pass
 
 
 def get_all_alunos_group():
     g, created = Group.objects.get_or_create(name='Todos_Alunos')
+    if created:
+        alunos_group_assert_permission()
     return g
 
 

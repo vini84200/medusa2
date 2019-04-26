@@ -1,12 +1,14 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 25/04/19 17:13.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import logging
 
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import User, Group
-from guardian.shortcuts import assign_perm
+from django.contrib.auth.models import User
 
 from escola.models import CargoTurma
+
+logger = logging.getLogger(__name__)
 
 
 def username_present(username):
@@ -17,37 +19,26 @@ def username_present(username):
 
 
 def dar_permissao_user(ocupante, cargo: CargoTurma):
+    logger.info(f"Dando permissões para user {ocupante}, do cargo {cargo},"
+                f" que possui nivel {cargo.cod_especial}, na turma {cargo.turma}")
     if cargo.cod_especial == 1:
         # PERMISSÔES DE LIDER
-        group: Group = cargo.turma.get_or_create_lider_group()
-        for user in group.user_set.all():
-            group.user_set.remove(user)
-        ocupante.groups.add(group)
+        logger.info(f"Permissão de lider")
+        cargo.turma.lider = ocupante
+        cargo.turma.save()
+        logger.info(f"Agora o lider é {cargo.turma.lider}")
     if cargo.cod_especial == 2:
         # PERMISSÔES DE VICELIDER
-        group: Group = cargo.turma.get_or_create_vicelider_group()
-        for user in group.user_set.all():
-            group.user_set.remove(user)
-        ocupante.groups.add(group)
+        logger.info(f"Permissão de vicelider")
+        cargo.turma.vicelider = ocupante
+        cargo.turma.save()
+        logger.info(f"Agora o vicelider é {cargo.turma.vicelider}")
     if cargo.cod_especial == 5:
         # PERMISSÔES DE REGENTE
-        group: Group = cargo.turma.get_or_create_regente_group()
-        for user in group.user_set.all():
-            group.user_set.remove(user)
-        ocupante.groups.add(group)
-        # Permissões de Regente
-
-
-def dar_permissao_perm_a_user_of_level(perm, level_min, turma, obj):
-    if level_min == 1:
-        assign_perm(perm,turma.get_or_create_lider_group(), obj)
-        assign_perm(perm,turma.get_or_create_vicelider_group(), obj)
-        assign_perm(perm,turma.get_or_create_regente_group(), obj)
-    if level_min == 2:
-        assign_perm(perm,turma.get_or_create_lider_group(), obj)
-        assign_perm(perm,turma.get_or_create_regente_group(), obj)
-    if level_min == 3:
-        assign_perm(perm,turma.get_or_create_regente_group(), obj)
+        logger.info(f"Permissão de regente")
+        cargo.turma.regente = ocupante
+        cargo.turma.save()
+        logger.info(f"Agora o regente é {cargo.turma.regente}")
 
 
 def genarate_password():
