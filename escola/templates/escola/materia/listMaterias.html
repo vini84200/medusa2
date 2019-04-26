@@ -1,16 +1,19 @@
 {% extends "../base.html" %}
-
-{% load guardian_tags %}
-
-
+{% load permission_tags %}
 
 {%block conteudo%}
 
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 25/04/19 22:45.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
 <div class="container">
 
-{% get_obj_perms user for turma as "turma_perm" %}
+{% can 'add_materia' turma as can_add_materia %}
 <h1>Listagem de materias da turma {{turma.numero}}</h1>
-{%if 'can_add_materia' in turma_perm %}
+{%if can_add_materia%}
     <a href="{% url 'escola:add-materia' turma.id %}" class="btn btn-primary">Adicionar Materia</a>
     <br><br>
 {%endif%}
@@ -26,14 +29,15 @@
 </tr>
 {%for materia in materias%}
 <tr>
-    {% get_obj_perms user for materia as "materia_perm" %}
     <td><a href="{% url 'escola:detail-materia' materia.pk %}">{{materia.nome}}</a></td>
     <td>{{materia.professor.nome}}</td>
     <td class="text-center">{{materia.abreviacao}}</td>
-    {%if 'can_edit_materia' in materia_perm%}
+    {% can 'edit_materia' materia as can_edit_materia%}
+    {%if can_edit_materia%}
     <td><a href="{% url 'escola:edit-materia' materia.pk %}" class="btn btn-primary">Editar</a></td>
     {%endif%}
-    {%if 'can_delete_materia' in materia_perm%}
+    {% can 'delete_materia' materia as can_delete_materia%}
+    {%if can_delete_materia%}
     <td><a href="{% url 'escola:delete-materia' materia.pk %}" class="btn btn-danger">Apagar</a></td>
     {%endif%}
 </tr>

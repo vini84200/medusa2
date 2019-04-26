@@ -2,7 +2,7 @@
 Models gerais do aplicativo Escola.
 """
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 14:26.
+#  Last Modified 25/04/19 23:13.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import logging
@@ -211,7 +211,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='materias')
     abreviacao = models.CharField(max_length=5)
     conteudos = models.ManyToManyField(Conteudo)
 
@@ -244,7 +244,7 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
     """Tarefa para com prazo, como um tema, ou pesquisa"""
     titulo = models.CharField(max_length=60)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
-    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
+    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     TIPOS = (
         (1, 'Tema'),
         (2, 'Trabalho'),

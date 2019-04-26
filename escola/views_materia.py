@@ -1,21 +1,27 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 13:41.
+#  Last Modified 25/04/19 22:53.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import logging
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.views.generic import DetailView
+from rolepermissions.checkers import has_object_permission
 
 from escola.decorators import is_user_escola
 from escola.forms import MateriaForm
 from escola.models import Turma, MateriaDaTurma
 
+logger = logging.getLogger(__name__)
 
-# FIXME: 25/04/2019 por wwwvi: Adicionar permissões
+
 def add_materia(request, turma_pk):
-    # FIXME Adicionar permissões, a lista de permissões do grupo LIDER, VICELIDER e REGENTE da turma;
+    turma = get_object_or_404(Turma, pk=turma_pk)
+    if not has_object_permission('add_materia', request.user, turma):
+        return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
         form = MateriaForm(request.POST)
         if form.is_valid():
@@ -43,10 +49,11 @@ def list_materias(request, turma_pk):
     return render(request, 'escola/materia/listMaterias.html', context={'materias': materias, 'turma': turma})
 
 
-# FIXME: 25/04/2019 por wwwvi: Adicionar requerimento de permissão
 def edit_materia(request, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
     turma = materia.turma
+    if not has_object_permission('edit_materia', request.user, materia):
+        return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
         form = MateriaForm(request.POST)
         if form.is_valid():
@@ -65,15 +72,15 @@ def edit_materia(request, materia_pk):
     return render(request, 'escola/materia/formMateria.html', context=context)
 
 
-# FIXME: 25/04/2019 por wwwvi: Adicionar Permissão
 def delete_materia(request, materia_pk):
     materia = get_object_or_404(MateriaDaTurma, pk=materia_pk)
+    if not has_object_permission('edit_materia', request.user, materia):
+        return redirect_to_login(request.get_full_path())
     turma = materia.turma
     materia.delete()
     return HttpResponseRedirect(reverse('escola:list-materias', args=[turma.pk]))
 
 
-# FIXME: 25/04/2019 por wwwvi: Adicionar Permissão
 class MateriaDaTurmaDetailView(LoginRequiredMixin, DetailView):
     """View de detalhes sobre a materia"""
     model = MateriaDaTurma

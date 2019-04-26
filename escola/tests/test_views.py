@@ -1,6 +1,6 @@
 """Teste de unidade de todas as Views, seja ela de qualquer arquivo"""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 17:11.
+#  Last Modified 25/04/19 23:16.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import warnings
@@ -1632,8 +1632,8 @@ class TestAddMateria(_TestFormViewEspecificoTurma, TestCase):
     aluno_e_professor = AssertRedirectsLogin()
     admin = Assert200()
 
-    aluno_lider = Assert200AndTemplate('escola/materia/formMateria.html')
-    aluno_vicelider = Assert200AndTemplate('escola/materia/formMateria.html')
+    aluno_lider = AssertRedirectsLogin()
+    aluno_vicelider = AssertRedirectsLogin()
     aluno_suplente = AssertRedirectsLogin()
     prof_regente = Assert200AndTemplate('escola/materia/formMateria.html')
 
@@ -1804,8 +1804,7 @@ class TestDeleteTarefa(_TestViewEspecificoModel, TestCase):
 class TestConcluirTarefa(TestCase):
     def test_permited(self):
         c = Client()
-        turma = create_turma()
-        tarefa = mixer.blend(Tarefa, turma=turma, materia=turma.materiadaturma_set.all()[0])
+        tarefa = mixer.blend(Tarefa)
         response = c.get(reverse('escola:concluir-tarefa', args=[tarefa.pk, ]))
         self.assertRedirects(response, '/accounts/login/?next=' + reverse('escola:concluir-tarefa', args=[1, ]))
 
