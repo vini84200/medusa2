@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 16:47.
+#  Last Modified 27/04/19 08:03.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import time
 
@@ -7,8 +7,47 @@ import pytest
 from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.select import Select
 
 TIME_LOAD = 2
+
+def HeaderWrongMsg(expected, recieved):
+    """Retorna uma msg para quando o Title no HEAD da pagina estiver erado"""
+    return f"O titulo no HEAD da pagina não é '{expected}', e sim '{recieved}'"
+
+
+def AssertHeader(expected, recieved_browser: webdriver.Firefox):
+    """Verifica que o Title no Head esta coreto"""
+    TestCase().assertIn(expected, recieved_browser.title, HeaderWrongMsg(expected, recieved_browser.title))
+
+
+def AssertAlunoInTheList(nome, num, browser):
+    tc = TestCase()
+    alunos_n = browser.find_elements_by_class_name('aluno_n')
+    tc.assertIn(num, [n.text for n in alunos_n])
+    alunos_nome = browser.find_elements_by_class_name('aluno_nome')
+    tc.assertIn(nome, [row.text for row in alunos_nome])
+
+
+def navigate_navbar(browser, points):
+    """Navega no site pela NavBar, envie quais pontos da navbar devem ser selecionados"""
+    for p in points:
+        browser.find_element_by_link_text(p).click()
+
+
+def click_button(browser, btn_text):
+    """Clica no botão com esse texto"""
+    browser.find_element_by_link_text(btn_text).click()
+
+
+def fill_form_id(browser, fields: dict):
+    """Prenche um form usando os valores passados como key como id e value como o que escrever"""
+    for field_id, data in fields.items():
+        browser.find_css(f'#{field_id}').send_keys(data)
+
+def submit_form(browser):
+    """Envia o form da pagina"""
+    browser.find_element_by_tag_name('form').find_element_by_name('submit').click()
 
 
 @pytest.mark.selenium_test
@@ -39,19 +78,14 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     # Pedro Verifica que a pagina possui o titulo de 'Pagina Inicial'
     AssertHeader('Página Inicial', browser)
     # La pedro clica no dropdonw, e então no item que o leva a listagem de turmas
-    dropdown = browser.find_element_by_link_text('Escola')
-    dropdown.click()
-    list_turmas = browser.find_element_by_link_text('Lista de turmas')
-    list_turmas.click()
+    navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
     # Ele chega lá, e vê que há um titulo 'Lista de Turmas'.
     AssertHeader('Lista de Turmas', browser)
     h1 = browser.find_element_by_tag_name('h1')
     tc.assertIn('Lista de Turmas', h1.text, f"Lista de turmas não é o titulo no h1 da pagina, e sim '{h1.text}'")
-    # pytest.fail("TERMINAR")
 
-    # Ele tambem vê um botão, 'Adicionar turma'.
-    adcionar_turma_btn = browser.find_element_by_link_text('Adicionar Turma')
-    adcionar_turma_btn.click()
+    # Ele tambem vê um botão, 'Adicionar Turma'.
+    click_button(browser, 'Adicionar Turma')
 
     # Quando clica no botão, ele é redirecionado a uma pagina com um formulario para adcionar sua propria turma,
     # a pagina possui titulo: 'Adicionar uma turma'
@@ -83,10 +117,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     # e nome de usuario, pedro os imprime e volta para pagina inicial
     browser.get(live_server.url)
     #Ele está de volta a pagina inicial, de lá ele rapidamente verifica a lista de alunos da turma que ele criou
-    dropdown = browser.find_element_by_link_text('Escola')
-    dropdown.click()
-    list_turmas = browser.find_element_by_link_text('Lista de turmas')
-    list_turmas.click()
+    navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
     turma_row = browser.find_element_by_class_name('turma_302')
     turma_row.find_element_by_link_text('Alunos').click()
 
@@ -100,10 +131,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     tc.assertIn('Silas S Abdi', [row.text for row in alunos_nome])
     # O nome que ele adicionara. Pedro precisa adicionar mais nomes, mas ele sabe que adicionar um por vez não
     # sera uma opção, então ele volta a lista de turmas,
-    dropdown = browser.find_element_by_link_text('Escola')
-    dropdown.click()
-    list_turmas = browser.find_element_by_link_text('Lista de turmas')
-    list_turmas.click()
+    navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
 
     # e lá ele clica no botão Popular Turmas,
     browser.find_element_by_link_text('Adicionar Lista de Alunos').click()
@@ -130,10 +158,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
 
     browser.get(live_server.url)
     # e então volta a lista de alunos
-    dropdown = browser.find_element_by_link_text('Escola')
-    dropdown.click()
-    list_turmas = browser.find_element_by_link_text('Lista de turmas')
-    list_turmas.click()
+    navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
     turma_row = browser.find_element_by_class_name('turma_302')
     turma_row.find_element_by_link_text('Alunos').click()
 
@@ -145,24 +170,78 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     AssertAlunoInTheList('Eligia A Borkowska', '2', browser)
     AssertAlunoInTheList('Kelsie E Aitken', '3', browser)
     AssertAlunoInTheList('Amanda M Nilsson', '4', browser)
+    # Pedro vai adicionar os professores de sua escola
+    navigate_navbar(browser, ['Escola', 'Lista de Professores'])
+    click_button(browser, 'Adicionar Professor')
+    # Ele adiciona 'Maria das Dores' professora de Matematica
+    fill_form_id(browser, {
+        'id_nome': 'Maria das Dores'
+    })
+    submit_form(browser)
+    # Agora ele vai verificar que sua professora foi adicionada
+    browser.get(live_server.url)
+    navigate_navbar(browser, ['Escola', 'Lista de Professores'])
+
+    tc.assertIn('Maria das Dores', [row.text for row in browser.find_elements_by_class_name('professor_nome')])
+    assert 'Lista de Professores' in browser.title
+    # Agora ele adiciona um novo professor
+    click_button(browser, 'Adicionar Professor')
+    # Ele adiciona 'Patricia Klainir' professora de Geografia
+    assert 'Adicionar Professor' in browser.title
+    fill_form_id(browser, {
+        'id_nome': 'Patricia Klainir'
+    })
+    submit_form(browser)
+    # Agora ele vai verificar que sua professora foi adicionada
+    browser.get(live_server.url)
+    navigate_navbar(browser, ['Escola', 'Lista de Professores'])
+    # Ele verifica que seus dois professores foram adicionados
+    tc.assertIn('Maria das Dores', [row.text for row in browser.find_elements_by_class_name('professor_nome')])
+    tc.assertIn('Patricia Klainir', [row.text for row in browser.find_elements_by_class_name('professor_nome')])
+    # Agora Pedro volta a lista de turmas, e abre a lista de materias
+    navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
+    turma_row = browser.find_element_by_class_name('turma_302')
+    click_button(turma_row, "Materias")
+    assert 'Materias da 302' in browser.title
+    # Lá ele clica para adicionar uma nova materia 'Matematica' com a professora 'Maria das Dores'
+    click_button(browser, 'Adicionar Materia')
+    assert 'Adicionar Materia' in browser.title
+    fill_form_id(browser, {
+        'id_nome': 'Matematica',
+        'id_abreviacao': 'MAT'
+    })
+    s = Select(browser.find_element_by_id('id_professor'))
+    s.select_by_visible_text('Maria das Dores')
+    submit_form(browser)
+    # Tambem adiciona a materia 'Geografia' com a professora 'Patricia Klainir'
+    click_button(browser, 'Adicionar Materia')
+    fill_form_id(browser, {
+        'id_nome': 'Geografia',
+        'id_abreviacao': 'GEO'
+    })
+    s = Select(browser.find_element_by_id('id_professor'))
+    s.select_by_visible_text('Patricia Klainir')
+    submit_form(browser)
+
+    # Agora Pedro transformara Patricia na Regente da Turma
+    navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
+    turma_row = browser.find_element_by_class_name('turma_302')
+    click_button(turma_row, "Cargos")
+    assert 'Cargos da 302' in browser.title
+    # Pedro clica em criar cargo
+    click_button(browser, 'Adicionar Cargo')
+    assert 'Adicionar Cargo' in browser.title
+    # Pedro preenche como Regente e adiciona sua professora
+    fill_form_id(browser, {
+        'id_nome': 'Regente'
+    })
+    Select(browser.find_element_by_id('id_ocupante')).select_by_visible_text('patricia.pk')
+    Select(browser.find_element_by_id('id_cod_especial')).select_by_value('5')
+    submit_form(browser)
+    navigate_navbar(browser, ['Escola','Lista de Turmas'])
+    turma_row = browser.find_element_by_class_name('turma_302')
+    click_button(turma_row, "Cargos")
+    assert 'patricia.pk' in [r.text for r in browser.find_elements_by_class_name('cargo_ocupante')]
     # Pedro sai de sua conta.
     browser.find_element_by_link_text('Sair').click()
 
-
-def HeaderWrongMsg(expected, recieved):
-    """Retorna uma msg para quando o Title no HEAD da pagina estiver erado"""
-    return f"O titulo no HEAD da pagina não é '{expected}', e sim '{recieved}'"
-
-
-def AssertHeader(expected, recieved_browser: webdriver.Firefox):
-    """Verifica que o Title no Head esta coreto"""
-    TestCase().assertIn(expected, recieved_browser.title, HeaderWrongMsg(expected, recieved_browser.title))
-
-
-def AssertAlunoInTheList(nome, num, browser):
-    tc = TestCase()
-    alunos_n = browser.find_elements_by_class_name('aluno_n')
-    tc.assertIn(num, [n.text for n in alunos_n])
-    alunos_nome = browser.find_elements_by_class_name('aluno_nome')
-    tc.assertIn(nome, [row.text for row in alunos_nome])
- 

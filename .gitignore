@@ -13,3 +13,4 @@ escola/tests/htmlcov
 *.log
 /Logs/log_django.txt
 Logs/log_django.txt
+/Logs/Screenshots/

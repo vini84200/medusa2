@@ -1,23 +1,23 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 27/04/19 08:14.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
-from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.decorators import permission_required
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
+from rolepermissions.decorators import has_permission_decorator
 
+from escola import user_utils
 from escola.decorators import is_user_escola, is_professor
 from escola.forms import ProfessorCreateForm
-from escola.models import Profile, Professor, MateriaDaTurma
-from escola.utils import username_present, generate_username, genarate_password
+from escola.models import Professor, MateriaDaTurma
+from escola.utils import generate_username, genarate_password
 
 
-@permission_required('escola.can_add_professor')
+@has_permission_decorator('add_professor')
 def add_professor(request):
     if request.method == 'POST':
 
@@ -55,16 +55,17 @@ def create_professor(form):
     senha = form.cleaned_data['senha']
     if not senha:
         senha = genarate_password()
-    user = User.objects.create_user(username, password=senha)
-    user.first_name = nome.split(" ")[0]
-    user.last_name = nome.split(" ")[-1]
-    user.save()
-    profile = Profile(user=user, is_aluno=False, is_professor=True)
-    profile.save()
-    professor = Professor()
-    professor.user = user
-    professor.nome = nome
-    professor.save()
+    # user = User.objects.create_user(username, password=senha)
+    # user.first_name = nome.split(" ")[0]
+    # user.last_name = nome.split(" ")[-1]
+    # user.save()
+    # profile = Profile(user=user, is_aluno=False, is_professor=True)
+    # profile.save()
+    # professor = Professor()
+    # professor.user = user
+    # professor.nome = nome
+    # professor.save()
+    user_utils.create_professor_user(username, senha, nome)
     return senha, username
 
 

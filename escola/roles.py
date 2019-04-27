@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 18:04.
+#  Last Modified 26/04/19 23:27.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from rolepermissions.roles import AbstractUserRole
@@ -18,6 +18,9 @@ class Admin(AbstractUserRole):
         'populate_alunos': True,
         'add_aluno_g': True,
         'edit_horario_g': True,
+        'add_professor': True,
+        'add_materia_g': True,
+        'add_cargo_g': True,
     }
 
 

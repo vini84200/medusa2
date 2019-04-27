@@ -1,6 +1,6 @@
 """Mantem funções para criar usuarios, e seus grupos padrões."""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 17:02.
+#  Last Modified 26/04/19 16:30.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 
@@ -108,12 +108,14 @@ def get_turma_alunos_group(turma_pk):
 
 def create_professor_user(username, password, name):
     u = create_user(username, password)
+    assign_role(u, 'professor')
     p = u.profile_escola
     p.is_professor = True
-    u.groups.add(get_all_professor_group())
+    p.save()
     P = Professor()
     P.user = u
     P.nome = name
+    P.save()
     return u
 
 

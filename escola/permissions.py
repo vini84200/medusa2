@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 23:18.
+#  Last Modified 26/04/19 23:30.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 from rolepermissions.checkers import has_role, has_permission
 from rolepermissions.permissions import register_object_checker
@@ -161,6 +161,16 @@ def delete_tarefa(role, user, tarefa):
         return True
 
     if user == tarefa.materia.professor.user:
+        return True
+
+    return False
+
+@register_object_checker()
+def add_cargo(role, user, turma):
+    if user.is_superuser:
+        return True
+
+    if has_permission(user, 'add_cargo_g'):
         return True
 
     return False

@@ -1,9 +1,17 @@
 {% extends "../base.html" %}
-
+{% load permission_tags %}
+{%block title%}Cargos da {{turma.numero}} - Medusa II{%endblock%}
 {%block conteudo%}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 27/04/19 07:09.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
 <div class="container">
 <h1>Listagem de Cargos da turma {{turma.numero}}</h1>
-{%if perms.escola.can_add_cargo%}
+{% can 'add_cargo' turma as can_add_cargo%}
+{%if can_add_cargo%}
     <a href="{% url 'escola:add-cargo' turma.pk %}" class="btn btn-primary">Adicionar Cargo</a>
 {%endif%}
 <div class="table-responsive">
@@ -23,7 +31,7 @@
 {%for cargo in cargos%}
 <tr>
     <td>{{cargo.nome}}</td>
-    <td>{{cargo.ocupante.username}}</td>
+    <td class="cargo_ocupante">{{cargo.ocupante.username}}</td>
     <td>{{cargo.ativo|yesno:'Sim,Não'}}</td>
     <td>{{cargo.get_cod_especial_display}}</td>
     {%if perms.escola.can_edit_cargo%}

@@ -1,10 +1,17 @@
 {% extends "../base.html" %}
-
+{% load permission_tags %}
+{%block title%}Lista de Professores - Medusa II{%endblock%}
 {%block conteudo%}
+
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 26/04/19 23:04.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
 
 <div class="container">
 <h1>Listagem de Professores</h1>
-{%if perms.escola.can_add_professores%}
+{%if user|can:"add_professor" %}
     <a href="{% url 'escola:add-professor' %}" class="btn btn-primary">Adicionar Professor</a><br><br>
 {%endif%}
 <div class="teble-responsive">
@@ -22,7 +29,7 @@
 {%for prof in professores%}
 <tr>
     <td>{{prof.user.username}}</td>
-    <td>{{prof.nome}}</td>
+    <td class="professor_nome">{{prof.nome}}</td>
     {%if perms.escola.can_edit_professor%}
     <td><a href="{% url 'escola:edit-professor' prof.pk %}"class="btn btn-primary">Editar</a></td>
     {%endif%}
