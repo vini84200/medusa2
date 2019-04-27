@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 17:02.
+#  Last Modified 27/04/19 08:09.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import pytest
 from django.contrib.auth.models import User, Group
@@ -147,9 +147,6 @@ class TestCreteProfessor:
 
     def test_is_instance_off(self, user):
         assert isinstance(user, User)
-
-    def test_is_in_group_all_professores(self, user):
-        assert_is_in_group(user, user_utils.get_all_professor_group())
 
     def test_has_professor_object(self, user):
         assert isinstance(user.professor, Professor)

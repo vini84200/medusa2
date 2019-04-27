@@ -1,19 +1,23 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 27/04/19 08:14.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.views import redirect_to_login
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from rolepermissions.checkers import has_object_permission
 
 from escola.forms import CargoForm
 from escola.models import Turma, CargoTurma
 from escola.utils import dar_permissao_user
 
 
-@permission_required('escola.can_add_cargo')
 def add_cargo(request, turma_pk):
+    turma = get_object_or_404(Turma, pk=turma_pk)
+    if not has_object_permission('add_cargo', request.user, turma):
+        return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
 
         # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms

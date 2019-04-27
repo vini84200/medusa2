@@ -1,6 +1,8 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 14:26.
+#  Last Modified 27/04/19 08:14.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import logging
+from pathlib import Path
 
 import pytest
 from decouple import config
@@ -8,10 +10,12 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from mixer.backend.django import mixer
 from rolepermissions.roles import assign_role
+from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 
 from escola.tests.selenium_test_case import CustomWebDriver
 
+logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope='module')
 def browser(request):
@@ -22,12 +26,28 @@ def browser(request):
         options.add_argument('-headless')
 
     browser_: CustomWebDriver = CustomWebDriver(firefox_options=options)
-
+    failed_before = request.session.testsfailed
+    logger.info(f"Yielding browser, failed before: {failed_before}")
     yield browser_
-
+    logger.info(f"Retornou o browser, failed: {request.session.testsfailed}")
+    if request.session.testsfailed != failed_before:
+        test_name = request.node.name
+        take_screenshot(browser_, test_name)
     # TearDown
     browser_.quit()
 
+
+def take_screenshot(browser: webdriver.firefox, test_name: str):
+    screenshots_dir = Path("Logs/Screenshots/funcional_tests")
+    screenshot_file_path = screenshots_dir / (test_name.replace('/', '_').replace('.py', '') + ".png")
+    print("Path to screnshot: '{}'".format(screenshot_file_path))
+    l = browser.save_screenshot(
+        screenshot_file_path.absolute().resolve().__str__()
+    )
+    if not l:
+        logger.warning("Couldn't take screnshot for some reason.")
+    else:
+        logger.info("Screnshot taken! Path: '{}'".format(screenshot_file_path))
 
 username = 'pedrinho'
 senha = '123456'
@@ -49,7 +69,7 @@ def pedrinho(db):
 @pytest.fixture()
 def authenticated_pedrinho_browser(browser, client, live_server, pedrinho):
     """Return a browser instance with logged-in user session."""
-    client.login(email=TESTEMAIL, password=TESTPASSWORD)
+    client.login(username=username, password=senha)
     cookie = client.cookies['sessionid']
 
     browser.get(live_server.url)
