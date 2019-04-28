@@ -2,7 +2,7 @@
 Models gerais do aplicativo Escola.
 """
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 23:13.
+#  Last Modified 28/04/19 09:52.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import logging
@@ -359,19 +359,19 @@ class Horario(models.Model, ExportModelOperationsMixin('Horario')):
 class Turno(models.Model, ExportModelOperationsMixin('Turno')):
     nome = models.CharField(max_length=30)
     cod = models.PositiveSmallIntegerField()
-    horaInicio = models.TimeField()
+    horaInicio = models.TimeField(blank=True, null=True)
     # 1
-    s1 = models.TimeField()
+    s1 = models.TimeField(blank=True, null=True)
     # 2
-    s2 = models.TimeField()
+    s2 = models.TimeField(blank=True, null=True)
     # 3
-    s3 = models.TimeField()
+    s3 = models.TimeField(blank=True, null=True)
     # intervalo
-    s4 = models.TimeField()
+    s4 = models.TimeField(blank=True, null=True)
     # 4
-    s5 = models.TimeField()
+    s5 = models.TimeField(blank=True, null=True)
     # 5
-    horaFim = models.TimeField()
+    horaFim = models.TimeField(blank=True, null=True)
 
     def __str__(self):
         return self.nome

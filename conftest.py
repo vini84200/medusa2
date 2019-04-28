@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 28/04/19 09:43.
+#  Last Modified 28/04/19 10:02.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 from pathlib import Path
@@ -38,7 +38,7 @@ def browser(request):
 
 
 def take_screenshot(browser: webdriver.firefox, test_name: str):
-    screenshots_dir = Path("/Screenshots/funcional_tests")
+    screenshots_dir = Path("Logs/Screenshots/funcional_tests")
     screenshot_file_path = screenshots_dir / (test_name.replace('/', '_').replace('.py', '') + ".png")
     print("Path to screnshot: '{}'".format(screenshot_file_path))
     l = browser.save_screenshot(

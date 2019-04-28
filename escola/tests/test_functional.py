@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 28/04/19 08:32.
+#  Last Modified 28/04/19 11:55.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import time
 
@@ -303,6 +303,7 @@ def test_novo_aluno_pode_logar(live_server, browser, dummy_aluno):
 
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
+@pytest.mark.xfail("Teste não terminado, terminar ASAP")  # TODO: 28/04/2019 por wwwvi: Terminar esse teste
 def test_lider_pode_alterar_horario(live_server, browser, dummy_aluno_lider):
     # Jorge é o lider de sua turma, ele acessa o site para definir o horario de sua turma
     ## Defininindo Jorge como logado
@@ -312,9 +313,11 @@ def test_lider_pode_alterar_horario(live_server, browser, dummy_aluno_lider):
     ht = browser.find_element_by_class_name("horario_table")
     dia = ht.find_element_by_id("turno_1").find_element_by_id('dia_2')
     dia.find_element_by_link_text("Alterar").click()
+    pytest.fail("Terminar")
 
 
 def dummy_login(browser, dummy_user, live_server):
     browser.get(live_server.url)
     browser.add_cookie({'name': 'sessionid', 'value': dummy_user['cookie'].value, 'secure': False, 'path': '/'})
     browser.refresh()
+

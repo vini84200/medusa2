@@ -2,7 +2,7 @@
 {% load permission_tags %}
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 28/04/19 08:32.
+  ~ Last Modified 28/04/19 11:46.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
@@ -18,7 +18,7 @@
 
   </tr>
    {% for turno in turnos %}
-    <tr id="turno_{{turno.id}}">
+    <tr id="turno_{{turno.cod}}">
         <th class="text-center">{{turno.nome}}</th>
         {%for dia in DIAS_DA_SEMANA_N%}
         <td class="text-center" id="dia_{{dia}}">
@@ -33,7 +33,7 @@
 
                 {%if edit_hor%}
           <!--FIXME Verificar as permissões na linha superior-->
-                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">EDITAR</a>
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
                 {%endif%}
             {%else%}
                 <br/><br/>
@@ -41,7 +41,7 @@
                 <br/><br/><br/>
                 {%if edit_hor%}
           <!--FIXME Verificar as permissões na linha superior-->
-                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">EDITAR</a>
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
                 {%endif%}
             {%endif%}
         </td>
