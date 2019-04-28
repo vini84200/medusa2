@@ -2,12 +2,12 @@
 {% load permission_tags %}
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 25/04/19 18:11.
+  ~ Last Modified 28/04/19 08:32.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
 <div class="table-responsive">
-<table class="table">
+<table class="table horario_table">
   <tr>
       <th></th>
       {%for d in DIAS_DA_SEMANA%}
@@ -18,10 +18,10 @@
 
   </tr>
    {% for turno in turnos %}
-    <tr>
+    <tr id="turno_{{turno.id}}">
         <th class="text-center">{{turno.nome}}</th>
         {%for dia in DIAS_DA_SEMANA_N%}
-        <td class="text-center">
+        <td class="text-center" id="dia_{{dia}}">
 
 
            {%dia_teste turno dia ta as verdade%}

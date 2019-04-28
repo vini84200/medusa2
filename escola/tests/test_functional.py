@@ -1,13 +1,17 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 27/04/19 08:03.
+#  Last Modified 28/04/19 08:32.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import time
 
 import pytest
-from django.test import TestCase
+from django.test import TestCase, Client
+from mixer.backend.django import mixer
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+
+from escola import user_utils
+from escola.models import Turma
 
 TIME_LOAD = 2
 
@@ -245,3 +249,72 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     # Pedro sai de sua conta.
     browser.find_element_by_link_text('Sair').click()
 
+
+@pytest.fixture()
+def dummy_aluno():
+    t = mixer.blend(Turma)
+    username = 'marcos'
+    senha = '12345678'
+    nome = 'Marcos das Laranjeiras'
+    a = user_utils.create_aluno_user(username, senha, t, nome, 0)
+    c = Client()
+    c.login(username=username, password=senha)
+    cookie = c.cookies['sessionid']
+    return {
+        'user': a,
+        'username': username,
+        'senha': senha,
+        'nome': nome,
+        'turma': t,
+        'cookie': cookie,
+    }
+
+@pytest.fixture()
+def dummy_aluno_lider(dummy_aluno):
+    dummy_aluno['turma'].lider = dummy_aluno['user']
+    dummy_aluno['turma'].save()
+    return dummy_aluno
+
+
+@pytest.mark.selenium_test
+@pytest.mark.live_server_no_flush
+def test_novo_aluno_pode_logar(live_server, browser, dummy_aluno):
+    """Aluno novo loga no site"""
+    tc = TestCase()
+    # Marcos ouviu falar do novo site de escola, ele esta curioso sobre esse site e suas funcionalidades
+    # Então Marcos acessa o link do site
+    browser.get(live_server.url)
+    # A primeira coisa que Marcos vê é uma tela de Login muito bonita
+    AssertHeader("Login", browser)
+    # Marcos preenche as credencias que recebeu
+    fill_form_id(browser, {
+        'id_username':dummy_aluno['username'],
+        'id_password': dummy_aluno['senha']
+    })
+    submit_form(browser)
+    # Ele é redirecionado a pagina inicial,
+    AssertHeader("Página Inicial", browser)
+    # Na pagina inicial ele vê uma tabela de horarios vazia
+    assert "Horario" in [a.text for a in browser.find_elements_by_tag_name('h2')]
+    # Tambem ele vê uma tabela de Tarefas
+    assert "Tarefas" in [a.text for a in browser.find_elements_by_tag_name('h2')]
+    # Ele resolve sair, sua curiosidade foi saciada
+
+
+@pytest.mark.selenium_test
+@pytest.mark.live_server_no_flush
+def test_lider_pode_alterar_horario(live_server, browser, dummy_aluno_lider):
+    # Jorge é o lider de sua turma, ele acessa o site para definir o horario de sua turma
+    ## Defininindo Jorge como logado
+    dummy_login(browser, dummy_aluno_lider, live_server)
+    # Ele acessa a pagina inicial
+    browser.get(live_server.url)
+    ht = browser.find_element_by_class_name("horario_table")
+    dia = ht.find_element_by_id("turno_1").find_element_by_id('dia_2')
+    dia.find_element_by_link_text("Alterar").click()
+
+
+def dummy_login(browser, dummy_user, live_server):
+    browser.get(live_server.url)
+    browser.add_cookie({'name': 'sessionid', 'value': dummy_user['cookie'].value, 'secure': False, 'path': '/'})
+    browser.refresh()

@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 27/04/19 08:14.
+#  Last Modified 28/04/19 09:43.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 from pathlib import Path
@@ -25,7 +25,7 @@ def browser(request):
     if config('MOZ_HEADLESS', 0) == 1:
         options.add_argument('-headless')
 
-    browser_: CustomWebDriver = CustomWebDriver(firefox_options=options)
+    browser_: CustomWebDriver = CustomWebDriver(options=options)
     failed_before = request.session.testsfailed
     logger.info(f"Yielding browser, failed before: {failed_before}")
     yield browser_
@@ -38,7 +38,7 @@ def browser(request):
 
 
 def take_screenshot(browser: webdriver.firefox, test_name: str):
-    screenshots_dir = Path("Logs/Screenshots/funcional_tests")
+    screenshots_dir = Path("/Screenshots/funcional_tests")
     screenshot_file_path = screenshots_dir / (test_name.replace('/', '_').replace('.py', '') + ".png")
     print("Path to screnshot: '{}'".format(screenshot_file_path))
     l = browser.save_screenshot(
