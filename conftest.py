@@ -20,8 +20,9 @@ from escola.tests.selenium_test_case import CustomWebDriver
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.fixture(scope='module')
-def browser(request):
+def browser_testings(request):
     """Provide a selenium webdriver instance."""
     # SetUp
     options = Options()
@@ -91,6 +92,7 @@ def dummy_aluno():
     c = Client()
     c.login(username=username, password=senha)
     cookie = c.cookies['sessionid']
+    c.logout()
     return {
         'user': a,
         'username': username,

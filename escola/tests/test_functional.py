@@ -11,6 +11,12 @@ from selenium.webdriver.support.select import Select
 
 TIME_LOAD = 2
 
+
+@pytest.fixture(scope='session')
+def splinter_webdriver():
+    """Override splinter webdriver name."""
+    return 'django'
+
 def HeaderWrongMsg(expected, recieved):
     """Retorna uma msg para quando o Title no HEAD da pagina estiver erado"""
     return f"O titulo no HEAD da pagina não é '{expected}', e sim '{recieved}'"
@@ -52,7 +58,7 @@ def submit_form(browser):
 
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
-def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alunos_and_simple_add(live_server, browser,
+def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alunos_and_simple_add(live_server, browser_testings,
                                                                                                    pedrinho):
     """
     :param live_server:
@@ -60,6 +66,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     :param pedrinho:
     :return:
     """
+    browser = browser_testings
     tc = TestCase()
     # Pedro, admin e aluno no site de sua escola quer adicionar uma nova turma ao site, no inicio do ano letivo,
     # para isso acessa o site da escola.
@@ -249,8 +256,9 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
 
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
-def test_novo_aluno_pode_logar(live_server, browser, dummy_aluno):
+def test_novo_aluno_pode_logar(live_server, browser_testings, dummy_aluno):
     """Aluno novo loga no site"""
+    browser = browser_testings
     tc = TestCase()
     # Marcos ouviu falar do novo site de escola, ele esta curioso sobre esse site e suas funcionalidades
     # Então Marcos acessa o link do site
@@ -275,7 +283,8 @@ def test_novo_aluno_pode_logar(live_server, browser, dummy_aluno):
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
 @pytest.mark.xfail(reason="Teste não terminado, terminar ASAP")  # TODO: 28/04/2019 por wwwvi: Terminar esse teste
-def test_lider_pode_alterar_horario(live_server, browser, dummy_aluno_lider):
+def test_lider_pode_alterar_horario(live_server, browser_testings, dummy_aluno_lider):
+    browser = browser_testings
     # Jorge é o lider de sua turma, ele acessa o site para definir o horario de sua turma
     ## Defininindo Jorge como logado
     dummy_login(browser, dummy_aluno_lider, live_server)

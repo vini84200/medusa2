@@ -12,3 +12,6 @@
 escola/tests/htmlcov
 *.log
 /Logs/Screenshots/
+/escola/tests/features/htmlcov/
+/escola.tests.test_functional/
+/escola.tests.features.test_provas/

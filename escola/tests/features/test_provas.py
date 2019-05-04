@@ -4,6 +4,7 @@
 #  Developed by Vinicius José Fritzen
 #  Last Modified 01/05/19 09:23.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import pytest
 from mixer.backend.django import mixer
 from pytest_bdd import (
     given,
@@ -28,12 +29,13 @@ def test_professor_wants_to_create_a_prova():
 @given('a Aluno is logged in')
 def aluno_logged(browser, dummy_aluno, live_server):
     """Aluno is logged in."""
-    browser.get(live_server.url)
-    browser.add_cookie({'name': 'sessionid', 'value': dummy_aluno['cookie'].value, 'secure': False, 'path': '/'})
-    browser.refresh()
+    browser.visit(live_server.url)
+    # browser.add_cookie({'name': 'sessionid', 'value': dummy_aluno['cookie'].value, 'secure': False, 'path': '/'})
+    browser.cookies.add({'sessionid': dummy_aluno['cookie'].value})
+    browser.reload()
 
 
-@given('Professor created a Prova')
+@given('a Professor created a Prova')
 def a_professor_created_a_prova():
     """a Professor created a Prova."""
     # mixer.blend(Prova, )
@@ -43,28 +45,29 @@ def a_professor_created_a_prova():
 @given('a Professor is logged in')
 def professor_logged(browser, live_server, dummy_professor):
     """a Professor is logged in."""
-    browser.get(live_server.url)
-    browser.add_cookie({'name': 'sessionid', 'value': dummy_professor['cookie'].value, 'secure': False, 'path': '/'})
-    browser.refresh()
+    browser.visit(live_server.url)
+    # browser.add_cookie({'name': 'sessionid', 'value': dummy_professor['cookie'].value, 'secure': False, 'path': '/'})
+    browser.cookies.add({'sessionid': dummy_professor['cookie'].value})
+    browser.reload()
     return dummy_professor
 
 
 @given('he clicks on the materia of the list')
-def he_clicks_on_the_materia_of_the_list(browser: CustomWebDriver):
+def he_clicks_on_the_materia_of_the_list(browser):
     """he clicks on the materia of the list."""
-    browser.find_element_by_class_name("materia-item").find_elements_by_class_name("materia-name").click()
+    browser.find_by_css(".materia-item").first.find_by_css("materia-name").first.click()
 
 
 @given('he clicks the Area do Professor dropdown')
 def he_clicks_the_area_do_professor_dropdown(browser):
     """he clicks the Area do Professor dropdown."""
-    browser.find_element_by_link_text("Area do Professor").click()
+    browser.find_by_text("Area do Professor").first.click()
 
 
 @given('he clicks the link \'Adicionar Prova\'')
 def he_clicks_the_link_adicionar_prova(browser):
     """he clicks the link 'Adicionar Prova'."""
-    browser.find_element_by_link_text("Adicionar Prova").click()
+    browser.find_by_text("Adicionar Prova").first.click()
 
 
 @given('he has a Materia for him')
@@ -76,13 +79,13 @@ def he_has_a_materia_for_him(professor_logged):
 @given('he is in the homepage')
 def he_is_in_the_homepage(browser, live_server):
     """he is in the homepage."""
-    browser.get(live_server.url)
+    browser.visit(live_server.url)
 
 
 @given('then clicks in the Minhas Materias option in the dropdown')
 def then_clicks_in_the_minhas_materias_option_in_the_dropdown(browser):
     """then clicks in the Minhas Materias option in the dropdown."""
-    browser.find_element_by_link_text("Minhas Materias").click()
+    browser.find_by_text("Minhas Materias").first.click()
 
 
 @then('the Aluno should see the Prova in the list')

@@ -1,13 +1,13 @@
 Feature: Provas
 
-  @live_server_no_flush
+  @live_server_no_flush @django_db @xfail
   Scenario: Aluno wants to see his Provas
     Given a Aluno is logged in
     And a Professor created a Prova
     When he is in the homepage
     Then the Aluno should see the Prova in the list
 
-  @live_server_no_flush
+  @live_server_no_flush @django_db @xfail
   Scenario: When Professor wants to create a Prova show Form
     Given a Professor is logged in
     And he is in the homepage
