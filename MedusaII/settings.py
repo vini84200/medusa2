@@ -98,6 +98,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'escola.context_processors.google_analytics',
+                'escola.context_processors.warnings',
             ],
         },
     },

@@ -13,7 +13,7 @@ import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
 import escola.views_conteudo
-from escola import api
+from escola import api, views_profile
 from . import views
 
 router = routers.DefaultRouter()
@@ -119,7 +119,13 @@ urlpatterns += \
 # Offline template
 urlpatterns += \
     [
-        path('base_layout', escola.views.base_layout, name='base_layout_offline'),
+        path('baseLayout', escola.views.base_layout, name='base_layout_offline'),
+    ]
+
+# Perfil do usuario
+urlpatterns +=\
+    [
+        path('self/emailChange', views_profile.email_change, name='self-email-change'),
     ]
 
 #Temporarias
