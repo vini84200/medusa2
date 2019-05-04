@@ -11,6 +11,7 @@
 .coverage
 escola/tests/htmlcov
 *.log
-/Logs/log_django.txt
-Logs/log_django.txt
 /Logs/Screenshots/
+/escola/tests/features/htmlcov/
+/escola.tests.test_functional/
+/escola.tests.features.test_provas/

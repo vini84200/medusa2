@@ -26,3 +26,8 @@ django-debug-permissions==1.0.0
 django-progressive-web-app==0.1.1
 rules==2.0.1
 django-role-permissions==2.2.1
+pytest-bdd==3.1.0
+cssselect==1.0.3
+lxml==4.3.3
+splinter==0.10.0
+pytest-splinter==2.0.1

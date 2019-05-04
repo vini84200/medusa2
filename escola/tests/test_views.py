@@ -1,6 +1,6 @@
 """Teste de unidade de todas as Views, seja ela de qualquer arquivo"""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 25/04/19 23:16.
+#  Last Modified 28/04/19 15:19.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 import warnings
@@ -958,7 +958,7 @@ class TestIndex(TestCase):
         c.force_login(aluno.user)
         response = c.get(reverse(self.page_name))
         self.assertEqual(200, response.status_code)
-        self.assertContains(response, '<h2>Horario:</h2>')
+        self.assertContains(response, '<h2>Horario</h2>')
         # TODO: Adicionar mais aspectos a serem verificados
 
     def test_aparece_tarefas(self):
@@ -967,7 +967,7 @@ class TestIndex(TestCase):
         c.force_login(aluno.user)
         response = c.get(reverse(self.page_name))
         self.assertEqual(200, response.status_code)
-        self.assertContains(response, '<h2>Proximas tarefas</h2>')
+        self.assertContains(response, '<h2>Tarefas</h2>')
         # TODO: Adicionar mais aspectos;
 
     def _test_aparece_notificacoes(self):

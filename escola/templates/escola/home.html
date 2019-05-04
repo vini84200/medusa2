@@ -1,7 +1,7 @@
 {% extends "escola/base.html" %}
 <!--
   ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 20/04/19 08:56.
+  ~ Last Modified 28/04/19 07:35.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
@@ -34,12 +34,12 @@
 
 {% if request.user.profile_escola.is_aluno%}
 <article  class="container">
-    <h2>Horario:</h2>
+    <h2>Horario</h2>
 {% mostra_horario_proprio user %}
 </article> <br/>
 
 <article  class="container">
-    <h2>Proximas tarefas</h2>
+    <h2>Tarefas</h2>
     {%if perms.escola.can_add_tarefa%}
         <a href="{% url 'escola:add-tarefa' turma.pk %}">Adicionar Tarefa</a>
     {%endif%}
@@ -80,7 +80,7 @@
     </table></div>
 </article> <br/>
 <article  class="container">
-    <h2>Proximas Provas:</h2>
+    <h2>Provas</h2>
     Não Implementado
 </article> <br/>
 {%endif%}
