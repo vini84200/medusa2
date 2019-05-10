@@ -12,7 +12,7 @@ Feature: Aviso de email
   @live_server_no_flush @django_db
   Scenario: Usuario tem formulario
     Given a user is logged in
-    When Enters the page 'escola:email-change'
+    When Enters the page 'escola:self-email-change'
     Then a form should load
 
   @live_server_no_flush @django_db

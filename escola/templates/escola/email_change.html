@@ -1,0 +1,18 @@
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 04/05/19 17:29.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+{% extends "escola/base.html" %}
+{% load crispy_forms_tags %}
+{%load dict_key %}
+
+
+{% block title %} Alterar Email - Medusa II {% endblock %}
+
+
+{% block conteudo %}
+<div class="container">
+  {%crispy form%}
+</div>
+{% endblock %}
