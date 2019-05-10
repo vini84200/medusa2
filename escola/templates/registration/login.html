@@ -57,29 +57,7 @@
   </form>
   <p><a href="{% url 'password_reset' %}">Esqueceu sua senha?</a></p>
 </div>
-{% if GA_TRACKING_ID %}
-<script>
-  // Get a reference to the form element, assuming
-// it contains the ID attribute "signup-form".
-var form = document.getElementsByTagName("form")[0]
 
-// Add a listener for the "submit" event.
-form.addEventListener('submit', function(event) {
-
-  // Prevent the browser from submitting the form
-  // and thus unloading the current page.
-  event.preventDefault();
-
-  // Send the event to Google Analytics and
-  // resubmit the form once the hit is done.
-  gtag('event', 'login_form_complete', {
-    'event_callback': function() {
-      form.submit();
-    }
-  });
-});
-</script>
-{%endif%}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
           integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
           crossorigin="anonymous"></script>
