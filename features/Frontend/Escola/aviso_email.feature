@@ -1,7 +1,7 @@
 Feature: Aviso de email
   Quando um usuario não possuir um email registrado
 
-  @live_server_no_flush @django_db
+  @django_db
   Scenario: Usuario vê aviso
     Given a user is logged in
     And he doesn't have a email
@@ -9,13 +9,13 @@ Feature: Aviso de email
     Then he sees a warning about his email
     And a link in the warning, to change his email
 
-  @live_server_no_flush @django_db
+  @django_db
   Scenario: Usuario tem formulario
     Given a user is logged in
     When Enters the page 'escola:self-email-change'
     Then a form should load
 
-  @live_server_no_flush @django_db
+  @django_db
   Scenario: Usuario preenche email
     Given a user is logged in
     And enters the page 'escola:email-change'
