@@ -12,12 +12,17 @@ from django.db import models
 from django.urls import reverse
 from django_prometheus.models import ExportModelOperationsMixin
 from mptt.models import MPTTModel, TreeForeignKey
+from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 
 import escola
 from escola.customFields import ColorField
 
 logger = logging.getLogger(__name__)
+
+
+class Escola(models.Model):
+    nome = models.CharField(max_length=150)
 
 
 class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
@@ -55,6 +60,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
     """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
     numero = models.IntegerField()
     ano = models.IntegerField()
+    escola = models.ForeignKey(Escola, on_delete=models.DO_NOTHING, null=True, blank=True)
     lider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
     vicelider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True,
                                   related_name='turma_vicelider')
@@ -140,7 +146,7 @@ class Professor(models.Model, ExportModelOperationsMixin('Professor')):
     """Um professor, não esecifico para uma turma."""
     user = models.OneToOneField(User, related_name='professor', on_delete=models.CASCADE)
     nome = models.CharField(max_length=70)
-
+    escola = models.ForeignKey(Escola, on_delete=models.DO_NOTHING, null=True, blank=True)
     def __str__(self):
         return self.nome
 
@@ -372,6 +378,7 @@ class Turno(models.Model, ExportModelOperationsMixin('Turno')):
     s5 = models.TimeField(blank=True, null=True)
     # 5
     horaFim = models.TimeField(blank=True, null=True)
+    escola = models.ForeignKey(Escola, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self):
         return self.nome
@@ -412,3 +419,16 @@ class Periodo(models.Model, ExportModelOperationsMixin('Periodo')):
     @property
     def turno_cod(self):
         return self.turnoAula.turno.cod
+
+
+# class Evento(PolymorphicModel):
+#     """Uma data especial que aparecerá em um calendario"""
+#     nome = models.CharField(max_length=70)
+#     data = models.DateTimeField()
+#     descricao = models.TextField()
+#
+#     def get_participantes(self):
+#         """Retorna participantes, nenhum no Evento base"""
+#         return None
+
+
