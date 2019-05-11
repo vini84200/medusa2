@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'pwa',
     'rules',
     'rolepermissions',
+    'polymorphic',
 ]
 
 MIDDLEWARE = [
