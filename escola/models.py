@@ -60,7 +60,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
     """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
     numero = models.IntegerField()
     ano = models.IntegerField()
-    escola = models.ForeignKey(Escola, on_delete=models.DO_NOTHING, null=True, blank=True)
+    escola = models.ForeignKey(Escola, on_delete=models.CASCADE)
     lider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
     vicelider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True,
                                   related_name='turma_vicelider')
@@ -146,7 +146,7 @@ class Professor(models.Model, ExportModelOperationsMixin('Professor')):
     """Um professor, não esecifico para uma turma."""
     user = models.OneToOneField(User, related_name='professor', on_delete=models.CASCADE)
     nome = models.CharField(max_length=70)
-    escola = models.ForeignKey(Escola, on_delete=models.DO_NOTHING, null=True, blank=True)
+    escola = models.ForeignKey(Escola, on_delete=models.CASCADE)
     def __str__(self):
         return self.nome
 
@@ -378,7 +378,7 @@ class Turno(models.Model, ExportModelOperationsMixin('Turno')):
     s5 = models.TimeField(blank=True, null=True)
     # 5
     horaFim = models.TimeField(blank=True, null=True)
-    escola = models.ForeignKey(Escola, on_delete=models.DO_NOTHING, null=True, blank=True)
+    escola = models.ForeignKey(Escola, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nome
