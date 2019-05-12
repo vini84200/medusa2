@@ -2,7 +2,7 @@
 Models gerais do aplicativo Escola.
 """
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/05/19 14:30.
+#  Last Modified 12/05/19 20:53.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import datetime
 import logging
@@ -223,7 +223,7 @@ class AreaConhecimento(models.Model):
     nome = models.CharField(max_length=40)
     turma = models.ForeignKey(Turma, models.CASCADE, 'Area')
 
-    def get_materias(self) -> List[MateriaDaTurma]:
+    def get_materias(self):
         """Retorna as materias desta area"""
         return self.materias.all()
 
@@ -235,7 +235,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='materias')
     abreviacao = models.CharField(max_length=5)
     conteudos = models.ManyToManyField(Conteudo)
-    area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='materias')
+    area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='materias', null=True, blank=True)
 
     def __str__(self):
         return f"{self.nome}/{self.turma.numero}"
@@ -521,7 +521,7 @@ class EventoTurma(Evento):
 
 class ProvaMarcada(EventoTurma):
     """Uma prova"""
-    conteudo = models.ManyToManyField(Conteudo, on_delete=models.CASCADE)
+    conteudo = models.ManyToManyField(Conteudo)
 
     def get_materias(self):
         """Retorna lista de materias da prova"""
@@ -532,19 +532,21 @@ class ProvaMarcada(EventoTurma):
         return self.conteudo.all()
 
 
-class ProvaMateriaMarcada(ProvaMarcada, ItemAvaliativoMateria):
+class ProvaMateriaMarcada(ProvaMarcada):
     """Prova de uma materia"""
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
+    item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
+
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return [self.materia, ]
 
 
-class ProvaAreaMarcada(ProvaMarcada, ItemAvaliativoArea):
+class ProvaAreaMarcada(ProvaMarcada):
     """Prova de Area"""
     area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
-
+    item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return self.area.get_materias()
