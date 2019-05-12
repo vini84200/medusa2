@@ -4,18 +4,21 @@ Models gerais do aplicativo Escola.
 #  Developed by Vinicius José Fritzen
 #  Last Modified 28/04/19 09:52.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
-
+import datetime
 import logging
+from enum import Enum
+from typing import List
 
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from django_prometheus.models import ExportModelOperationsMixin
 from mptt.models import MPTTModel, TreeForeignKey
+from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 
 import escola
-from escola.customFields import ColorField
+from escola.customFields import ColorField, JSONField
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +82,11 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
             h = Horario(turma=self)
             h.save()
             return h
+
+    def get_list_alunos(self):
+        """Retorna a lista de user da aluno"""
+        return [a.user for a in self.aluno_set.all()]
+
 
     def __str__(self):
         return f"Turma {self.numero}"
@@ -207,6 +215,15 @@ class LinkConteudo(models.Model):
         return self.titulo
 
 
+class AreaConhecimento(models.Model):
+    """Area do conhecimento"""
+    nome = models.CharField(max_length=40)
+    turma = models.ForeignKey(Turma, models.CASCADE, 'Area')
+
+    def get_materias(self) -> List[MateriaDaTurma]:
+        return self.materias.all()
+
+
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
@@ -214,6 +231,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='materias')
     abreviacao = models.CharField(max_length=5)
     conteudos = models.ManyToManyField(Conteudo)
+    area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='materias')
 
     def __str__(self):
         return f"{self.nome}/{self.turma.numero}"
@@ -412,3 +430,84 @@ class Periodo(models.Model, ExportModelOperationsMixin('Periodo')):
     @property
     def turno_cod(self):
         return self.turnoAula.turno.cod
+
+
+class MetodoAvaliativo(Enum):
+    CONCEITO = 1
+    PORCENTAGEM = 2
+
+
+class ItemAvaliativo(PolymorphicModel):
+    nota = JSONField()
+    metodosAvaliativos = [(m.name) for m in MetodoAvaliativo]
+
+
+class ItemAvaliativoMateria(ItemAvaliativo):
+    materia = models.ForeignKey(MateriaDaTurma, models.CASCADE)
+
+
+class Evento(PolymorphicModel):
+    """Uma data especial que aparecerá em um calendario"""
+    nome = models.CharField(max_length=70)
+    data = models.DateTimeField()
+    descricao = models.TextField()
+
+    owner = models.ForeignKey(User, models.CASCADE)
+
+    def get_participantes(self):
+        """Retorna participantes, nenhum no Evento base"""
+        return []
+
+    def get_data(self) -> datetime:
+        """Retorna data do evento"""
+        return self.data
+
+    def get_descricao(self) -> str:
+        """Retorna a descrição do evento"""
+
+    def has_permition_edit(self, user: User) -> bool:
+        """Retorna True se o usuario tem permissão para editar o evento"""
+        if user == self.owner:
+            return True
+        return False
+
+
+class EventoTurma(Evento):
+    """Uma data especial de uma turma"""
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+
+    def get_participantes(self):
+        """Retorna lista de participante, alunos da turma"""
+        ls = super(EventoTurma, self).get_participantes()
+        return self.turma.get_list_alunos() + ls
+
+
+class ProvaMarcada(EventoTurma):
+    """Uma prova"""
+    conteudo = models.ManyToManyField(Conteudo, on_delete=models.CASCADE)
+
+    def get_materias(self):
+        """Retorna lista de materias da prova"""
+        return []
+
+    def get_conteudo(self) -> List[MateriaDaTurma]:
+        """Retorna lista de conteudos dessa prova"""
+        return self.conteudo.all()
+
+
+class ProvaMateriaMarcada(ProvaMarcada):
+    """Prova de uma materia"""
+    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
+
+    def get_materias(self) -> List[MateriaDaTurma]:
+        """Retorna lista de materias dessa prova"""
+        return [self.materia, ]
+
+
+class ProvaAreaMarcada(ProvaMarcada):
+    """Prova de Area"""
+    area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
+
+    def get_materias(self) -> List[MateriaDaTurma]:
+        """Retorna lista de materias dessa prova"""
+        return self.area.get_materias()
