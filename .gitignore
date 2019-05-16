@@ -16,3 +16,4 @@ escola/tests/htmlcov
 /escola.tests.test_functional/
 /escola.tests.features.test_provas/
 /backupDBdev/
+/escola.tests.features.test_aviso_email/

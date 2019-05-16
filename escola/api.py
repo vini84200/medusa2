@@ -1,15 +1,15 @@
 """Views da API do sistema"""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/04/19 13:19.
+#  Last Modified 16/05/19 13:21.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.contrib.auth.models import User, Group
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 
 from escola import api_permissions
 from . import models
 from . import serializers
-from rest_framework import viewsets, permissions
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -168,3 +168,26 @@ class CategoriaConteudoViewSet(viewsets.ModelViewSet):
     queryset = models.CategoriaConteudo.objects.all()
     serializer_class = serializers.CategoriaConteudoSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
+
+# Provas e Eventos
+
+
+class AreaConhecimentoViewSet(viewsets.ModelViewSet):
+    """Viewset for the AreaConhecimento class"""
+    queryset = models.AreaConhecimento.objects.all()
+    serializer_class = serializers.AreaConhecimentoSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+
+class EventoViewSet(viewsets.ModelViewSet):
+    """Viewset for the Evento polymorphic class"""
+    queryset = models.Evento.objects.all()
+    serializer_class = serializers.EventoPolymorphicSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+
+class ProvaMarcadaViewSet(viewsets.ModelViewSet):
+    """Viewset for the ProvaMarcada polymorphic class"""
+    queryset = models.ProvaMarcada.objects.all()
+    serializer_class = serializers.ProvaMarcadaPolymorphicSerializer
+    permission_classes = [permissions.IsAdminUser]

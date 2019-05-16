@@ -2,11 +2,10 @@
 Models gerais do aplicativo Escola.
 """
 #  Developed by Vinicius José Fritzen
-#  Last Modified 12/05/19 20:53.
+#  Last Modified 16/05/19 13:21.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import datetime
 import logging
-from enum import Enum
 from typing import List
 
 from django.contrib.auth.models import User
@@ -18,8 +17,7 @@ from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 
 import escola
-from escola.customFields import ColorField, JSONField
-from escola.metodos_avaliacao import NotaConceito, NotaPercentual
+from escola.customFields import ColorField
 
 logger = logging.getLogger(__name__)
 
@@ -442,45 +440,45 @@ class Periodo(models.Model, ExportModelOperationsMixin('Periodo')):
         return self.turnoAula.turno.cod
 
 
-class MetodoAvaliativo(Enum):
-    """Enumerado de metodos de registrar uma nota"""
-    CONCEITO = ('CONCEITO', NotaConceito)
-    PORCENTAGEM = ('PORCENTAGEM', NotaPercentual)
-
-    def __init__(self, name, klass):
-        self.nome = name
-        self.klass = klass
-
-    @property
-    def tupleChoice(self):
-        return self.name, self.name.title()
-
-
-class ItemAvaliativo(PolymorphicModel):
-    """Um item que será avaliado, com  nota"""
-    nome = models.CharField(max_length=90)
-    numero = models.IntegerField()
-    nota = JSONField(null=True, blank=True)
-    metodosAvaliativos = [m.tupleChoice for m in MetodoAvaliativo]
-    metodoNota = models.CharField(max_length=30, choices=metodosAvaliativos)
-
-    def get_materias(self) -> List[MateriaDaTurma]:
-        return []
+# class MetodoAvaliativo(Enum):
+#     """Enumerado de metodos de registrar uma nota"""
+#     CONCEITO = ('CONCEITO', NotaConceito)
+#     PORCENTAGEM = ('PORCENTAGEM', NotaPercentual)
+#
+#     def __init__(self, name, klass):
+#         self.nome = name
+#         self.klass = klass
+#
+#     @property
+#     def tupleChoice(self):
+#         return self.name, self.name.title()
 
 
-class ItemAvaliativoMateria(ItemAvaliativo):
-    materia = models.ForeignKey(MateriaDaTurma, models.CASCADE)
+# class ItemAvaliativo(PolymorphicModel):
+#     """Um item que será avaliado, com  nota"""
+#     nome = models.CharField(max_length=90)
+#     numero = models.IntegerField()
+#     nota = JSONField(null=True, blank=True)
+#     metodosAvaliativos = [m.tupleChoice for m in MetodoAvaliativo]
+#     metodoNota = models.CharField(max_length=30, choices=metodosAvaliativos)
+#
+#     def get_materias(self) -> List[MateriaDaTurma]:
+#         return []
 
-    def get_materias(self):
-        return [self.materia, ]
 
-
-class ItemAvaliativoArea(ItemAvaliativo):
-    area = models.ForeignKey(AreaConhecimento, models.CASCADE)
-
-    def get_materias(self) -> List[MateriaDaTurma]:
-        """Retorna lista de materias dessa prova"""
-        return self.area.get_materias()
+# class ItemAvaliativoMateria(ItemAvaliativo):
+#     materia = models.ForeignKey(MateriaDaTurma, models.CASCADE)
+#
+#     def get_materias(self):
+#         return [self.materia, ]
+#
+#
+# class ItemAvaliativoArea(ItemAvaliativo):
+#     area = models.ForeignKey(AreaConhecimento, models.CASCADE)
+#
+#     def get_materias(self) -> List[MateriaDaTurma]:
+#         """Retorna lista de materias dessa prova"""
+#         return self.area.get_materias()
 
 
 class Evento(PolymorphicModel):
@@ -494,6 +492,11 @@ class Evento(PolymorphicModel):
     def get_participantes(self):
         """Retorna participantes, nenhum no Evento base"""
         return []
+
+    @property
+    def participantes(self):
+        """Propriedade de participante"""
+        return self.get_participantes()
 
     def get_data(self) -> datetime:
         """Retorna data do evento"""
@@ -535,8 +538,7 @@ class ProvaMarcada(EventoTurma):
 class ProvaMateriaMarcada(ProvaMarcada):
     """Prova de uma materia"""
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
-    item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
-
+    # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
@@ -546,7 +548,8 @@ class ProvaMateriaMarcada(ProvaMarcada):
 class ProvaAreaMarcada(ProvaMarcada):
     """Prova de Area"""
     area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
-    item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
+    # item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
+
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return self.area.get_materias()

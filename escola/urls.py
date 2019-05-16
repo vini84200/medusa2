@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 20/04/19 08:59.
+#  Last Modified 16/05/19 13:21.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.urls import path, include
@@ -7,12 +7,12 @@ from rest_framework import routers
 
 import escola.views_aluno
 import escola.views_cargo
+import escola.views_conteudo
 import escola.views_horario
 import escola.views_materia
 import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
-import escola.views_conteudo
 from escola import api, views_profile
 from . import views
 
@@ -36,6 +36,10 @@ router.register(r'turnoaula', api.TurnoAulaViewSet)
 router.register(r'conteudo', api.ConteudoViewSet)
 router.register(r'link_conteudo', api.LinkConteudoViewSet)
 router.register(r'categoria_conteudo', api.CategoriaConteudoViewSet)
+# Func. Provas Marcadas
+router.register(r'area', api.AreaConhecimentoViewSet)
+router.register(r'evento', api.EventoViewSet)
+router.register(r'provamarcada', api.ProvaMarcadaViewSet)
 
 app_name = 'escola'
 
