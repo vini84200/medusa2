@@ -1,6 +1,6 @@
 """Mantem funções para criar usuarios, e seus grupos padrões."""
 #  Developed by Vinicius José Fritzen
-#  Last Modified 26/04/19 16:30.
+#  Last Modified 16/05/19 14:42.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 
@@ -87,6 +87,7 @@ def create_aluno_user(username, senha, turma, nome, num=0):
     a.chamada = num
     a.save()
     assign_role(u, 'aluno')
+    u.save()
     return u
 
 

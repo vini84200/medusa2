@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 16/05/19 13:21.
+#  Last Modified 16/05/19 13:55.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.urls import path, include
@@ -123,7 +123,7 @@ urlpatterns += \
 # Offline template
 urlpatterns += \
     [
-        path('baseLayout', escola.views.base_layout, name='base_layout_offline'),
+        path('base_layout', escola.views.base_layout, name='base_layout_offline'),
     ]
 
 # Perfil do usuario
@@ -132,7 +132,8 @@ urlpatterns +=\
         path('self/emailChange', views_profile.email_change, name='self-email-change'),
     ]
 
-#Temporarias
+# Temporarias
+
 # urlpatterns += \
 #     [
 #           JAMAIS ADICIONAR NOVAMENTE, É DEBUG!!!

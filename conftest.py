@@ -1,5 +1,5 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 28/04/19 16:28.
+#  Last Modified 16/05/19 14:42.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 from pathlib import Path
@@ -83,7 +83,7 @@ def authenticated_pedrinho_browser(browser, client, live_server, pedrinho):
     return browser
 
 @pytest.fixture()
-def dummy_aluno():
+def dummy_aluno(db):
     t = mixer.blend(Turma)
     username = 'marcos'
     senha = '12345678'
@@ -92,7 +92,6 @@ def dummy_aluno():
     c = Client()
     c.login(username=username, password=senha)
     cookie = c.cookies['sessionid']
-    c.logout()
     return {
         'user': a,
         'username': username,
@@ -110,7 +109,7 @@ def dummy_aluno_lider(dummy_aluno):
 
 
 @pytest.fixture()
-def dummy_professor():
+def dummy_professor(db):
     username = 'teixeira'
     senha = '12345678'
     nome = 'Teixeira das Laranjeiras'
