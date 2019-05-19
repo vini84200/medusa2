@@ -487,7 +487,7 @@ class Evento(models.Model):
     data = models.DateTimeField()
     descricao = models.TextField()
 
-    owner = models.ForeignKey(User, models.CASCADE)
+    owner = models.ForeignKey(User, models.CASCADE, null=True, blank=True)
 
     def get_nome(self):
         return self.nome
