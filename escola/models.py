@@ -537,11 +537,13 @@ class EventoTurma(models.Model):
         a = EventoTurma()
         a.evento = Evento.create(nome, data, descricao, owner)
         a.turma = turma
+        a.save()
+        return a
 
 
-class ProvaMarcada(PolymorphicModel):
+class ProvaMarcada(models.Model):
     """Uma prova"""
-    conteudo = models.ManyToManyField(Conteudo)
+    conteudos = models.ManyToManyField(Conteudo)
     evento = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
 
     def get_materias(self):
@@ -552,21 +554,42 @@ class ProvaMarcada(PolymorphicModel):
         """Retorna lista de conteudos dessa prova"""
         return self.conteudo.all()
 
+    def add_conteudo(self, conteudo):
+        self.conteudos.add(conteudo)
 
-class ProvaMateriaMarcada(ProvaMarcada):
+    def add_conteudos(self, conteudos):
+        for c in conteudos:
+            self.add_conteudo(c)
+
+    @staticmethod
+    def create(turma, nome, data, descricao, owner, conteudos = None):
+        a = ProvaMarcada()
+        a.evento = EventoTurma.create(turma, nome, data, descricao, owner)
+        a.save()
+
+        if conteudos:
+            a.add_conteudos(conteudos)
+        return a
+
+
+class ProvaMateriaMarcada(models.Model):
     """Prova de uma materia"""
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
+    _prova = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return [self.materia, ]
 
 
-class ProvaAreaMarcada(ProvaMarcada):
+
+
+class ProvaAreaMarcada(models.Model):
     """Prova de Area"""
     area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
+    _prova = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""

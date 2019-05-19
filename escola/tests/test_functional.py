@@ -293,7 +293,7 @@ def test_lider_pode_alterar_horario(live_server, browser, dummy_aluno_lider, tra
     ht = browser.find_by_css(".horario_table")
     dia = ht.first.find_by_id("turno_1").first.find_by_id('dia_2')
     dia.find_by_text("Alterar").click()
-    pytest.xfail("Terminar")  # TODO: 18/05/2019 por wwwvi: TERMINAR
+    pytest.xfail("Terminar")  # TODO: 18/05/2019 por wwwvi: TERMINAR, e automatizar uma criação de turnos e horarios
 
 
 def dummy_login(browser, dummy_user, live_server):
