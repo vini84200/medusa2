@@ -489,21 +489,19 @@ class Evento(models.Model):
 
     owner = models.ForeignKey(User, models.CASCADE)
 
-    def get_participantes(self):
-        """Retorna participantes, nenhum no Evento base"""
-        return []
-
-    @property
-    def participantes(self):
-        """Propriedade de participante"""
-        return self.get_participantes()
+    def get_nome(self):
+        return self.nome
 
     def get_data(self) -> datetime:
         """Retorna data do evento"""
         return self.data
 
-    def get_descricao(self) -> str:
+    def get_descricao(self):
         """Retorna a descrição do evento"""
+        return self.descricao
+
+    def get_owner(self):
+        return self.owner
 
     def has_permition_edit(self, user: User) -> bool:
         """Retorna True se o usuario tem permissão para editar o evento"""
@@ -521,6 +519,11 @@ class Evento(models.Model):
         a.save()
         return a
 
+    def update(self, *args, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+        self.save()
+
 
 class EventoTurma(models.Model):
     """Uma data especial de uma turma"""
@@ -529,8 +532,27 @@ class EventoTurma(models.Model):
 
     def get_participantes(self):
         """Retorna lista de participante, alunos da turma"""
-        ls = self.evento.get_participantes()
-        return self.turma.get_list_alunos() + ls
+        return self.turma.get_list_alunos()
+
+    def get_nome(self):
+        return self.evento.get_nome()
+
+    def get_data(self) -> datetime:
+        """Retorna data do evento"""
+        return self.evento.get_data()
+
+    def get_descricao(self):
+        """Retorna a descrição do evento"""
+        return self.evento.get_descricao()
+
+    def get_owner(self):
+        return self.evento.get_owner()
+
+    def has_permition_edit(self, user: User) -> bool:
+        """Retorna True se o usuario tem permissão para editar o evento"""
+        if user == self.get_owner:
+            return True
+        return False
 
     @staticmethod
     def create(turma, nome, data, descricao, owner):
@@ -540,17 +562,22 @@ class EventoTurma(models.Model):
         a.save()
         return a
 
+    def update(self, *args, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+        self.save()
+
 
 class ProvaMarcada(models.Model):
     """Uma prova"""
     conteudos = models.ManyToManyField(Conteudo)
-    evento = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
+    evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
 
     def get_materias(self):
         """Retorna lista de materias da prova"""
         return []
 
-    def get_conteudo(self) -> List[MateriaDaTurma]:
+    def get_conteudos(self) -> List[MateriaDaTurma]:
         """Retorna lista de conteudos dessa prova"""
         return self.conteudo.all()
 
@@ -561,8 +588,38 @@ class ProvaMarcada(models.Model):
         for c in conteudos:
             self.add_conteudo(c)
 
+    def update(self, *args, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+        self.save()
+
+    def get_participantes(self):
+        """Retorna lista de participante, alunos da turma"""
+        return self.evento.get_participantes()
+
+    def get_nome(self):
+        return self.evento.get_nome()
+
+    def get_data(self) -> datetime:
+        """Retorna data do evento"""
+        return self.evento.get_data()
+
+    def get_descricao(self):
+        """Retorna a descrição do evento"""
+        return self.evento.get_descricao()
+
+    def get_owner(self):
+        return self.evento.get_owner()
+
+    def has_permition_edit(self, user: User) -> bool:
+        """Retorna True se o usuario tem permissão para editar o evento"""
+        if user == self.get_owner:
+            return True
+        return False
+
+
     @staticmethod
-    def create(turma, nome, data, descricao, owner, conteudos = None):
+    def create(turma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMarcada()
         a.evento = EventoTurma.create(turma, nome, data, descricao, owner)
         a.save()
@@ -574,23 +631,112 @@ class ProvaMarcada(models.Model):
 
 class ProvaMateriaMarcada(models.Model):
     """Prova de uma materia"""
-    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
+    materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
-    _prova = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
+    _prova: ProvaMarcada = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return [self.materia, ]
 
+    def get_conteudos(self):
+        return self._prova.get_conteudos()
 
+    def add_conteudo(self, c):
+        return self._prova.add_conteudo(c)
+
+    def add_conteudos(self, clist):
+        return self._prova.add_conteudos(clist)
+
+    def update(self, *args, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+        self.save()
+
+    def get_participantes(self):
+        """Retorna lista de participante, alunos da turma"""
+        return self._prova.get_participantes()
+
+    def get_nome(self):
+        return self._prova.get_nome()
+
+    def get_data(self) -> datetime:
+        """Retorna data do evento"""
+        return self._prova.get_data()
+
+    def get_descricao(self):
+        """Retorna a descrição do evento"""
+        return self._prova.get_descricao()
+
+    def get_owner(self):
+        return self._prova.get_owner()
+
+    def has_permition_edit(self, user: User) -> bool:
+        """Retorna True se o usuario tem permissão para editar o evento"""
+        if user == self.get_owner:
+            return True
+        return False
+
+
+    @staticmethod
+    def create(materia: MateriaDaTurma, nome, data, descricao, owner, conteudos=None):
+        a = ProvaMateriaMarcada()
+        a._prova = ProvaMarcada.create(materia.turma, nome, data, descricao, owner, conteudos)
+        a.materia = materia
+        a.save()
 
 
 class ProvaAreaMarcada(models.Model):
     """Prova de Area"""
-    area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
+    area: AreaConhecimento = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
-    _prova = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
+    _prova: ProvaMarcada = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return self.area.get_materias()
+
+    def get_conteudos(self):
+        return self._prova.get_conteudos()
+
+    def add_conteudo(self, c):
+        return self._prova.add_conteudo(c)
+
+    def add_conteudos(self, clist):
+        return self._prova.add_conteudos(clist)
+
+    def update(self, *args, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+        self.save()
+
+    def get_participantes(self):
+        """Retorna lista de participante, alunos da turma"""
+        return self._prova.get_participantes()
+
+    def get_nome(self):
+        return self._prova.get_nome()
+
+    def get_data(self) -> datetime:
+        """Retorna data do evento"""
+        return self._prova.get_data()
+
+    def get_descricao(self):
+        """Retorna a descrição do evento"""
+        return self._prova.get_descricao()
+
+    def get_owner(self):
+        return self._prova.get_owner()
+
+    def has_permition_edit(self, user: User) -> bool:
+        """Retorna True se o usuario tem permissão para editar o evento"""
+        if user == self.get_owner:
+            return True
+        return False
+
+    @staticmethod
+    def create(area, nome, data, descricao, owner, conteudos=None):
+        a = ProvaAreaMarcada()
+        a._prova = ProvaMarcada.create(area.turma, nome, data, descricao, owner, conteudos)
+        a.area = area
+        a.save()

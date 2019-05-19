@@ -20,4 +20,8 @@ DATABASES = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 
+# Desabilita o Ga para evitar estatisticas falsas no Google Analytics
 GA_TRACKING_ID = None
+
+# Desabilita o reportamento automatico de erros para o Sentry
+RAVEN_CONFIG = None
