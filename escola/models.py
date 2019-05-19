@@ -481,7 +481,7 @@ class Periodo(models.Model, ExportModelOperationsMixin('Periodo')):
 #         return self.area.get_materias()
 
 
-class Evento(PolymorphicModel):
+class Evento(models.Model):
     """Uma data especial que aparecerá em um calendario"""
     nome = models.CharField(max_length=70)
     data = models.DateTimeField()
@@ -511,20 +511,38 @@ class Evento(PolymorphicModel):
             return True
         return False
 
+    @staticmethod
+    def create(nome, data, descricao, owner):
+        a = Evento()
+        a.nome = nome
+        a.data = data
+        a.descricao = descricao
+        a.owner = owner
+        a.save()
+        return a
 
-class EventoTurma(Evento):
+
+class EventoTurma(models.Model):
     """Uma data especial de uma turma"""
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    turma: Turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    evento: Evento = models.ForeignKey(Evento, on_delete=models.CASCADE)
 
     def get_participantes(self):
         """Retorna lista de participante, alunos da turma"""
-        ls = super(EventoTurma, self).get_participantes()
+        ls = self.evento.get_participantes()
         return self.turma.get_list_alunos() + ls
 
+    @staticmethod
+    def create(turma, nome, data, descricao, owner):
+        a = EventoTurma()
+        a.evento = Evento.create(nome, data, descricao, owner)
+        a.turma = turma
 
-class ProvaMarcada(EventoTurma):
+
+class ProvaMarcada(PolymorphicModel):
     """Uma prova"""
     conteudo = models.ManyToManyField(Conteudo)
+    evento = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
 
     def get_materias(self):
         """Retorna lista de materias da prova"""
