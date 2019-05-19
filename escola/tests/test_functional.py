@@ -252,8 +252,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     click_button(turma_row, "Cargos")
     assert 'patricia.pk' in [r.text for r in browser.find_by_css('.cargo_ocupante')]
     # Pedro sai de sua conta.
-    # browser.find_link_by_text('Sair').click()
-    logger.warning("Fim do teste")
+    browser.find_link_by_text('Sair').click()
 
 
 
@@ -269,7 +268,7 @@ def test_novo_aluno_pode_logar(live_server, browser, dummy_aluno, transactional_
     AssertHeader("Login", browser)
     # Marcos preenche as credencias que recebeu
     fill_form_id(browser, {
-        'id_username':dummy_aluno['username'],
+        'id_username': dummy_aluno['username'],
         'id_password': dummy_aluno['senha']
     })
     submit_form(browser)
@@ -292,13 +291,13 @@ def test_lider_pode_alterar_horario(live_server, browser, dummy_aluno_lider, tra
     # Ele acessa a pagina inicial
     browser.visit(live_server.url)
     ht = browser.find_by_css(".horario_table")
-    dia = ht.find_element_by_id("turno_1").find_element_by_id('dia_2')
-    dia.find_link_by_text("Alterar").click()
-    pytest.fail("Terminar")
+    dia = ht.first.find_by_id("turno_1").first.find_by_id('dia_2')
+    dia.find_by_text("Alterar").click()
+    pytest.xfail("Terminar")  # TODO: 18/05/2019 por wwwvi: TERMINAR
 
 
 def dummy_login(browser, dummy_user, live_server):
     browser.visit(live_server.url)
-    browser.add_cookie({'name': 'sessionid', 'value': dummy_user['cookie'].value, 'secure': False, 'path': '/'})
-    browser.refresh()
+    browser.cookies.add({'sessionid': dummy_user['cookie'].value})
+    browser.reload()
 
