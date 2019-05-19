@@ -119,7 +119,7 @@ urlpatterns += \
 # Offline template
 urlpatterns += \
     [
-        path('baseLayout', escola.views.base_layout, name='base_layout_offline'),
+        path('base_layout', escola.views.base_layout, name='base_layout_offline'),
     ]
 
 # Perfil do usuario
@@ -128,7 +128,8 @@ urlpatterns +=\
         path('self/emailChange', views_profile.email_change, name='self-email-change'),
     ]
 
-#Temporarias
+# Temporarias
+
 # urlpatterns += \
 #     [
 #           JAMAIS ADICIONAR NOVAMENTE, É DEBUG!!!

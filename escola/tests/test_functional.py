@@ -300,4 +300,3 @@ def dummy_login(browser, dummy_user, live_server):
     browser.visit(live_server.url)
     browser.cookies.add({'sessionid': dummy_user['cookie'].value})
     browser.reload()
-
