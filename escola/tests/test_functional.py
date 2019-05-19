@@ -1,6 +1,7 @@
 #  Developed by Vinicius José Fritzen
-#  Last Modified 01/05/19 09:23.
+#  Last Modified 16/05/19 16:44.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import logging
 import time
 
 import pytest
@@ -11,11 +12,14 @@ from selenium.webdriver.support.select import Select
 
 TIME_LOAD = 2
 
+logger = logging.getLogger(__name__)
 
-@pytest.fixture(scope='session')
-def splinter_webdriver():
-    """Override splinter webdriver name."""
-    return 'django'
+
+
+# @pytest.fixture(scope='session')
+# def splinter_webdriver():
+#     """Override splinter webdriver name."""
+#     return 'django'
 
 def HeaderWrongMsg(expected, recieved):
     """Retorna uma msg para quando o Title no HEAD da pagina estiver erado"""
@@ -38,48 +42,43 @@ def AssertAlunoInTheList(nome, num, browser):
 def navigate_navbar(browser, points):
     """Navega no site pela NavBar, envie quais pontos da navbar devem ser selecionados"""
     for p in points:
-        browser.find_element_by_link_text(p).click()
+        browser.click_link_by_partial_text(p)
 
 
 def click_button(browser, btn_text):
     """Clica no botão com esse texto"""
-    browser.find_element_by_link_text(btn_text).click()
+    browser.click_link_by_partial_text(btn_text)
 
 
 def fill_form_id(browser, fields: dict):
     """Prenche um form usando os valores passados como key como id e value como o que escrever"""
     for field_id, data in fields.items():
-        browser.find_css(f'#{field_id}').send_keys(data)
+        browser.find_by_css(f'#{field_id}').type(data)
+
 
 def submit_form(browser):
     """Envia o form da pagina"""
-    browser.find_element_by_tag_name('form').find_element_by_name('submit').click()
+    browser.find_by_tag('form').find_element_by_name('submit').click()
 
 
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
-def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alunos_and_simple_add(live_server, browser_testings,
+def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alunos_and_simple_add(live_server, browser,
                                                                                                    pedrinho):
-    """
-    :param live_server:
-    :param webdriver.Firefox browser:
-    :param pedrinho:
-    :return:
-    """
-    browser = browser_testings
+    """Testa o login de um admin, adição de uma turma, alunos, professores, materias, e cargos"""
     tc = TestCase()
     # Pedro, admin e aluno no site de sua escola quer adicionar uma nova turma ao site, no inicio do ano letivo,
     # para isso acessa o site da escola.
-    browser.get(live_server.url)
+    browser.visit(live_server.url)
     # O site o redireciona a pagina de login.
     # Login é o titulo
     AssertHeader('Login', browser)
     # Pedro adiciona sua credenciais e loga no site.
-    username_input = browser.find_css('#id_username')
-    username_input.send_keys(pedrinho[1])
-    senha_input = browser.find_css('#id_password')
-    senha_input.send_keys(pedrinho[2])
-    button = browser.find_element_by_tag_name('button')
+    username_input = browser.find_by_css('#id_username')[0]
+    username_input.type(pedrinho[1])
+    senha_input = browser.find_by_css('#id_password')
+    senha_input.type(pedrinho[2])
+    button = browser.find_by_tag('button')
     button.click()
     # Ele é redirecionado a pagina inicial do site,
     # Pedro Verifica que a pagina possui o titulo de 'Pagina Inicial'
@@ -88,7 +87,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
     # Ele chega lá, e vê que há um titulo 'Lista de Turmas'.
     AssertHeader('Lista de Turmas', browser)
-    h1 = browser.find_element_by_tag_name('h1')
+    h1 = browser.find_by_tag('h1')
     tc.assertIn('Lista de Turmas', h1.text, f"Lista de turmas não é o titulo no h1 da pagina, e sim '{h1.text}'")
 
     # Ele tambem vê um botão, 'Adicionar Turma'.
@@ -98,10 +97,10 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     # a pagina possui titulo: 'Adicionar uma turma'
     AssertHeader('Adicionar uma turma', browser)
     # ele preeche com turma: '302', um terceiro ano de sua escola, e o ano, '2019', já estava preenchido. ano letivo que estava começando.
-    browser.find_css('#id_numero').send_keys('302')
-    assert browser.find_css('#id_ano').get_property('value') == '2019'
+    browser.find_by_css('#id_numero').type('302')
+    assert browser.find_by_css('#id_ano')[0].get_property('value') == '2019'
     # Ele aperta enter e é redirecionado a lista de turmas,
-    browser.find_css('#id_ano').send_keys(Keys.ENTER)
+    browser.find_by_css('#id_ano').type(Keys.ENTER)
     # onde Pedro pode ver que sua turma está na lista, isso alegra Pedro. :D
     time.sleep(TIME_LOAD)
     turma_row = browser.find_element_by_class_name('turma_302')
@@ -116,9 +115,9 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     # Pedro clica no link de adicionar aluno,
     browser.find_element_by_link_text('Adicionar Aluno').click()
     # e preenche com o nome de 'Silas S Abdi', anota o n da chamada como 14.
-    browser.find_css('#id_num_chamada').send_keys('14')
-    browser.find_css('#id_nome').send_keys('Silas S Abdi')
-    browser.find_css('#id_nome').send_keys(Keys.ENTER)
+    browser.find_by_css('#id_num_chamada').type('14')
+    browser.find_by_css('#id_nome').type('Silas S Abdi')
+    browser.find_by_css('#id_nome').type(Keys.ENTER)
     time.sleep(TIME_LOAD)
     # Pedro preciona enter e redirecionado para uma pagina que mostra que seu novo usuario possui uma senha
     # e nome de usuario, pedro os imprime e volta para pagina inicial
@@ -147,19 +146,19 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     # alunos, ele comeca a adicionar varios:
     # 2 | Eligia A Borkowska | 302
     ## time.sleep(30)
-    browser.find_element_by_name('form-0-num_chamada').send_keys('2')
-    browser.find_element_by_name('form-0-nome').send_keys('Eligia A Borkowska')
-    browser.find_element_by_name('form-0-turma').send_keys('302')
+    browser.find_element_by_name('form-0-num_chamada').type('2')
+    browser.find_element_by_name('form-0-nome').type('Eligia A Borkowska')
+    browser.find_element_by_name('form-0-turma').type('302')
     # 3 | Kelsie E Aitken    | 302
-    browser.find_element_by_name('form-1-num_chamada').send_keys('3')
-    browser.find_element_by_name('form-1-nome').send_keys('Kelsie E Aitken')
-    browser.find_element_by_name('form-1-turma').send_keys('302')
+    browser.find_element_by_name('form-1-num_chamada').type('3')
+    browser.find_element_by_name('form-1-nome').type('Kelsie E Aitken')
+    browser.find_element_by_name('form-1-turma').type('302')
     # 4 | Amanda M Nilsson   | 302
-    browser.find_element_by_name('form-2-num_chamada').send_keys('4')
-    browser.find_element_by_name('form-2-nome').send_keys('Amanda M Nilsson')
-    browser.find_element_by_name('form-2-turma').send_keys('302')
+    browser.find_element_by_name('form-2-num_chamada').type('4')
+    browser.find_element_by_name('form-2-nome').type('Amanda M Nilsson')
+    browser.find_element_by_name('form-2-turma').type('302')
     # E então pedrinho clica em enviar,
-    browser.find_css('#submit-id-submit').click()
+    browser.find_by_css('#submit-id-submit').click()
     # ele vê então uma pagina com senhas e cartões para serem distribuidos, ele esta feliz,
     # ele mais uma vez volta a pagina inicial
 
@@ -250,13 +249,14 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     click_button(turma_row, "Cargos")
     assert 'patricia.pk' in [r.text for r in browser.find_elements_by_class_name('cargo_ocupante')]
     # Pedro sai de sua conta.
-    browser.find_element_by_link_text('Sair').click()
+    # browser.find_element_by_link_text('Sair').click()
+    logger.warning("Fim do teste")
 
 
 
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
-def test_novo_aluno_pode_logar(live_server, browser_testings, dummy_aluno):
+def test_novo_aluno_pode_logar(live_server, browser_testings, dummy_aluno, transactional_db):
     """Aluno novo loga no site"""
     browser = browser_testings
     tc = TestCase()
@@ -283,7 +283,7 @@ def test_novo_aluno_pode_logar(live_server, browser_testings, dummy_aluno):
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
 @pytest.mark.xfail(reason="Teste não terminado, terminar ASAP")  # TODO: 28/04/2019 por wwwvi: Terminar esse teste
-def test_lider_pode_alterar_horario(live_server, browser_testings, dummy_aluno_lider):
+def test_lider_pode_alterar_horario(live_server, browser_testings, dummy_aluno_lider, transactional_db):
     browser = browser_testings
     # Jorge é o lider de sua turma, ele acessa o site para definir o horario de sua turma
     ## Defininindo Jorge como logado
