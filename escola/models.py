@@ -550,9 +550,12 @@ class EventoTurma(models.Model):
 
     def has_permition_edit(self, user: User) -> bool:
         """Retorna True se o usuario tem permissão para editar o evento"""
-        if user == self.get_owner:
+        if user == self.get_owner():
             return True
         return False
+
+    def get_turma(self):
+        return self.turma
 
     @staticmethod
     def create(turma, nome, data, descricao, owner):
@@ -588,11 +591,6 @@ class ProvaMarcada(models.Model):
         for c in conteudos:
             self.add_conteudo(c)
 
-    def update(self, *args, **kwargs):
-        for k in kwargs:
-            setattr(self, k, kwargs[k])
-        self.save()
-
     def get_participantes(self):
         """Retorna lista de participante, alunos da turma"""
         return self.evento.get_participantes()
@@ -611,9 +609,12 @@ class ProvaMarcada(models.Model):
     def get_owner(self):
         return self.evento.get_owner()
 
+    def get_turma(self):
+        return self.evento.get_turma()
+
     def has_permition_edit(self, user: User) -> bool:
         """Retorna True se o usuario tem permissão para editar o evento"""
-        if user == self.get_owner:
+        if user == self.get_owner():
             return True
         return False
 
@@ -673,9 +674,12 @@ class ProvaMateriaMarcada(models.Model):
 
     def has_permition_edit(self, user: User) -> bool:
         """Retorna True se o usuario tem permissão para editar o evento"""
-        if user == self.get_owner:
+        if user == self.get_owner():
             return True
         return False
+
+    def get_turma(self):
+        return self._prova.get_turma()
 
 
     @staticmethod
@@ -684,6 +688,7 @@ class ProvaMateriaMarcada(models.Model):
         a._prova = ProvaMarcada.create(materia.turma, nome, data, descricao, owner, conteudos)
         a.materia = materia
         a.save()
+        return a
 
 
 class ProvaAreaMarcada(models.Model):
@@ -730,9 +735,12 @@ class ProvaAreaMarcada(models.Model):
 
     def has_permition_edit(self, user: User) -> bool:
         """Retorna True se o usuario tem permissão para editar o evento"""
-        if user == self.get_owner:
+        if user == self.get_owner():
             return True
         return False
+
+    def get_turma(self):
+        return self._prova.get_turma()
 
     @staticmethod
     def create(area, nome, data, descricao, owner, conteudos=None):
@@ -740,3 +748,4 @@ class ProvaAreaMarcada(models.Model):
         a._prova = ProvaMarcada.create(area.turma, nome, data, descricao, owner, conteudos)
         a.area = area
         a.save()
+        return a
