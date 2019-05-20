@@ -6,7 +6,7 @@ from mixer.backend.django import mixer
 
 from escola import user_utils
 from escola.models import Evento, EventoTurma, ProvaMarcada, ProvaAreaMarcada, ProvaMateriaMarcada, Turma, \
-    MateriaDaTurma, AreaConhecimento
+    MateriaDaTurma, AreaConhecimento, Conteudo
 
 pytestmark = pytest.mark.django_db
 
@@ -318,6 +318,55 @@ def test_prova_marcada_get_participantes(faker):
     assert len(a.get_participantes()) == 2
 
 
+def test_prova_marcada_get_materias(faker):
+    turma = mixer.blend(Turma)
+    nome = faker.sentence()
+    data = faker.date_time()
+    descricao = faker.paragraph()
+    owner = mixer.blend(User)
+    a = ProvaMarcada.create(turma, nome, data, descricao, owner)
+    assert a.get_materias() == []
+
+
+# def test_prova_marcada_get_conteudos(faker):
+#     turma = mixer.blend(Turma)
+#     nome = faker.sentence()
+#     data = faker.date_time()
+#     descricao = faker.paragraph()
+#     owner = mixer.blend(User)
+#     a = ProvaMarcada.create(turma, nome, data, descricao, owner)
+#     assert None is a.get_conteudos()
+#     c = mixer.blend(Conteudo)
+#     a.conteudos.add(c)
+#     assert a.get_conteudos() == [c, ]
+#
+#
+# def test_prova_marcada_add_conteudo(faker):
+#     turma = mixer.blend(Turma)
+#     nome = faker.sentence()
+#     data = faker.date_time()
+#     descricao = faker.paragraph()
+#     owner = mixer.blend(User)
+#     a = ProvaMarcada.create(turma, nome, data, descricao, owner)
+#     assert a.get_conteudos() == []
+#     c = mixer.blend(Conteudo)
+#     a.add_conteudo(c)
+#     assert a.get_conteudos() == [c, ]
+#
+#
+# def test_prova_marcada_add_conteudos(faker):
+#     turma = mixer.blend(Turma)
+#     nome = faker.sentence()
+#     data = faker.date_time()
+#     descricao = faker.paragraph()
+#     owner = mixer.blend(User)
+#     a = ProvaMarcada.create(turma, nome, data, descricao, owner)
+#     assert a.get_conteudos() == []
+#     c0 = mixer.blend(Conteudo)
+#     c1 = mixer.blend(Conteudo)
+#     a.add_conteudos([c0, c1, ])
+#     assert a.get_conteudos() == [c0, c1, ]
+
 # Prova Marcada Materia
 
 
@@ -329,7 +378,7 @@ def test_prova_marcada_materia_create(faker):
     descricao = faker.paragraph()
     owner = mixer.blend(User)
     a = ProvaMateriaMarcada.create(materia, nome, data, descricao, owner)
-    assert initial + 1 == ProvaMateriaMarcada.objects.count()
+    assert a.get_materias() == [materia, ]
 
 
 def test_prova_marcada_materia_get_nome(faker):
@@ -423,7 +472,6 @@ def test_prova_marcada_materia_get_participantes(faker):
 
 def test_prova_marcada_area_create(faker):
     initial = ProvaAreaMarcada.objects.count()
-    turma = mixer.blend(Turma)
     area = mixer.blend(AreaConhecimento)
     nome = faker.sentence()
     data = faker.date_time()
@@ -434,7 +482,6 @@ def test_prova_marcada_area_create(faker):
 
 
 def test_prova_marcada_area_get_nome(faker):
-    turma = mixer.blend(Turma)
     area = mixer.blend(AreaConhecimento)
     nome = faker.sentence()
     data = faker.date_time()
@@ -445,7 +492,6 @@ def test_prova_marcada_area_get_nome(faker):
 
 
 def test_prova_marcada_area_get_data(faker):
-    turma = mixer.blend(Turma)
     area = mixer.blend(AreaConhecimento)
     nome = faker.sentence()
     data = faker.date_time()
@@ -456,7 +502,6 @@ def test_prova_marcada_area_get_data(faker):
 
 
 def test_prova_marcada_area_get_descricao(faker):
-    turma = mixer.blend(Turma)
     area = mixer.blend(AreaConhecimento)
     nome = faker.sentence()
     data = faker.date_time()
@@ -467,7 +512,6 @@ def test_prova_marcada_area_get_descricao(faker):
 
 
 def test_prova_marcada_area_get_owner(faker):
-    turma = mixer.blend(Turma)
     area = mixer.blend(AreaConhecimento)
     nome = faker.sentence()
     data = faker.date_time()
@@ -489,7 +533,6 @@ def test_prova_marcada_area_get_turma(faker):
 
 
 def test_prova_marcada_area_somebody_has_permition_to_edit_denies(faker):
-    turma = mixer.blend(Turma)
     area = mixer.blend(AreaConhecimento)
     nome = faker.sentence()
     data = faker.date_time()
@@ -501,7 +544,6 @@ def test_prova_marcada_area_somebody_has_permition_to_edit_denies(faker):
 
 
 def test_prova_marcada_area_owner_has_permition_to_edit_accept(faker):
-    turma = mixer.blend(Turma)
     area = mixer.blend(AreaConhecimento)
     nome = faker.sentence()
     data = faker.date_time()

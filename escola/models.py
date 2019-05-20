@@ -582,7 +582,11 @@ class ProvaMarcada(models.Model):
 
     def get_conteudos(self) -> List[MateriaDaTurma]:
         """Retorna lista de conteudos dessa prova"""
-        return self.conteudo.all()
+        s = self.conteudos.all()
+        g = []
+        for item in s:
+            g += [item, ]
+
 
     def add_conteudo(self, conteudo):
         self.conteudos.add(conteudo)
