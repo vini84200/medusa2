@@ -36,7 +36,6 @@ def dummy_login(browser, dummy_user, live_server):
 # Testes
 
 
-@pytest.mark.xfail()
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
 def test_ver_datas_e_marcar_uma(dummy_professor, live_server, browser):
@@ -50,9 +49,11 @@ def test_ver_datas_e_marcar_uma(dummy_professor, live_server, browser):
     # Ela aperta no primeiro botão ‘Química/203’
     assert browser.find_by_id('section-resumo-professor').find_by_id('div-turmas-hoje').is_text_present('Química/203')
     browser.find_by_id('section-resumo-professor').find_by_id('div-turmas-hoje').click_link_by_text('Química/203')
+    pytest.fail("Termine o teste")
     # e é levada a uma página onde ela pode ver algumas informações,
 
-    # e em um painel lateral ela vê um botão ‘Escolher data para marcar prova’, ela clica ali e é levada a uma página com título
+    # e em um painel lateral ela vê um botão ‘Escolher data para marcar prova’,
+    # ela clica ali e é levada a uma página com título
     # ‘Datas livres da 203’ e embaixo há um calendário, o mês é o mesmo que o atual, datas passadas estão em cinza, já a
     # data atual em azul, as datas que o professor tem aula com a  turma em verde, já outras datas em branco.
     # Se houvesse alguma prova marcada estaria em vermelho. Cada data tem espaço para seus eventos, como provas, e
