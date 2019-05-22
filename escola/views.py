@@ -24,7 +24,7 @@ def index(request):
     logger.info('views:index; user_id: %s', request.user.pk)
     context = {'request': request}
 
-    if request.user.profile_escola.is_aluno:
+    if request.user.profile_escola.is_aluno:  # TODO: Transformar as tarefas em um panel
         turma_pk = request.user.aluno.turma.pk
         logger.info('views:index; user_id: %s é aluno.', request.user.pk)
         # TAREFAS
@@ -37,7 +37,16 @@ def index(request):
         context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 
     logger.info('Antes de renderizar a view index, user: %s', request.user.pk)
-    return render(request, 'escola/home.html', context=context)
+
+    if request.user.profile_escola.is_aluno:
+        logger.info('É um aluno renderizando tela do aluno')
+        return render(request, 'escola/home_aluno.html', context=context)
+
+    if request.user.profile_escola.is_professor:
+        logger.info('É um professor renderizando tela do professor')
+        return render(request, 'escola/home_professor.html', context=context)
+    logger.warning('O usuario não é nem professor nem aluno, renderizando a tela default')
+    return render(request, 'escola/home_base.html', context=context)
 
 
 @permission_required('escola.edit_aluno')

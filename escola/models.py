@@ -226,6 +226,14 @@ class AreaConhecimento(models.Model):
         return self.materias.all()
 
 
+class MateriaManager(models.Manager):
+    def filter_from_professor(self, professor):
+        return super().filter(professor = professor).all()
+
+    def filter_from_professor_for_day(self, professor, day):
+        return [a for a in self.filter_from_professor(professor).all() if a.has_aula_in_day(day)]
+
+
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
@@ -235,8 +243,14 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     conteudos = models.ManyToManyField(Conteudo)
     area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='materias', null=True, blank=True)
 
+    objects = models.Manager()
+    helper = MateriaManager()
+
     def __str__(self):
         return f"{self.nome}/{self.turma.numero}"
+
+    def has_aula_in_day(self, day):
+        return True # FIXME: FINISH
 
     class Meta:
         """Meta"""

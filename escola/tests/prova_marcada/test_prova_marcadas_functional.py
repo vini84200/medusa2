@@ -38,6 +38,7 @@ def dummy_login(browser, dummy_user, live_server):
 
 @pytest.mark.selenium_test
 @pytest.mark.live_server_no_flush
+@pytest.mark.xfail(reason="Not finished")
 def test_ver_datas_e_marcar_uma(dummy_professor, live_server, browser):
     # A Joana, uma professora de sua escola, precisa marcar uma prova com sua turma, ela entra na sua plataforma,
     dummy_login(browser, dummy_professor, live_server)
