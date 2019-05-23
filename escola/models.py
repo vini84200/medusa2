@@ -221,20 +221,29 @@ class AreaConhecimento(models.Model):
     nome = models.CharField(max_length=40)
     turma = models.ForeignKey(Turma, models.CASCADE, 'Area')
 
+    def __str__(self):
+        return self.nome
+
     def get_materias(self):
         """Retorna as materias desta area"""
         return self.materias.all()
 
     def get_materias_str(self):
+        """
+        Retorna a lista de materias no formato string.
+        Ex.
+            "Matematica"
+            "Portugues, Ingles"
+        """
         mats = self.get_materias()
         if len(mats) == 1:
             return f"{mats[0].nome}"
-        a = ""
+        str_nomes = ''
         for m in mats:
-            if not a == "":
-                a += ", "
-            a += f"{m.nome}"
-
+            if not str_nomes == "":
+                str_nomes += ", "
+            str_nomes += f"{m.nome}"
+        return str_nomes
 
 
 class MateriaManager(models.Manager):
@@ -422,9 +431,12 @@ class Turno(models.Model, ExportModelOperationsMixin('Turno')):
     # 5
     horaFim = models.TimeField(blank=True, null=True)
 
+    objects = models.Manager()
+
     def __str__(self):
         return self.nome
 
+    @staticmethod
     def get_turno_by_cod(cod):
         return Turno.objects.filter(cod=cod)[0]
 
@@ -517,6 +529,9 @@ class Evento(models.Model):
     def get_nome(self):
         return self.nome
 
+    def __str__(self):
+        return self.get_nome()
+
     def get_data(self) -> datetime:
         """Retorna data do evento"""
         return self.data
@@ -554,6 +569,9 @@ class EventoTurma(models.Model):
     """Uma data especial de uma turma"""
     turma: Turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     evento: Evento = models.ForeignKey(Evento, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.get_nome()
 
     def get_participantes(self):
         """Retorna lista de participante, alunos da turma"""
@@ -604,6 +622,9 @@ class ProvaMarcada(models.Model):
     def get_materias(self):
         """Retorna lista de materias da prova"""
         return []
+
+    def __str__(self):
+        return self.get_nome()
 
     def get_conteudos(self) -> List[MateriaDaTurma]:
         """Retorna lista de conteudos dessa prova"""
@@ -666,6 +687,9 @@ class ProvaMateriaMarcada(models.Model):
     materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
     _prova: ProvaMarcada = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.get_nome()
 
     def get_apresentacao(self):
         return f"{self.materia.nome}"
@@ -736,6 +760,9 @@ class ProvaAreaMarcada(models.Model):
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return self.area.get_materias()
+
+    def __str__(self):
+        return self.get_nome()
 
     def get_conteudos(self):
         return self._prova.get_conteudos()
