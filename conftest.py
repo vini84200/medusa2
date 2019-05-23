@@ -45,35 +45,36 @@ def take_screenshot(browser: webdriver.firefox, test_name: str):
     screenshots_dir = Path("Logs/Screenshots/funcional_tests")
     screenshot_file_path = screenshots_dir / (test_name.replace('/', '_').replace('.py', '') + ".png")
     print("Path to screnshot: '{}'".format(screenshot_file_path))
-    l = browser.save_screenshot(
+    taken = browser.save_screenshot(
         screenshot_file_path.absolute().resolve().__str__()
     )
-    if not l:
+    if not taken:
         logger.warning("Couldn't take screnshot for some reason.")
     else:
         logger.info("Screnshot taken! Path: '{}'".format(screenshot_file_path))
 
-username = 'pedrinho'
-senha = '123456'
+
+username_pedrinho = 'pedrinho'
+senha_pedrinho = '123456'
 
 
 @pytest.fixture()
 def pedrinho(db):
     """Add a test user to the database."""
     user_ = mixer.blend(User,
-        name='Pedrinho',
-        username=username,
-        password=make_password(senha),
-        is_staff = True,
-        )
+                        name='Pedrinho',
+                        username=username_pedrinho,
+                        password=make_password(senha_pedrinho),
+                        is_staff=True,
+                        )
     assign_role(user_, 'admin')
-    return user_, username, senha
+    return user_, username_pedrinho, senha_pedrinho
 
 
 @pytest.fixture()
 def authenticated_pedrinho_browser(browser, client, live_server, pedrinho):
     """Return a browser instance with logged-in user session."""
-    client.login(username=username, password=senha)
+    client.login(username=username_pedrinho, password=senha_pedrinho)
     cookie = client.cookies['sessionid']
 
     browser.get(live_server.url)
@@ -82,12 +83,13 @@ def authenticated_pedrinho_browser(browser, client, live_server, pedrinho):
 
     return browser
 
+
 @pytest.fixture()
-def dummy_aluno():
+def dummy_aluno(faker):
     t = mixer.blend(Turma)
-    username = 'marcos'
-    senha = '12345678'
-    nome = 'Marcos das Laranjeiras'
+    username = faker.user_name()
+    senha = faker.password()
+    nome = faker.name()
     a = user_utils.create_aluno_user(username, senha, t, nome, 0)
     c = Client()
     c.login(username=username, password=senha)
@@ -102,6 +104,7 @@ def dummy_aluno():
         'cookie': cookie,
     }
 
+
 @pytest.fixture()
 def dummy_aluno_lider(dummy_aluno):
     dummy_aluno['turma'].lider = dummy_aluno['user']
@@ -110,10 +113,10 @@ def dummy_aluno_lider(dummy_aluno):
 
 
 @pytest.fixture()
-def dummy_professor():
-    username = 'teixeira'
-    senha = '12345678'
-    nome = 'Teixeira das Laranjeiras'
+def dummy_professor(faker):
+    username = faker.user_name()
+    senha = faker.password()
+    nome = faker.name()
     a = user_utils.create_professor_user(username, senha, nome)
     c = Client()
     c.login(username=username, password=senha)

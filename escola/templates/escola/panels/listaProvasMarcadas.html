@@ -1,0 +1,26 @@
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 22/05/19 14:42.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Titulo</th>
+        <th>Data</th>
+      </tr>
+    </thead>
+    {# Linhas #}
+    {% for prova in provas %}
+      <tr>
+        <td>{{prova.get_apresentacao}}</td>
+        <td>{{prova.get_nome}}</td>
+        <td>{{prova.get_data}}</td>
+      </tr>
+    {% endfor %}
+
+  </table>
+</div>

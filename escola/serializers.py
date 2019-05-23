@@ -4,11 +4,11 @@
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
 from django.contrib.auth.models import User, Group
+from rest_framework import serializers
+from rest_polymorphic.serializers import PolymorphicSerializer
 from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
 
 from . import models
-
-from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -247,3 +247,157 @@ class LinkConteudoSerializer(TaggitSerializer, serializers.ModelSerializer):
             'descricao',
             'tags',
         )
+
+# Provas e eventos
+
+
+class AreaConhecimentoSerializer(serializers.ModelSerializer):
+    turma = serializers.HyperlinkedRelatedField(
+        many=False,
+        view_name='turma-detail',
+        read_only=True,
+    )
+    class Meta:
+        model = models.AreaConhecimento
+        fields = (
+            'id',
+            'nome',
+            'turma',
+        )
+
+
+class EventoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Evento
+        fields = (
+            'nome',
+            'data',
+            'descricao'
+        )
+
+
+class EventoTurmaSerializer(serializers.ModelSerializer):
+    turma = serializers.HyperlinkedRelatedField(
+        many=False,
+        view_name='turma-detail',
+        read_only=True
+    )
+
+    class Meta:
+        model = models.EventoTurma
+        fields = (
+            'nome',
+            'data',
+            'descricao',
+            'turma'
+        )
+
+
+class ProvaMarcadaSerializer(serializers.ModelSerializer):
+    turma = serializers.HyperlinkedRelatedField(
+        many=False,
+        view_name='turma-detail',
+        read_only=True
+    )
+    conteudo = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='conteudo-detail',
+        read_only=True
+    )
+
+    class Meta:
+        model = models.ProvaMarcada
+        fields = (
+            'nome',
+            'data',
+            'descricao',
+            'turma',
+            'conteudo',
+        )
+
+
+class ProvaMarcadaMateriaSerializer(serializers.ModelSerializer):
+    turma = serializers.HyperlinkedRelatedField(
+        many=False,
+        view_name='turma-detail',
+        read_only=True
+    )
+    conteudo = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='conteudo-detail',
+        read_only=True
+    )
+    materia = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='materia-detail',
+        read_only=True
+    )
+    item_avaliativo = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='item_avaliativo-detail',
+        read_only=True
+    )
+    class Meta:
+        model = models.ProvaMarcada
+        fields = (
+            'nome',
+            'data',
+            'descricao',
+            'turma',
+            'conteudo',
+            'materia',
+            'item_avaliativo',
+        )
+
+
+class ProvaMarcadaAreaSerializer(serializers.ModelSerializer):
+    turma = serializers.HyperlinkedRelatedField(
+        many=False,
+        view_name='turma-detail',
+        read_only=True
+    )
+    conteudo = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='conteudo-detail',
+        read_only=True
+    )
+    area = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='area-detail',
+        read_only=True
+    )
+    item_avaliativo = serializers.HyperlinkedRelatedField(
+        many=True,
+        view_name='item_avaliativo-detail',
+        read_only=True
+    )
+
+    class Meta:
+        model = models.ProvaMarcada
+        fields = (
+            'nome',
+            'data',
+            'descricao',
+            'turma',
+            'conteudo',
+            'area',
+            'item_avaliativo',
+        )
+
+
+class EventoPolymorphicSerializer(PolymorphicSerializer):
+    model_serializer_mapping = {
+        models.Evento: EventoSerializer,
+        models.EventoTurma: EventoTurmaSerializer,
+        models.ProvaMarcada: ProvaMarcadaSerializer,
+        models.ProvaMateriaMarcada: ProvaMarcadaMateriaSerializer,
+        models.ProvaAreaMarcada: ProvaMarcadaAreaSerializer,
+    }
+
+
+class ProvaMarcadaPolymorphicSerializer(PolymorphicSerializer):
+    model_serializer_mapping = {
+        models.ProvaMarcada: ProvaMarcadaSerializer,
+        models.ProvaAreaMarcada: ProvaMarcadaAreaSerializer,
+        models.ProvaMateriaMarcada: ProvaMarcadaMateriaSerializer,
+    }

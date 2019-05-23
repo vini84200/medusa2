@@ -942,7 +942,7 @@ class TestIndex(TestCase):
         c.force_login(aluno.user)
         response = c.get(reverse(self.page_name))
         self.assertEqual(200, response.status_code)
-        self.assertTemplateUsed(response, 'escola/home.html')
+        self.assertTemplateUsed(response, 'escola/home_aluno.html')
 
     def test_prof(self):
         c = Client()
@@ -950,7 +950,7 @@ class TestIndex(TestCase):
         c.force_login(prof.user)
         response = c.get(reverse(self.page_name))
         self.assertEqual(200, response.status_code)
-        self.assertTemplateUsed(response, 'escola/home.html')
+        self.assertTemplateUsed(response, 'escola/home_professor.html')
 
     def test_aparece_horario(self):
         c = Client()

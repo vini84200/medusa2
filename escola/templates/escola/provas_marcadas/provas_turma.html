@@ -1,0 +1,18 @@
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 22/05/19 14:42.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+{% extends "escola/home_base.html" %}
+
+{% load panels %}
+
+{% block conteudo %}
+
+<section class="container">
+  <h1>Provas marcadas da {{turma}}</h1>
+  {% panel_lista_provas_marcadas_turma turma %}
+</section>
+
+{% endblock conteudo %}

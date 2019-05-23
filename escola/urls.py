@@ -13,7 +13,7 @@ import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
 import escola.views_conteudo
-from escola import api, views_profile
+from escola import api, views_profile, views_provas_marcadas
 from . import views
 
 router = routers.DefaultRouter()
@@ -119,7 +119,7 @@ urlpatterns += \
 # Offline template
 urlpatterns += \
     [
-        path('baseLayout', escola.views.base_layout, name='base_layout_offline'),
+        path('base_layout', escola.views.base_layout, name='base_layout_offline'),
     ]
 
 # Perfil do usuario
@@ -128,7 +128,16 @@ urlpatterns +=\
         path('self/emailChange', views_profile.email_change, name='self-email-change'),
     ]
 
-#Temporarias
+# Marcar Provas
+
+urlpatterns +=\
+    [
+        path('turmas/<int:turma_pk>/provas', views_provas_marcadas.ListaProvasTurmaView.as_view(),
+             name='provas-turma-list'),
+    ]
+
+# Temporarias
+
 # urlpatterns += \
 #     [
 #           JAMAIS ADICIONAR NOVAMENTE, É DEBUG!!!

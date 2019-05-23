@@ -1,38 +1,13 @@
-{% extends "escola/base.html" %}
+{% extends "escola/home_base.html" %}
 <!--
   ~ Developed by Vinicius José Fritzen
   ~ Last Modified 28/04/19 07:35.
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
-<!--FIXME Implementar permissões melhoradas-->
 {%load dict_key %}
-{% block title %} Página Inicial - Medusa II {% endblock %}
 
-
-{% block conteudo %}
-
-{%if user.profile_escola.template_data.notificacao_count > 0 %}
-
-<article class="container">
-
-        <h2>Notificações</h2>
-    <div class="list-group">
-        {% for noti in user.profile_escola.template_data.notificacoes%}
-            <a href="{% if noti.link%}{{noti.link}}{%else%}#{%endif%}" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{noti.title}}</h5>
-                    <small>{{noti.dataCriado|timesince}} ago</small>
-                </div>
-                <p class="mb-1">{{noti.msg}}</p>
-            </a>
-        {%endfor%}
-    </div>
-</article> <br/>
-{%endif%}
-
-
-{% if request.user.profile_escola.is_aluno%}
+{% block especific_cargo %}
 <article  class="container">
     <h2>Horario</h2>
 {% mostra_horario_proprio user %}
@@ -83,10 +58,4 @@
     <h2>Provas</h2>
     Não Implementado
 </article> <br/>
-{%endif%}
-
-
-{% endblock %}
-
-{% block scripts %}
-{% endblock %}
+{% endblock especific_cargo %}

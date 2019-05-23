@@ -15,3 +15,5 @@ escola/tests/htmlcov
 /escola/tests/features/htmlcov/
 /escola.tests.test_functional/
 /venv/
+/escola/tests/prova_marcada/htmlcov/
+/escola.tests.prova_marcada.test_prova_marcadas_functional/

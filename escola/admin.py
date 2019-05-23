@@ -21,4 +21,10 @@ admin.site.register(Notificacao)
 admin.site.register(Conteudo)
 admin.site.register(CategoriaConteudo)
 admin.site.register(LinkConteudo)
-
+# Prova Marcada Register
+admin.site.register(AreaConhecimento)
+admin.site.register(Evento)
+admin.site.register(EventoTurma)
+admin.site.register(ProvaMarcada)
+admin.site.register(ProvaMateriaMarcada)
+admin.site.register(ProvaAreaMarcada)
