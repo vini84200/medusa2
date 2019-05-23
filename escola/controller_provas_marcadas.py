@@ -5,7 +5,7 @@ from datetime import date
 
 from django.contrib.auth.models import User
 
-from escola.models import Turma, Professor, MateriaDaTurma
+from escola.models import Turma, Professor, MateriaDaTurma, ProvaMateriaMarcada, ProvaAreaMarcada
 
 
 def get_dia_eventos(dia: date, user: User):
@@ -26,3 +26,10 @@ def has_a_prova_in_day(dia: date, turma: Turma):
 def get_materias_professor_for_day(professor: Professor, dia: date):
     """Return a list of materias of the professor for today"""
     return MateriaDaTurma.helper.filter_from_professor_for_day(professor, dia)
+
+
+def get_provas_turma(turma: Turma):
+    a = [a for a in ProvaMateriaMarcada.objects.all() if a.get_turma() == turma]
+    a += [a for a in ProvaAreaMarcada.objects.all() if a.get_turma() == turma]
+    return a
+    

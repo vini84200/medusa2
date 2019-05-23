@@ -225,10 +225,21 @@ class AreaConhecimento(models.Model):
         """Retorna as materias desta area"""
         return self.materias.all()
 
+    def get_materias_str(self):
+        mats = self.get_materias()
+        if len(mats) == 1:
+            return f"{mats[0].nome}"
+        a = ""
+        for m in mats:
+            if not a == "":
+                a += ", "
+            a += f"{m.nome}"
+
+
 
 class MateriaManager(models.Manager):
     def filter_from_professor(self, professor):
-        return super().filter(professor = professor).all()
+        return super().filter(professor=professor).all()
 
     def filter_from_professor_for_day(self, professor, day):
         return [a for a in self.filter_from_professor(professor).all() if a.has_aula_in_day(day)]
@@ -250,7 +261,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
         return f"{self.nome}/{self.turma.numero}"
 
     def has_aula_in_day(self, day):
-        return True # FIXME: FINISH
+        return True  # FIXME: FINISH
 
     class Meta:
         """Meta"""
@@ -596,14 +607,17 @@ class ProvaMarcada(models.Model):
 
     def get_conteudos(self) -> List[MateriaDaTurma]:
         """Retorna lista de conteudos dessa prova"""
-        s = self.conteudos.all()
+        s = self.conteudos
         g = []
         for item in s:
             g += [item, ]
-
+        return g
 
     def add_conteudo(self, conteudo):
-        self.conteudos.add(conteudo)
+        if conteudo.parent:
+            self.add_conteudo(conteudo.parent)
+        if conteudo not in self.conteudos:
+            self.conteudos.add(conteudo)
 
     def add_conteudos(self, conteudos):
         for c in conteudos:
@@ -636,7 +650,6 @@ class ProvaMarcada(models.Model):
             return True
         return False
 
-
     @staticmethod
     def create(turma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMarcada()
@@ -653,6 +666,9 @@ class ProvaMateriaMarcada(models.Model):
     materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
     _prova: ProvaMarcada = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
+
+    def get_apresentacao(self):
+        return f"{self.materia.nome}"
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
@@ -699,6 +715,8 @@ class ProvaMateriaMarcada(models.Model):
     def get_turma(self):
         return self._prova.get_turma()
 
+    def get_conteudo_materia(self, materia):
+        pass
 
     @staticmethod
     def create(materia: MateriaDaTurma, nome, data, descricao, owner, conteudos=None):
@@ -759,6 +777,9 @@ class ProvaAreaMarcada(models.Model):
 
     def get_turma(self):
         return self._prova.get_turma()
+
+    def get_apresentacao(self):
+        return f"Area: {self.area}({self.area.get_materias_str()})"
 
     @staticmethod
     def create(area, nome, data, descricao, owner, conteudos=None):

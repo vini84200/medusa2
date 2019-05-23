@@ -5,8 +5,8 @@ import datetime
 
 from django.template.defaultfilters import register
 
-from escola.controller_provas_marcadas import get_materias_professor_for_day
-from escola.models import Turno
+from escola.controller_provas_marcadas import get_materias_professor_for_day, get_provas_turma
+from escola.models import Turno, Turma
 
 
 @register.inclusion_tag('escola/horario/horario_include.html')
@@ -59,3 +59,18 @@ def panel_resumo_do_dia_prof(user):
     context = {}
     context.update({'turmashoje': get_materias_professor_for_day(professor, datetime.date.today())})
     return context
+
+
+# Panel da lista de provas de uma turma
+@register.inclusion_tag('escola/panels/listaProvasMarcadas.html')
+def panel_lista_provas_marcadas_turma(turma: Turma):
+    """Retorna uma lista de provas de uma turma em especifico"""
+    context = {}
+    provas = get_provas_turma(turma)
+    context.update({'turma': turma})
+
+
+# Panel do resumo diario dos alunos
+
+# Lista de provas do aluno
+# PS: Usar a função anterior já existente
