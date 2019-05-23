@@ -4,13 +4,18 @@
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
-{% extends "escola/home_base.html" %}
+{% extends "escola/base.html" %}
 
 {% load panels %}
+{% load permission_tags %}
 
 {% block conteudo %}
 
 <section class="container">
+  {% if user|can:'create_provas'%}
+    <a href="{%url 'escola:create-prova-materia'%}"></a>
+  {% endif %}
+
   <h1>Provas marcadas da {{turma}}</h1>
   {% panel_lista_provas_marcadas_turma turma %}
 </section>

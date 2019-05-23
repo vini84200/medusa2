@@ -24,7 +24,7 @@ class ListaProvasTurmaView(DetailView):
 
 
 # Adicionar prova de materia
-class ProvaCreateView(CreateView):
+class CreateProvaMateriaView(CreateView):
     pass
 
 # Adicionar prova de area
