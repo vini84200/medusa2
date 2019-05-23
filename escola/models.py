@@ -598,7 +598,7 @@ class EventoTurma(models.Model):
 
 class ProvaMarcada(models.Model):
     """Uma prova"""
-    conteudos = models.ManyToManyField(Conteudo)
+    conteudos = models.ManyToManyField(Conteudo, blank=True)
     evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
 
     def get_materias(self):

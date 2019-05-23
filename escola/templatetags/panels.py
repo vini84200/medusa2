@@ -67,7 +67,8 @@ def panel_lista_provas_marcadas_turma(turma: Turma):
     """Retorna uma lista de provas de uma turma em especifico"""
     context = {}
     provas = get_provas_turma(turma)
-    context.update({'turma': turma})
+    context.update({'turma': turma, 'provas': provas})
+    return context
 
 
 # Panel do resumo diario dos alunos
