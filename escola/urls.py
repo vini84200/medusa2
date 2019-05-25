@@ -45,8 +45,9 @@ urlpatterns = [
     # turma
     path('turmas/', escola.views_turma.list_turmas, name='list-turmas'),
     path('turmas/add/', escola.views_turma.add_turma, name='add-turma'),
-    path('turmas/edit/<int:pk>', escola.views_turma.edit_turma, name='edit-turma'),
-    path('turmas/delete/<int:pk>', escola.views_turma.delete_turma, name='delete-turma'),
+    path('turmas/<int:pk>', escola.views_turma.TurmaDetailView.as_view(), name='detail-turma'),
+    path('turmas/<int:pk>/edit', escola.views_turma.edit_turma, name='edit-turma'),
+    path('turmas/<int:pk>/delete', escola.views_turma.delete_turma, name='delete-turma'),
     path('alunos/populate/', escola.views_aluno.populate_alunos, name='populate-alunos'),
     # cargos
     path('turmas/<int:pk_turma>/cargos', escola.views_cargo.list_cargos, name='list-cargos'),
