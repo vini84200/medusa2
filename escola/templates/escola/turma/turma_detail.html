@@ -1,0 +1,18 @@
+{% extends "../base.html" %}
+
+{% load permission_tags %}
+
+{% block conteudo %}
+
+<div class="container">
+
+  <h1>{{turma}}</h1>
+
+  {% can 'marcar_prova_m_turma' turma as can_marcar_prova_materia%}
+  {%if can_marcar_prova_materia%}
+    <a href="{%url 'escola:marcar-prova-materia' %}" class="btn btn-primary">A</a>
+  {%endif%}
+
+</div>
+
+{% endblock conteudo %}

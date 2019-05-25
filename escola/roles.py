@@ -21,6 +21,7 @@ class Admin(AbstractUserRole):
         'add_professor': True,
         'add_materia_g': True,
         'add_cargo_g': True,
+        'marcar_prova_g': True,
     }
 
 

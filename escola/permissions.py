@@ -165,6 +165,7 @@ def delete_tarefa(role, user, tarefa):
 
     return False
 
+
 @register_object_checker()
 def add_cargo(role, user, turma):
     if user.is_superuser:
@@ -173,4 +174,13 @@ def add_cargo(role, user, turma):
     if has_permission(user, 'add_cargo_g'):
         return True
 
+    return False
+
+
+@register_object_checker()
+def marcar_prova_m_turma(role, user, turma):
+    if has_role(user, 'professor'):
+        return True
+    if user.is_staff:
+        return True
     return False

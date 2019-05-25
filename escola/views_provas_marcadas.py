@@ -4,11 +4,13 @@
 import logging
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.functional import lazy
 from django.views.generic import ListView, CreateView, DetailView
+from rolepermissions.checkers import has_object_permission, has_role
 
 from escola.forms import MarcarProvaMateriaProfessorForm
 from escola.models import Turma, Professor
@@ -29,10 +31,15 @@ class ListaProvasTurmaView(DetailView):
 
 
 # Adicionar prova de materia
-@method_decorator(login_required, name='dispatch')
 class CreateProvaMateriaView(CreateView):
     form_class = MarcarProvaMateriaProfessorForm
     template_name = 'escola/provas_marcadas/marcar_prova_professor.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        if has_role(request.user, 'Professor') or has_role(request.user, 'Admin'):
+            return super(CreateProvaMateriaView, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

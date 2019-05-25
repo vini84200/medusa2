@@ -16,6 +16,7 @@
 <article  class="container">
     <h2>Tarefas</h2>
     {%if perms.escola.can_add_tarefa%}
+    <!-- TODO ageitar permissões e mover isso para outro lugar. -->
         <a href="{% url 'escola:add-tarefa' turma.pk %}">Adicionar Tarefa</a>
     {%endif%}
     <div class="table-responsive">
