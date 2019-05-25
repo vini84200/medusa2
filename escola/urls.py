@@ -134,7 +134,7 @@ urlpatterns +=\
     [
         path('turmas/<int:turma_pk>/provas', views_provas_marcadas.ListaProvasTurmaView.as_view(),
              name='provas-turma-list'),
-        path('turmas/<int:turma_pk>/provas', views_provas_marcadas.CreateProvaMateriaView.as_view(),
+        path('provas/add', views_provas_marcadas.CreateProvaMateriaView.as_view(),
              name='create-prova-materia'),
     ]
 

@@ -4,11 +4,12 @@ Verificações dos Campos dos Forms.
 #  Developed by Vinicius José Fritzen
 #  Last Modified 12/04/19 13:19.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
-
+import datetime
 from typing import Callable, Any
 
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
 import logging
@@ -119,6 +120,15 @@ class VerificarSenha(Verificacao):
         logger.error("Por algum motivo o validate_password()[forms.py:AlunoCreateForm:clean_senha()] não retornou "
                        "None, nem deu Raise num ValidateError.")
         raise ValidationError(_('Algo de errado aconteceu, por favor tente novamente mais tarde.'))
+
+
+class VerificarDataFutura(VerificarLambda):
+    """Verifica se uma data é futura, retorna erro se não"""
+
+    msg = "A data preenchida não esta no futuro"
+
+    def __init__(self, msg=msg):
+        super().__init__(lambda data: data >= timezone.now(), msg)
 
 
 def verificar(date, verificacoes):

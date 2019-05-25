@@ -11,7 +11,8 @@ from django.forms import ModelForm
 from django.utils.safestring import mark_safe
 from mptt.forms import TreeNodeChoiceField, TreeNodeMultipleChoiceField
 
-from escola.verificacao_forms import VerificarMinimo, VerificarPositivo, VerificarNomeUsuario, VerificarSenha, verificar
+from escola.verificacao_forms import VerificarMinimo, VerificarPositivo, VerificarNomeUsuario, VerificarSenha, \
+    verificar, VerificarDataFutura
 from .models import *
 
 logger = logging.getLogger(__name__)
@@ -328,3 +329,36 @@ class EmailChangeForm(forms.Form):
         if commit:
             self.user.save()
         return self.user
+
+
+class MarcarProvaMateriaProfessorForm(forms.Form):
+    """
+        Formumulario para marcar uma prova de materia.
+    """
+    error_messages = {
+
+    }
+    
+    titulo = forms.CharField(max_length=70)
+    data = forms.DateTimeField()
+    descricao = forms.CharField(widget=forms.Textarea())
+    materia = forms.ModelChoiceField(queryset=None)
+
+    def __init__(self, *args, instance, professor, **kwargs):
+        super().__init__(*args, **kwargs)
+        # professor = kwargs.get('professor')
+        self.fields['materia'].queryset = professor.professor.materias
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
+        self.user = professor
+
+    def clean_data(self):
+        return verificar(self.cleaned_data['data'],
+                         [VerificarDataFutura('A data da prova deve estar no futuro.')])
+
+    def save(self):
+        ProvaMateriaMarcada.create(self.cleaned_data['materia'],
+                                   self.cleaned_data['titulo'],
+                                   self.cleaned_data['data'],
+                                   self.cleaned_data['descricao'],
+                                   self.user)

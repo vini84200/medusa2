@@ -1,0 +1,24 @@
+{% extends "escola/base.html" %}
+
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 26/04/19 23:09.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+{% load crispy_forms_tags %}
+
+{%block title%}Medusa II{%endblock%}
+
+{% block conteudo %}
+<div class="container">
+{% block preform %}{% endblock preform %}
+
+{% block form %}
+  {% crispy form %}
+{% endblock form %}
+
+{% block posform %}{% endblock posform %}
+
+</div>
+{% endblock %}

@@ -257,10 +257,10 @@ class MateriaManager(models.Manager):
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='materias')
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='materias')
     abreviacao = models.CharField(max_length=5)
-    conteudos = models.ManyToManyField(Conteudo)
+    conteudos = models.ManyToManyField(Conteudo, blank=True)
     area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='materias', null=True, blank=True)
 
     objects = models.Manager()

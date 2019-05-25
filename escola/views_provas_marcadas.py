@@ -3,10 +3,15 @@
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.utils.functional import lazy
 from django.views.generic import ListView, CreateView, DetailView
 
-from escola.models import Turma
+from escola.forms import MarcarProvaMateriaProfessorForm
+from escola.models import Turma, Professor
 
 logger = logging.getLogger(__name__)
 
@@ -24,8 +29,19 @@ class ListaProvasTurmaView(DetailView):
 
 
 # Adicionar prova de materia
+@method_decorator(login_required, name='dispatch')
 class CreateProvaMateriaView(CreateView):
-    pass
+    form_class = MarcarProvaMateriaProfessorForm
+    template_name = 'escola/provas_marcadas/marcar_prova_professor.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'professor': self.request.user})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse('escola:index')
+
 
 # Adicionar prova de area
 
