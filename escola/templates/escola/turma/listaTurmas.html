@@ -36,7 +36,7 @@
 </tr>
 {%for turma in turmas%}
 <tr class="turma_{{turma.numero}}">
-    <td class="turma_n">{{turma.numero}}</td>
+    <td class="turma_n"><a href="{%url 'escola:detail-turma' turma.id%}">{{turma.numero}}</a></td>
     <td class="turma_id">{{turma.ano}}</td>
     <div class="btn-group">
     <td><a href="{% url 'escola:list-cargos' turma.pk %}" class="btn btn-secondary">Cargos</a></td>

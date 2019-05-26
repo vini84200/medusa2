@@ -3,8 +3,10 @@
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
 from datetime import date
+from typing import List
 
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from escola.models import Turma, Professor, MateriaDaTurma, ProvaMateriaMarcada, ProvaAreaMarcada
 
@@ -30,9 +32,20 @@ def get_materias_professor_for_day(professor: Professor, dia: date):
     """Return a list of materias of the professor for today"""
     return MateriaDaTurma.helper.filter_from_professor_for_day(professor, dia)
 
+def get_data_for_sort(prova):
+    return prova.get_data()
 
-def get_provas_turma(turma: Turma):
-    a = [a if a.get_turma() == turma else None for a in ProvaMateriaMarcada.objects.all()]
-    a += [a if a.get_turma() == turma else None for a in ProvaAreaMarcada.objects.all()]
+
+def sort_provas(provas: List):
+    provas.sort(key=get_data_for_sort)
+    return provas
+
+
+def get_provas_turma_futuras(turma: Turma, qnt=0):
+    a = [(a) for a in ProvaMateriaMarcada.objects.all() if a.get_turma() == turma and a.get_data() > timezone.now()]
+    a += [(a) for a in ProvaAreaMarcada.objects.all() if a.get_turma() == turma and a.get_data() > timezone.now()]
     logger.info(f"Coletou {len(a)} provas")
+    a = sort_provas(a)
+    if qnt > 0:
+        return a[:qnt]
     return a

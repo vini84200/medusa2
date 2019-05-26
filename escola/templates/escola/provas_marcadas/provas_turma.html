@@ -13,7 +13,7 @@
 
 <section class="container">
   {% if user|can:'create_provas'%}
-    <a href="{%url 'escola:create-prova-materia'%}"></a>
+    <a href="{%url 'escola:marcar-prova-materia'%}"></a>
   {% endif %}
 
   <h1>Provas marcadas da {{turma}}</h1>

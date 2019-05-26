@@ -1,6 +1,7 @@
 {% extends "../base.html" %}
 
 {% load permission_tags %}
+{% load panels %}
 
 {% block conteudo %}
 
@@ -10,9 +11,15 @@
 
   {% can 'marcar_prova_m_turma' turma as can_marcar_prova_materia%}
   {%if can_marcar_prova_materia%}
-    <a href="{%url 'escola:marcar-prova-materia' %}" class="btn btn-primary">A</a>
+    <a href="{%url 'escola:marcar-prova-materia' %}" class="btn btn-primary">Marcar Prova</a>
   {%endif%}
+  <h3>Provas</h3>
+  {%panel_lista_provas_marcadas_turma turma 4%}
+  <a href="{%url 'escola:provas-turma-list' turma.id%}" class="btn btn-secondary">Ver mais...</a>
 
+  <h3>Tarefas</h3>
+  {# TODO #}
+  WIP
 </div>
 
 {% endblock conteudo %}
