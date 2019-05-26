@@ -17,6 +17,8 @@
   {%if user|can:'marcar_prova_area'%}
     <a href="{%url 'escola:marcar-prova-area' %}" class="btn btn-primary">Marcar Prova Area</a>
   {%endif%}
+    <a href="{%url 'escola:turma-provas-calendario' turma.id%}" class="btn btn-primary">Ver calendario</a>
+
   </div>
   <h3>Provas</h3>
   {%panel_lista_provas_marcadas_turma turma 4%}

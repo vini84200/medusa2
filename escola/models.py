@@ -272,6 +272,9 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     def has_aula_in_day(self, day):
         return True  # FIXME: FINISH
 
+    def get_professor(self):
+        return self.professor
+
     class Meta:
         """Meta"""
         permissions = (('can_edit_materia', 'Pode editar uma materia'),
@@ -570,6 +573,12 @@ class EventoTurma(models.Model):
     turma: Turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     evento: Evento = models.ForeignKey(Evento, on_delete=models.CASCADE)
 
+    block_prova = models.BooleanField(default=True)
+    
+    def delete(self, using=None, keep_parents=False):
+        self.evento.delete(using, keep_parents)
+        super(EventoTurma, self).delete(using, keep_parents)
+    
     def __str__(self):
         return self.get_nome()
 
@@ -601,10 +610,11 @@ class EventoTurma(models.Model):
         return self.turma
 
     @staticmethod
-    def create(turma, nome, data, descricao, owner):
+    def create(turma, nome, data, descricao, owner, block_prova=True):
         a = EventoTurma()
         a.evento = Evento.create(nome, data, descricao, owner)
         a.turma = turma
+        a.block_prova = block_prova
         a.save()
         return a
 
@@ -618,10 +628,23 @@ class ProvaMarcada(models.Model):
     """Uma prova"""
     conteudos = models.ManyToManyField(Conteudo, blank=True)
     evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
+    
+    def delete(self, using=None, keep_parents=False):
+        self.evento.delete(using, keep_parents)
+        super(ProvaMarcada, self).delete(using, keep_parents)
+
+    def get_uper(self):
+        if hasattr(self, 'p_area'):
+            return self.p_area
+        elif hasattr(self, 'p_materia'):
+            return self.p_materia
 
     def get_materias(self):
         """Retorna lista de materias da prova"""
-        return []
+        return self.get_uper().get_materias()
+
+    def get_materias_text(self):
+        return ', '.join(m.__str__() for m in self.get_materias())
 
     def __str__(self):
         return self.get_nome()
@@ -674,9 +697,8 @@ class ProvaMarcada(models.Model):
     @staticmethod
     def create(turma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMarcada()
-        a.evento = EventoTurma.create(turma, nome, data, descricao, owner)
+        a.evento = EventoTurma.create(turma, nome, data, descricao, owner, True)
         a.save()
-
         if conteudos:
             a.add_conteudos(conteudos)
         return a
@@ -686,7 +708,11 @@ class ProvaMateriaMarcada(models.Model):
     """Prova de uma materia"""
     materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
-    _prova: ProvaMarcada = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
+    _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_materia')
+    
+    def delete(self, using=None, keep_parents=False):
+        self._prova.delete(using, keep_parents)
+        super(ProvaMateriaMarcada, self).delete(using, keep_parents)
 
     def __str__(self):
         return self.get_nome()
@@ -742,6 +768,9 @@ class ProvaMateriaMarcada(models.Model):
     def get_conteudo_materia(self, materia):
         pass
 
+    def get_absolute_url(self):
+        return reverse('escola:prova-detail', kwargs={'pk': self._prova.pk})
+
     @staticmethod
     def create(materia: MateriaDaTurma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMateriaMarcada()
@@ -755,7 +784,11 @@ class ProvaAreaMarcada(models.Model):
     """Prova de Area"""
     area: AreaConhecimento = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
     # item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
-    _prova: ProvaMarcada = models.ForeignKey(ProvaMarcada, on_delete=models.CASCADE)
+    _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_area')
+    
+    def delete(self, using=None, keep_parents=False):
+        self._prova.delete(using, keep_parents)
+        super(ProvaAreaMarcada, self).delete(using, keep_parents)
 
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
@@ -815,3 +848,6 @@ class ProvaAreaMarcada(models.Model):
         a.area = area
         a.save()
         return a
+
+    def get_absolute_url(self):
+        return reverse('escola:prova-detail', kwargs={'pk': self._prova.pk})

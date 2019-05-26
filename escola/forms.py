@@ -5,6 +5,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
+from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, PasswordChangeForm
 from django.forms import ModelForm
@@ -341,7 +342,7 @@ class MarcarProvaMateriaProfessorForm(forms.Form):
     }
     
     titulo = forms.CharField(max_length=70)
-    data = forms.DateTimeField()
+    data = forms.DateTimeField(widget=AdminDateWidget)
     descricao = forms.CharField(widget=forms.Textarea())
     materia = forms.ModelChoiceField(queryset=None)
 

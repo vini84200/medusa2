@@ -1,0 +1,11 @@
+{% extends "escola/base.html" %}
+
+{% block conteudo %}
+<div class="container">
+
+
+<h1>Prova {{prova}}</h1>
+<p class="lead">Materias: {{prova.get_materias_text}}</p>
+<p>{{prova.get_descricao}}</p>
+</div>
+{% endblock conteudo %}

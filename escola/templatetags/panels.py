@@ -5,8 +5,9 @@ import datetime
 
 from django.template.defaultfilters import register
 
-from escola.controller_provas_marcadas import get_materias_professor_for_day, get_provas_turma_futuras
-from escola.models import Turno, Turma
+from escola.controller_provas_marcadas import get_materias_professor_for_day, get_provas_turma_futuras, \
+    get_provas_professor_futuras
+from escola.models import Turno, Turma, Professor
 
 
 @register.inclusion_tag('escola/horario/horario_include.html')
@@ -70,6 +71,15 @@ def panel_lista_provas_marcadas_turma(turma: Turma, qnt=0):
     context.update({'turma': turma, 'provas': provas})
     return context
 
+
+# panel_lista_provas_marcadas_professor
+@register.inclusion_tag('escola/panels/listaProvasMarcadas.html')
+def panel_lista_provas_marcadas_professor(professor: Professor, qnt=0):
+    """Retorna uma lista de provas de uma turma em especifico"""
+    context = {}
+    provas = get_provas_professor_futuras( professor, qnt)
+    context.update({'professor': professor, 'provas': provas})
+    return context
 
 # Panel do resumo diario dos alunos
 

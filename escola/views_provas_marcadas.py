@@ -2,16 +2,21 @@
 #  Last Modified 20/05/19 15:02.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
+from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
+from django.utils.datetime_safe import date
 from django.utils.decorators import method_decorator
 from django.utils.functional import lazy
-from django.views.generic import ListView, CreateView, DetailView
+from django.utils.safestring import mark_safe
+from django.views.generic import ListView, CreateView, DetailView, DeleteView
 from rolepermissions.checkers import has_object_permission, has_role, has_permission
 
+from escola import models
+from escola.controller_provas_marcadas import CalendarioDatasLivresTurma
 from escola.forms import MarcarProvaMateriaProfessorForm, MarcarProvaAreaProfessorForm
 from escola.models import Turma, Professor
 
@@ -69,18 +74,80 @@ class CreateProvaAreaView(CreateView):
     def get_success_url(self):
         return reverse('escola:index')
 
+
 # Lista de provas do professor
+class ListaProvasProfessorView(DetailView):
+    template_name = "escola/provas_marcadas/listProvasProfessor.html"
+    context_object_name = 'professor'
 
-# Editar Prova de Materia
+    def get_object(self, queryset=None):
+        self.professor = self.request.user.professor
+        return self.professor
 
-# Editar Prova de Area
 
 # Apagar Prova de Materia
+class ProvaMateriaDeleteView(DeleteView):
+    model = models.ProvaMateriaMarcada
+    template_name = "escola/base_delete.html"
+
+    def get_object(self, queryset=None):
+        """ Garante que o usuario possui permsissão"""
+        obj = super(ProvaMateriaDeleteView, self).get_object(queryset)
+        if not has_object_permission('can_edit_prova_materia', self.request.user, obj):
+            raise PermissionDenied()
+        return obj
+
+    def get_success_url(self):
+        return reverse('escola:index')
+
 
 # Apagar prova de area
+class ProvaAreaDeleteView(DeleteView):
+    model = models.ProvaAreaMarcada
+    template_name = "escola/base_delete.html"
+
+    def get_object(self, queryset=None):
+        """ Garante que o usuario possui permsissão"""
+        obj = super(ProvaAreaDeleteView, self).get_object(queryset)
+        if not has_object_permission('can_edit_prova_area', self.request.user, obj):
+            raise PermissionDenied()
+        return obj
+
+    def get_success_url(self):
+        return reverse('escola:index')
+
 
 # Detalhes de prova
+class ProvaDetailView(DetailView):
+    template_name = 'escola/provas_marcadas/detail_prova.html'
+    model = models.ProvaMarcada
+    context_object_name = 'prova'
+
 
 # Adicionar conteudos a prova
 
 # Datas Livres da turma
+class CalendarioTurmaDatasLivresView(ListView):
+    model = models.EventoTurma
+    template_name = 'escola/provas_marcadas/calendarioDatasLivres.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # use today's date for the calendar
+        d = get_date(self.request.GET.get('day', None))
+
+        # Instantiate our calendar class with today's year and date
+        cal = CalendarioDatasLivresTurma(d.year, d.month)
+
+        # Call the formatmonth method, which returns our calendar as a table
+        html_cal = cal.formatmonth(get_object_or_404(Turma, pk=self.kwargs.get('pk')), withyear=True)
+        context['calendar'] = mark_safe(html_cal)
+        return context
+
+
+def get_date(req_day):
+    if req_day:
+        year, month = (int(x) for x in req_day.split('-'))
+        return date(year, month, day=1)
+    return datetime.today()

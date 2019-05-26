@@ -6,7 +6,7 @@
 
 <div class="table-responsive">
   <table class="table table-striped">
-    <thead>
+    <thead class="thead-dark">
       <tr>
         <th></th>
         <th>Titulo</th>
@@ -14,13 +14,15 @@
       </tr>
     </thead>
     {# Linhas #}
+    <tbody>
     {% for prova in provas %}
       <tr>
         <td>{{prova.get_apresentacao}}</td>
-        <td>{{prova.get_nome}}</td>
+        <td><a href="{{prova.get_absolute_url}}">{{prova.get_nome}}</a></td>
         <td>{{prova.get_data}}</td>
       </tr>
     {% endfor %}
+    </tbody>
 
   </table>
 </div>

@@ -30,4 +30,5 @@ class Admin(AbstractUserRole):
 class Professor(AbstractUserRole):
     available_permissions = {
         'marcar_prova_area': True,
+        'create_provas': True,
     }

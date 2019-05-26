@@ -5,7 +5,7 @@
 <!--FIXME Implementar permissões melhoradas-->
 <h1>Listagem de tarefas da turma {{turma.numero}}</h1>
 {%if perms.escola.can_add_tarefa%}
-    <a href="{% url 'escola:add-tarefa' turma.pk %}" class="btn btn-primary">Adicionar Tarefa</a><br><br>
+    <a href="{% url 'escola:add-tarefa' turma.id %}" class="btn btn-primary">Adicionar Tarefa</a><br><br>
 {%endif%}
 <div class="table-responsive">
 <table class="table table-striped">
@@ -26,16 +26,16 @@
 </tr>
 {%for tarefa in tarefas%}
 <tr>
-    <th><a href="{% url 'escola:detalhes-tarefa' tarefa.pk %}">{{tarefa.0.titulo}}</a> </th>
+    <th><a href="{% url 'escola:detalhes-tarefa' tarefa.id %}">{{tarefa.0.titulo}}</a> </th>
     <th>{{tarefa.materia}}</th>
     <th>{{tarefa.get_tipo_display}}</th>
     <th>{{tarefa.descricao|truncatechars:15}}</th>
     <th>{{tarefa.deadline}}</th>
     {%if perms.escola.can_edit_cargo%}
-    <th><a href="{% url 'escola:edit-tarefa' tarefa.pk %}" class="btn btn-info">Editar</a></th>
+    <th><a href="{% url 'escola:edit-tarefa' tarefa.id %}" class="btn btn-info">Editar</a></th>
     {%endif%}
     {%if perms.escola.can_delete_cargo%}
-    <th><a href="{% url 'escola:delete-tarefa' tarefa.pk %}" class="btn btn-danger">Apagar</a></th>
+    <th><a href="{% url 'escola:delete-tarefa' tarefa.id %}" class="btn btn-danger">Apagar</a></th>
     {%endif%}
 </tr>
 {%endfor%}

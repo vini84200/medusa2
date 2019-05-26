@@ -139,6 +139,16 @@ urlpatterns +=\
              name='marcar-prova-materia'),
         path('provas/add/area', views_provas_marcadas.CreateProvaAreaView.as_view(),
              name='marcar-prova-area'),
+        path('self/provas', views_provas_marcadas.ListaProvasProfessorView.as_view(),
+             name='provas-professor'),  # As provas do professor
+        path('provas/materia/<int:pk>/delete', views_provas_marcadas.ProvaMateriaDeleteView.as_view(),
+             name='provas-materia-delete'),
+        path('provas/area/<int:pk>/delete', views_provas_marcadas.ProvaAreaDeleteView.as_view(),
+             name='provas-area-delete'),
+        path('provas/<int:pk>', views_provas_marcadas.ProvaDetailView.as_view(),
+             name='prova-detail'),
+        path('turmas/<int:pk>/dias_livres', views_provas_marcadas.CalendarioTurmaDatasLivresView.as_view(),
+             name='turma-provas-calendario'),
     ]
 
 # Temporarias

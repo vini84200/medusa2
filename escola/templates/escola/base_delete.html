@@ -1,0 +1,11 @@
+{% extends "escola/base_imports.html" %}
+
+{% block body %}
+<div class="container">
+  <a href="{%url 'escola:index'%}">Voltar a Pagina Inicial</a>
+<form method="post" class="form">{% csrf_token %}
+    <p>{% block message %} Você tem certeza que quer deletar {% endblock message %}"{{ object }}"?</p>
+    <input type="submit" value="Sim, tenho certeza">
+</form>
+</div>
+{% endblock body %}
