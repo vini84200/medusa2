@@ -22,6 +22,7 @@ class Admin(AbstractUserRole):
         'add_materia_g': True,
         'add_cargo_g': True,
         'marcar_prova_g': True,
+        'add_prova_area_geral': True,
     }
 
 

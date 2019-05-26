@@ -222,7 +222,7 @@ class AreaConhecimento(models.Model):
     turma = models.ForeignKey(Turma, models.CASCADE, 'Area')
 
     def __str__(self):
-        return self.nome
+        return f"{self.nome.upper()}/{self.turma.numero}"
 
     def get_materias(self):
         """Retorna as materias desta area"""

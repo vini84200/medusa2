@@ -135,8 +135,10 @@ urlpatterns +=\
     [
         path('turmas/<int:turma_pk>/provas', views_provas_marcadas.ListaProvasTurmaView.as_view(),
              name='provas-turma-list'),
-        path('provas/add', views_provas_marcadas.CreateProvaMateriaView.as_view(),
+        path('provas/add/materia', views_provas_marcadas.CreateProvaMateriaView.as_view(),
              name='marcar-prova-materia'),
+        path('provas/add/area', views_provas_marcadas.CreateProvaAreaView.as_view(),
+             name='marcar-prova-area'),
     ]
 
 # Temporarias
