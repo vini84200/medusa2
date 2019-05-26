@@ -23,10 +23,11 @@ class Admin(AbstractUserRole):
         'add_cargo_g': True,
         'marcar_prova_g': True,
         'add_prova_area_geral': True,
+        'marcar_prova_area': True,
     }
 
 
 class Professor(AbstractUserRole):
     available_permissions = {
-
+        'marcar_prova_area': True,
     }
