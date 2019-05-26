@@ -2,6 +2,7 @@ import datetime
 
 import pytest
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 from escola.verificacao_forms import Verificacao, VerificarLambda, VerificarMinimo, VerificarMaximo, VerificarPositivo, \
     verificar, VerificarDataFutura
@@ -81,8 +82,8 @@ def test_verificar_positivo_okay():
 # Verificar data futura
 
 def test_verificar_data_passada():
-    future = datetime.datetime.now() + datetime.timedelta(minutes=10)
-    past = datetime.datetime.now() - datetime.timedelta(minutes=10)
+    future = timezone.now() + datetime.timedelta(minutes=10)
+    past = timezone.now() - datetime.timedelta(minutes=10)
     assert VerificarDataFutura().verificar(future) == future
     with pytest.raises(ValidationError):
         VerificarDataFutura().verificar(past)
