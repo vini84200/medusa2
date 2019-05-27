@@ -326,7 +326,7 @@ def test_prova_marcada_get_materias(faker):
     owner = mixer.blend(User)
     a = ProvaMateriaMarcada.create(materia, nome, data, descricao, owner)
     assert a._prova.get_materias() == a.get_materias()
-    assert a._prova.get_materias() == [materia,]
+    assert a._prova.get_materias() == [materia, ]
 
 
 # def test_prova_marcada_get_conteudos(faker):
