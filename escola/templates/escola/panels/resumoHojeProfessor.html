@@ -9,7 +9,7 @@
       <h5>Turmas</h5>
       <div class="btn-group-vertical" role="group">
         {% for turma in turmashoje %}
-            <a href="#" class="btn btn-secondary">{{turma}}</a>
+            <a href="{%url 'escola:detail-turma' turma.id%}" class="btn btn-secondary">{{turma}}</a>
         {% endfor %}
       </div>
     </div>

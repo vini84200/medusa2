@@ -165,6 +165,7 @@ def delete_tarefa(role, user, tarefa):
 
     return False
 
+
 @register_object_checker()
 def add_cargo(role, user, turma):
     if user.is_superuser:
@@ -174,3 +175,31 @@ def add_cargo(role, user, turma):
         return True
 
     return False
+
+
+@register_object_checker()
+def marcar_prova_m_turma(role, user, turma):
+    if has_role(user, 'professor'):
+        return True
+    if user.is_staff:
+        return True
+    return False
+
+
+@register_object_checker()
+def can_edit_prova_materia(role, user, prova_materia):
+    if prova_materia.get_owner() == user:
+        return True
+    if has_role(user, 'admin'):
+        return True
+    return False
+
+
+@register_object_checker()
+def can_edit_prova_area(role, user, prova_area):
+    if prova_area.get_owner() == user:
+        return True
+    if has_role(user, 'admin'):
+        return True
+    return False
+

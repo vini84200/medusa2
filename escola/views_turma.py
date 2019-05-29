@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import permission_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from django.views.generic import DetailView
 from rolepermissions.decorators import has_permission_decorator
 
 from escola.decorators import is_user_escola
@@ -90,3 +91,8 @@ def delete_turma(request, pk):
     turma_instace: Turma = get_object_or_404(Turma, pk=pk)
     turma_instace.delete()
     return HttpResponseRedirect(reverse('escola:list-turmas'))
+
+
+class TurmaDetailView(DetailView):
+    model = Turma
+    template_name = 'escola/turma/turma_detail.html'

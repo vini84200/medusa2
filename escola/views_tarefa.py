@@ -53,7 +53,7 @@ def list_tarefa(request, turma_pk):
         return render(request, 'escola/tarefas/listTarefasParaAluno.html',
                       context={'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
     else:
-        return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas})
+        return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 
 
 # FIXME: 25/04/2019 por wwwvi: Pedir Permissão

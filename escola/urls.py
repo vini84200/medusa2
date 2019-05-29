@@ -45,8 +45,9 @@ urlpatterns = [
     # turma
     path('turmas/', escola.views_turma.list_turmas, name='list-turmas'),
     path('turmas/add/', escola.views_turma.add_turma, name='add-turma'),
-    path('turmas/edit/<int:pk>', escola.views_turma.edit_turma, name='edit-turma'),
-    path('turmas/delete/<int:pk>', escola.views_turma.delete_turma, name='delete-turma'),
+    path('turmas/<int:pk>', escola.views_turma.TurmaDetailView.as_view(), name='detail-turma'),
+    path('turmas/<int:pk>/edit', escola.views_turma.edit_turma, name='edit-turma'),
+    path('turmas/<int:pk>/delete', escola.views_turma.delete_turma, name='delete-turma'),
     path('alunos/populate/', escola.views_aluno.populate_alunos, name='populate-alunos'),
     # cargos
     path('turmas/<int:pk_turma>/cargos', escola.views_cargo.list_cargos, name='list-cargos'),
@@ -134,6 +135,20 @@ urlpatterns +=\
     [
         path('turmas/<int:turma_pk>/provas', views_provas_marcadas.ListaProvasTurmaView.as_view(),
              name='provas-turma-list'),
+        path('provas/add/materia', views_provas_marcadas.CreateProvaMateriaView.as_view(),
+             name='marcar-prova-materia'),
+        path('provas/add/area', views_provas_marcadas.CreateProvaAreaView.as_view(),
+             name='marcar-prova-area'),
+        path('self/provas', views_provas_marcadas.ListaProvasProfessorView.as_view(),
+             name='provas-professor'),  # As provas do professor
+        path('provas/materia/<int:pk>/delete', views_provas_marcadas.ProvaMateriaDeleteView.as_view(),
+             name='provas-materia-delete'),
+        path('provas/area/<int:pk>/delete', views_provas_marcadas.ProvaAreaDeleteView.as_view(),
+             name='provas-area-delete'),
+        path('provas/<int:pk>', views_provas_marcadas.ProvaDetailView.as_view(),
+             name='prova-detail'),
+        path('turmas/<int:pk>/dias_livres', views_provas_marcadas.CalendarioTurmaDatasLivresView.as_view(),
+             name='turma-provas-calendario'),
     ]
 
 # Temporarias

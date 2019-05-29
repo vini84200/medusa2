@@ -319,13 +319,14 @@ def test_prova_marcada_get_participantes(faker):
 
 
 def test_prova_marcada_get_materias(faker):
-    turma = mixer.blend(Turma)
+    materia = mixer.blend(MateriaDaTurma)
     nome = faker.sentence()
     data = faker.date_time()
     descricao = faker.paragraph()
     owner = mixer.blend(User)
-    a = ProvaMarcada.create(turma, nome, data, descricao, owner)
-    assert a.get_materias() == []
+    a = ProvaMateriaMarcada.create(materia, nome, data, descricao, owner)
+    assert a._prova.get_materias() == a.get_materias()
+    assert a._prova.get_materias() == [materia, ]
 
 
 # def test_prova_marcada_get_conteudos(faker):

@@ -35,6 +35,7 @@
     <td>{{cargo.ativo|yesno:'Sim,Não'}}</td>
     <td>{{cargo.get_cod_especial_display}}</td>
     {%if perms.escola.can_edit_cargo%}
+    <!-- TODO Alterar permissões  -->
     <td><a href="{% url 'escola:edit-cargo' cargo.pk %}" class="btn btn-primary" >Editar</a></td>
     {%endif%}
     {%if perms.escola.can_delete_cargo%}
