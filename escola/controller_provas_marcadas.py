@@ -14,24 +14,10 @@ from escola.models import Turma, Professor, MateriaDaTurma, ProvaMateriaMarcada,
 logger = logging.getLogger(__name__)
 
 
-def get_dia_eventos(dia: date, user: User):
-    """Return the eventos for any given dia for User """
-    pass
-
-
-def get_dia_color(dia: date, turma: Turma):
-    """Return the hex code for the color of the day"""
-    pass
-
-
-def has_a_prova_in_day(dia: date, turma: Turma):
-    """Return a bool if the given day has a prova for turma"""
-    pass
-
-
 def get_materias_professor_for_day(professor: Professor, dia: date):
     """Return a list of materias of the professor for today"""
     return MateriaDaTurma.helper.filter_from_professor_for_day(professor, dia)
+
 
 def get_data_for_sort(prova):
     return prova.get_data()
@@ -69,7 +55,7 @@ def get_provas_professor_futuras(professor, qnt=0):
     return a
 
 
-class CalendarioDatasLivresTurma(LocaleHTMLCalendar):
+class CalendarioDatasLivresTurma(HTMLCalendar):
     DEFAULT_COLOR = '#ffffff'
     OCUPADO_COLOR = "#ff9e9e"
     INVALID_COLOR = "#a3a3a3"
@@ -77,7 +63,7 @@ class CalendarioDatasLivresTurma(LocaleHTMLCalendar):
     def __init__(self, year=None, month=None):
         self.year = year
         self.month = month
-        super(CalendarioDatasLivresTurma, self).__init__(firstweekday=6, locale='pt-br')
+        super(CalendarioDatasLivresTurma, self).__init__(firstweekday=6)
 
     def formatday(self, day, events):
         events_per_day: List[EventoTurma] = events.filter(evento__data__day=day)
