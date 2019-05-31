@@ -8,10 +8,11 @@
             "name": "Django",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\manage.py",
+            "program": "C:\\Programação\\MedusaIIh2\\manage.py",
             "args": [
                 "runserver",
             ],
+            "env": {"PYTHONPATH": "${workspaceRoot}"},
             "django": true
         }
     ]

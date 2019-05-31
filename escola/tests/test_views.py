@@ -5,11 +5,12 @@
 
 import warnings
 
+
 import pytest
 from django.contrib.auth import authenticate
 from django.test.client import Client
 from django.test.testcases import TestCase
-from helpers.utils import create_admin, create_aluno, create_professor, create_turma  # OK
+from helpers.utils import create_admin, create_aluno, create_professor, create_turma
 from mixer.backend.django import mixer
 
 from escola.models import *
@@ -23,6 +24,7 @@ pytestmark = pytest.mark.django_db
 # EXEPTIONS:
 class ImproperlyConfigured(Exception):
     """É criado quando à alguma configuração que não foi feita adequadamente."""
+    pass
 
 
 # Verificações
