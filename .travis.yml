@@ -4,7 +4,7 @@ python:
   - '3.6'
   - '3.7-dev'
   - '3.7'
-  - '3.8-dev'
+  - '3.8'
 env:
   MOZ_HEADLESS=1
 addons:
