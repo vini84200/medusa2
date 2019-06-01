@@ -2,13 +2,14 @@
 #  Last Modified 12/04/19 13:19.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
-from django.test.client import Client
-from .user_utils import create_aluno_user
-from django.contrib.auth.models import User
-from mixer.backend.django import mixer
-from .models import Turma
 import pytest
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.test.client import Client
+from mixer.backend.django import mixer
 
+from .models import Turma, MateriaDaTurma, ProvaMateriaMarcada, ProvaAreaMarcada
+from .user_utils import create_aluno_user, create_professor_user, create_user
 
 pytestmark = pytest.mark.django_db
 
@@ -39,3 +40,36 @@ def aluno(request, faker, turma) -> User:
 def aluno_client(request, client: Client, aluno):
     client.force_login(aluno)
     return client
+
+
+@pytest.fixture
+def tc(request):
+    return TestCase()
+
+
+@pytest.fixture
+def professor(request, faker):
+    professor_user = create_professor_user(faker.user_name(), faker.password(), faker.name())
+    mixer.blend(MateriaDaTurma, professor=professor_user.professor)
+    return professor_user
+
+
+@pytest.fixture
+def professor_client(request, professor, client: Client):
+    client.force_login(professor)
+    return client
+
+
+@pytest.fixture
+def materia(request, turma):
+    return mixer.blend(MateriaDaTurma)
+
+
+@pytest.fixture
+def user(request, faker):
+    return create_user(faker.user_name(), faker.password())
+
+
+@pytest.fixture
+def prova_marcada_materia(request, materia, faker, user):
+    return ProvaMateriaMarcada.create(materia, faker.sentence(), faker.date_time(), faker.paragraph(), user)

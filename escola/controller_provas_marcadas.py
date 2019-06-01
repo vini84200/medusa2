@@ -2,11 +2,10 @@
 #  Last Modified 20/05/19 14:36.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
-from calendar import HTMLCalendar, LocaleHTMLCalendar
+from calendar import HTMLCalendar
 from datetime import date
 from typing import List
 
-from django.contrib.auth.models import User
 from django.utils import timezone
 
 from escola.models import Turma, Professor, MateriaDaTurma, ProvaMateriaMarcada, ProvaAreaMarcada, EventoTurma

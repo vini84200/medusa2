@@ -14,11 +14,11 @@ TIME_LOAD = 2
 logger = logging.getLogger(__name__)
 
 
-
 # @pytest.fixture(scope='session')
 # def splinter_webdriver():
 #     """Override splinter webdriver name."""
 #     return 'django'
+
 
 def HeaderWrongMsg(expected, recieved):
     """Retorna uma msg para quando o Title no HEAD da pagina estiver erado"""
