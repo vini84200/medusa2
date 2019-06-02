@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 
-from escola.models import MateriaDaTurma, Turma, AreaConhecimento
+from escola.models import MateriaDaTurma, Turma, AreaConhecimento, ProvaMateriaMarcada, ProvaAreaMarcada
 
 logger = logging.getLogger(__name__)
 
@@ -108,3 +108,23 @@ def test_create_prova_materia_professor_post(professor_client: Client, tc: TestC
     tc.assertRedirects(response, reverse('escola:index'))
     assert len(materia.provas_materia.all()) == 1
     assert materia.provas_materia.first().get_nome() == titulo
+
+
+@pytest.mark.provas_marcadas
+def test_delete_prova_materia_post(prova_marcada_materia, tc, client):
+    user = prova_marcada_materia.get_owner()
+    client.force_login(user)
+    client.post(reverse('escola:provas-materia-delete', args=[prova_marcada_materia.pk, ]))
+    assert 0 == len(ProvaMateriaMarcada.objects.filter(pk=prova_marcada_materia.pk))
+
+
+@pytest.mark.provas_marcadas
+def test_delete_prova_area_post(prova_marcada_area, tc, client):
+    user = prova_marcada_area.get_owner()
+    client.force_login(user)
+    client.post(reverse('escola:provas-area-delete', args=[prova_marcada_area.pk, ]))
+    assert 0 == len(ProvaAreaMarcada.objects.filter(pk=prova_marcada_area.pk))
+
+
+# Testes de permissão falha
+# TODO

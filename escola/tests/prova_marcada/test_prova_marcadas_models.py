@@ -469,6 +469,8 @@ def test_prova_marcada_materia_get_participantes(faker):
     assert len(a.get_participantes()) == 2
 
 
+# TODO delete
+
 # Prova Marcada Area
 
 def test_prova_marcada_area_create(faker):
@@ -567,3 +569,6 @@ def test_prova_marcada_area_get_participantes(faker):
     assert aluno0 in a.get_participantes()
     assert aluno1 in a.get_participantes()
     assert len(a.get_participantes()) == 2
+
+
+# TODO delete
