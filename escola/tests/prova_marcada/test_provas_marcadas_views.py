@@ -2,12 +2,14 @@
 #  Last Modified 31/05/19 07:26.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
-import pytest
-from django.urls import reverse
-from escola.models import Turma
-from django.test import TestCase
 
+import pytest
+from django.contrib import auth
+from django.test import TestCase
 from django.test.client import Client
+from django.urls import reverse
+
+from escola.models import MateriaDaTurma, Turma, AreaConhecimento
 
 logger = logging.getLogger(__name__)
 
@@ -24,14 +26,14 @@ def test_lista_provas_turma(aluno_client: Client, turma: Turma, tc: TestCase):
 
 
 @pytest.mark.provas_marcadas
-def test_create_prova_materia_professor(professor_client: Client, tc: TestCase):
+def test_create_prova_materia_professor_get(professor_client: Client, tc: TestCase):
     response = professor_client.get(reverse('escola:marcar-prova-materia'))
     tc.assertContains(response, "<h1>Marcar uma prova</h1>")
     tc.assertTemplateUsed(response, "escola/provas_marcadas/marcar_prova_professor.html")
 
 
 @pytest.mark.provas_marcadas
-def test_create_prova_area_professor(professor_client: Client, tc: TestCase):
+def test_create_prova_area_professor_get(professor_client: Client, tc: TestCase):
     response = professor_client.get(reverse('escola:marcar-prova-area'))
     tc.assertContains(response, "<h1>Marcar uma prova</h1>")
     tc.assertTemplateUsed(response, "escola/provas_marcadas/marcar_prova_professor.html")
@@ -59,7 +61,7 @@ def test_delete_prova_area_get(prova_marcada_area, tc: TestCase, client: Client)
 
 
 @pytest.mark.provas_marcadas
-def test_detail_prova_materia_get(prova_marcada_materia, tc: TestCase, aluno_client: Client):
+def test_detail_prova_materia(prova_marcada_materia, tc: TestCase, aluno_client: Client):
     response = aluno_client.get(prova_marcada_materia.get_absolute_url())
     tc.assertContains(response, prova_marcada_materia.get_nome())
     tc.assertContains(response, prova_marcada_materia.get_descricao())
@@ -68,7 +70,7 @@ def test_detail_prova_materia_get(prova_marcada_materia, tc: TestCase, aluno_cli
 
 
 @pytest.mark.provas_marcadas
-def test_detail_prova_area_get(prova_marcada_area, tc: TestCase, aluno_client: Client):
+def test_detail_prova_area(prova_marcada_area, tc: TestCase, aluno_client: Client):
     response = aluno_client.get(prova_marcada_area.get_absolute_url())
     tc.assertContains(response, prova_marcada_area.get_nome())
     tc.assertContains(response, prova_marcada_area.get_descricao())
@@ -76,6 +78,33 @@ def test_detail_prova_area_get(prova_marcada_area, tc: TestCase, aluno_client: C
 
 
 @pytest.mark.provas_marcadas
-def test_calendario_turma_get(turma: Turma, tc: TestCase, professor_client: Client):
+def test_calendario_turma(turma: Turma, tc: TestCase, professor_client: Client):
     response = professor_client.get(reverse('escola:turma-provas-calendario', args=[turma.pk, ]))
     tc.assertTemplateUsed(response, 'escola/provas_marcadas/calendarioDatasLivres.html')
+
+# Testes de funções das views (POST)
+
+
+@pytest.mark.provas_marcadas
+def test_create_prova_area_professor_post(professor_client: Client, tc: TestCase, faker):
+    user = auth.get_user(professor_client)
+    materia: MateriaDaTurma = user.professor.materias.first()
+    area: AreaConhecimento = materia.area
+    area.turma.regente = user
+    area.turma.save()
+    titulo = faker.sentence()
+    response = professor_client.post(reverse('escola:marcar-prova-area'), {'titulo': titulo, 'data': faker.future_datetime(), 'descricao': faker.paragraph(), 'area': area.pk})
+    tc.assertRedirects(response, reverse('escola:index'))
+    assert len(area.provas_area.all()) == 1
+    assert area.provas_area.first().get_nome() == titulo
+
+
+@pytest.mark.provas_marcadas
+def test_create_prova_materia_professor_post(professor_client: Client, tc: TestCase, faker):
+    user = auth.get_user(professor_client)
+    materia: MateriaDaTurma = user.professor.materias.first()
+    titulo = faker.sentence()
+    response = professor_client.post(reverse('escola:marcar-prova-materia'), {'titulo': titulo, 'data': faker.future_datetime(), 'descricao': faker.paragraph(), 'materia': materia.pk})
+    tc.assertRedirects(response, reverse('escola:index'))
+    assert len(materia.provas_materia.all()) == 1
+    assert materia.provas_materia.first().get_nome() == titulo
