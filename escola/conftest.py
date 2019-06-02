@@ -48,9 +48,9 @@ def tc(request):
 
 
 @pytest.fixture
-def professor(request, faker):
+def professor(request, faker, turma):
     professor_user = create_professor_user(faker.user_name(), faker.password(), faker.name())
-    mixer.blend(MateriaDaTurma, professor=professor_user.professor)
+    mixer.blend(MateriaDaTurma, area=mixer.blend(AreaConhecimento, turma=turma), turma=turma, professor=professor_user.professor)
     return professor_user
 
 
@@ -62,12 +62,12 @@ def professor_client(request, professor, client: Client):
 
 @pytest.fixture
 def materia(request, turma):
-    return mixer.blend(MateriaDaTurma)
+    return mixer.blend(MateriaDaTurma, area=mixer.blend(AreaConhecimento, turma=turma), turma=turma)
 
 
 @pytest.fixture
 def area(request, turma):
-    return mixer.blend(AreaConhecimento)
+    return mixer.blend(AreaConhecimento, turma=turma)
 
 
 @pytest.fixture

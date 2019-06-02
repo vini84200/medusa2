@@ -13,7 +13,6 @@ from django.db import models
 from django.urls import reverse
 from django_prometheus.models import ExportModelOperationsMixin
 from mptt.models import MPTTModel, TreeForeignKey
-from polymorphic.models import PolymorphicModel
 from taggit.managers import TaggableManager
 
 import escola
@@ -706,7 +705,7 @@ class ProvaMarcada(models.Model):
 
 class ProvaMateriaMarcada(models.Model):
     """Prova de uma materia"""
-    materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
+    materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, related_name='provas_materia')
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
     _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_materia')
     
@@ -782,7 +781,7 @@ class ProvaMateriaMarcada(models.Model):
 
 class ProvaAreaMarcada(models.Model):
     """Prova de Area"""
-    area: AreaConhecimento = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE)
+    area: AreaConhecimento = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='provas_area')
     # item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
     _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_area')
     
