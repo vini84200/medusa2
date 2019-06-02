@@ -6,7 +6,7 @@
 {% block conteudo %}
 
 <section class="container">
-    <h1>Suas Provas marcadas</h1>
+  <h1>Minhas Provas marcadas</h1>
   <div class="btn-group" role="group" aria-label="Ações">
   {% if user|can:'create_provas'%}
     <a href="{%url 'escola:marcar-prova-materia'%}" class="btn btn-primary">Marcar Prova</a>

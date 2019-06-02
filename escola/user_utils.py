@@ -75,7 +75,7 @@ def give_admin_group_permissions():
     pass
 
 
-def create_aluno_user(username, senha, turma, nome, num=0):
+def create_aluno_user(username, senha, turma, nome, num=0) -> User:
     u = create_user(username, senha)
     p = u.profile_escola
     p.is_aluno = True

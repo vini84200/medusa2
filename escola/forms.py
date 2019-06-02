@@ -386,7 +386,8 @@ class MarcarProvaAreaProfessorForm(forms.Form):
         if has_permission(professor, 'add_prova_area_geral'):
             self.fields['area'].queryset = AreaConhecimento.objects.all()
         else:
-            self.fields['area'].queryset = Turma.objects.filter(regente=professor).area.all()
+            # self.fields['area'].queryset = Turma.objects.filter(regente=professor).area.all()
+            self.fields['area'].queryset = AreaConhecimento.objects.filter(turma__regente=professor)
 
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', "Adicionar"))
