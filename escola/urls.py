@@ -13,6 +13,7 @@ import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
 import escola.views_conteudo
+from escola.quotes.quotes_views import AllQuotesView
 from escola import api, views_profile, views_provas_marcadas
 from . import views
 
@@ -150,6 +151,13 @@ urlpatterns +=\
              name='prova-detail'),
         path('turmas/<int:pk>/dias_livres', views_provas_marcadas.CalendarioTurmaDatasLivresView.as_view(),
              name='turma-provas-calendario'),
+    ]
+
+# Quotes
+
+urlpatterns += \
+    [
+        path('all-quotes', AllQuotesView.as_view(), name='todas-quotes')
     ]
 
 # Temporarias
