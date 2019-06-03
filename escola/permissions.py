@@ -132,6 +132,7 @@ def add_tarefa_mat(role, user, materia):
         return True
     return False
 
+
 @register_object_checker()
 def edit_tarefa(role, user, tarefa):
     if user.is_superuser:
@@ -203,3 +204,9 @@ def can_edit_prova_area(role, user, prova_area):
         return True
     return False
 
+
+@register_object_checker()
+def can_edit_conteudo(role, user, conteudo):
+    if conteudo.professor.user == user:
+        return True
+    return False

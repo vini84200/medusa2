@@ -1,21 +1,27 @@
 #  Developed by Vinicius José Fritzen
 #  Last Modified 12/04/19 13:19.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import logging
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, PasswordChangeForm
+from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
+                                       PasswordResetForm)
+from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django.utils.safestring import mark_safe
-from mptt.forms import TreeNodeChoiceField, TreeNodeMultipleChoiceField
-from rolepermissions.checkers import has_role, has_permission
+from mptt.forms import TreeNodeMultipleChoiceField
+from rolepermissions.checkers import has_permission
 
-from escola.verificacao_forms import VerificarMinimo, VerificarPositivo, VerificarNomeUsuario, VerificarSenha, \
-    verificar, VerificarDataFutura
-from .models import *
+from escola.models import (AreaConhecimento, CargoTurma, Conteudo,
+                           MateriaDaTurma, Periodo, ProvaAreaMarcada,
+                           ProvaMateriaMarcada, Tarefa, TarefaComentario)
+from escola.verificacao_forms import (VerificarDataFutura, VerificarMinimo,
+                                      VerificarNomeUsuario, VerificarPositivo,
+                                      VerificarSenha, verificar)
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +55,7 @@ class CargoForm(ModelForm):
     def __init__(self, turma, *args, **kwargs):
         super(CargoForm, self).__init__(*args, **kwargs)
         self.fields['ocupante'].queryset = User.objects.filter(aluno__turma=turma) | \
-                                           User.objects.filter(profile_escola__is_professor=True)
+            User.objects.filter(profile_escola__is_professor=True)
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', "Adicionar"))
 
@@ -183,7 +189,6 @@ class TarefaForm(ModelForm):
         self.helper.add_input(Submit('submit', "Adicionar"))
 
 
-
 class ComentarioTarefaForm(ModelForm):
     class Meta:
         model = TarefaComentario
@@ -196,7 +201,7 @@ class ComentarioTarefaForm(ModelForm):
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', "Comentar"))
         self.helper.form_show_labels = False
-        self.helper.html5_required =True
+        self.helper.html5_required = True
 
 
 class ConteudoForm(ModelForm):
@@ -277,6 +282,7 @@ class SelectConteudosForm(forms.Form):
                     self.add_conteudo_na_materia(conteudo.parent)
             self.materia.conteudos.add(conteudo)
 
+
 class EmailChangeForm(forms.Form):
     """
     A form that lets a user change set their email while checking for a change in the
@@ -340,7 +346,7 @@ class MarcarProvaMateriaProfessorForm(forms.Form):
     error_messages = {
 
     }
-    
+
     titulo = forms.CharField(max_length=70)
     data = forms.DateTimeField(widget=AdminDateWidget)
     descricao = forms.CharField(widget=forms.Textarea())
@@ -399,7 +405,7 @@ class MarcarProvaAreaProfessorForm(forms.Form):
 
     def save(self):
         ProvaAreaMarcada.create(self.cleaned_data['area'],
-                                   self.cleaned_data['titulo'],
-                                   self.cleaned_data['data'],
-                                   self.cleaned_data['descricao'],
-                                   self.user)
+                                self.cleaned_data['titulo'],
+                                self.cleaned_data['data'],
+                                self.cleaned_data['descricao'],
+                                self.user)

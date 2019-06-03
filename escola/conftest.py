@@ -8,7 +8,8 @@ from django.test import TestCase
 from django.test.client import Client
 from mixer.backend.django import mixer
 
-from .models import Turma, MateriaDaTurma, ProvaMateriaMarcada, ProvaAreaMarcada, AreaConhecimento
+from .models import Turma, MateriaDaTurma, ProvaMateriaMarcada, ProvaAreaMarcada, AreaConhecimento, \
+    Conteudo
 from .user_utils import create_aluno_user, create_professor_user, create_user
 
 pytestmark = pytest.mark.django_db
@@ -61,8 +62,8 @@ def professor_client(request, professor, client: Client):
 
 
 @pytest.fixture
-def materia(request, turma):
-    return mixer.blend(MateriaDaTurma, area=mixer.blend(AreaConhecimento, turma=turma), turma=turma)
+def materia(request, turma, professor):
+    return mixer.blend(MateriaDaTurma, area=mixer.blend(AreaConhecimento, turma=turma), turma=turma, professor=professor.professor)
 
 
 @pytest.fixture
@@ -83,3 +84,8 @@ def prova_marcada_materia(request, materia, faker, user):
 @pytest.fixture
 def prova_marcada_area(request, area, faker, user):
     return ProvaAreaMarcada.create(area, faker.sentence(), faker.date_time(), faker.paragraph(), user)
+
+
+@pytest.fixture
+def conteudo(request, professor):
+    return mixer.blend(Conteudo, professor=professor.professor)
