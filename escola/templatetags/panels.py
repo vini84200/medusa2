@@ -5,12 +5,13 @@ import datetime
 import random
 
 from django.template.defaultfilters import register
-
-from escola.controller_provas_marcadas import get_materias_professor_for_day, get_provas_turma_futuras, \
-    get_provas_professor_futuras
-from escola.models import Turno, Turma, Professor
-from escola.quotes.quotes_conf import QUOTES
 from django.utils.safestring import mark_safe
+
+from escola.controller_provas_marcadas import (get_materias_professor_for_day,
+                                               get_provas_professor_futuras,
+                                               get_provas_turma_futuras)
+from escola.models import Professor, Turma, Turno
+from escola.quotes.quotes_conf import QUOTES
 
 
 @register.inclusion_tag('escola/horario/horario_include.html')
@@ -96,4 +97,23 @@ def panel_quote():
     context = {}
     citacao, autor = random.choice(QUOTES)
     context.update({'quote': mark_safe(citacao), 'autor': autor})
+    return context
+
+
+@register.inclusion_tag('escola/panels/panelQuote.html')
+def panel_quote_esp(id: int):
+    """Mostra uma citação aleatoria selecionada do arquivo de citações."""
+    context = {}
+    citacao, autor = QUOTES[id]
+    context.update({'quote': mark_safe(citacao), 'autor': autor})
+    return context
+
+@register.inclusion_tag('escola/panels/panelQuotesList.html')
+def panel_all_quotes():
+    """Mostra uma citação aleatoria selecionada do arquivo de citações."""
+    context = {}
+    ids = []
+    for quote in QUOTES:
+        ids.append(QUOTES.index(quote))
+    context.update({'quotes_ids': ids})
     return context
