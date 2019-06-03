@@ -3,16 +3,23 @@
 #  Last Modified 12/04/19 22:06.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
+import logging
+
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, CreateView, UpdateView, DetailView, FormView, ListView, DeleteView
-from mptt.forms import MoveNodeForm
+from django.views.generic import (
+    CreateView, DeleteView, DetailView, FormView, ListView, UpdateView)
+from rolepermissions.checkers import has_object_permission
 
-from .forms import *
-from .models import *
-from .decorators import *
+from escola.decorators import is_professor, is_user_escola
+from escola.forms import ConteudoForm, SelectConteudosForm
+from escola.models import CategoriaConteudo, Conteudo, LinkConteudo, MateriaDaTurma
+
+logger = logging.getLogger(__name__)
 
 
 class ConteudoCreate(CreateView):
@@ -25,6 +32,7 @@ class ConteudoCreate(CreateView):
     """
     model = Conteudo
     form_class = ConteudoForm
+    template_name = 'escola/conteudo/create_conteudo.html'
 
     def dispatch(self, request, *args, **kwargs):
         """Pega valores dos args"""
@@ -36,10 +44,9 @@ class ConteudoCreate(CreateView):
         """Altera o valor inicial dos campos"""
         initial = super(ConteudoCreate, self).get_initial()
         print(kwargs)
-        if self.parent:
+        if hasattr(self, 'parent'):
             logger.debug('ConteudoCreate:get_initial():in if loop.')
             initial['parent'] = self.parent
-            # TODO: 10/04/2019 por wwwvi: Adicionar Teste;
         return initial
 
     def form_valid(self, form):
@@ -51,12 +58,12 @@ class ConteudoCreate(CreateView):
         return HttpResponseRedirect(self.get_success_url())
 
 
-class ConteudoUpdate(UpdateView):
+class ConteudoUpdateView(UpdateView):
     """View para criar um Conteudo."""
     model = Conteudo
     form_class = ConteudoForm
     context_object_name = 'conteudo'
-    # TODO: 10/04/2019 por wwwvi: Testar
+    template_name = 'escola/conteudo/create_conteudo.html'
 
 
 class ConteudoDetail(DetailView):
@@ -97,9 +104,9 @@ class LinkConteudoCreateView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         self.conteudo = Conteudo.objects.get(pk=kwargs.get('pk'))
         self.categoria = kwargs.get('cat')
-        if not request.user == self.conteudo.professor.user:
-            logger.debug(request.user)
-            logger.debug(self.conteudo)
+        if not has_object_permission('can_edit_conteudo', request.user, self.conteudo):  # request.user == self.conteudo.professor.user:
+            logger.info(request.user)
+            logger.info(self.conteudo)
             raise PermissionDenied("Você não tem permissão para adicionar um link aqui.")
         return super(LinkConteudoCreateView, self).dispatch(request, *args, **kwargs)
 
