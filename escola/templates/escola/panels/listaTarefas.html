@@ -1,0 +1,39 @@
+<div class="table-responsive">
+<table class="table table-striped">
+    <thead class="thead-dark">
+        <tr>
+            <th>Titulo</th>
+            <th>Materia</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Data de Entrega</th>
+            <th>Concluido</th>
+            <th>Marcar como concluido</th>
+            {%if perms.escola.can_edit_tarefa%}
+            <th></th>
+            {%endif%}
+            {%if perms.escola.can_delete_tarefa%}
+            <th></th>
+            {%endif%}
+        </tr>
+    </thead>
+    <tbody>
+        {%for tarefa in tarefas%}
+            <tr>
+                <td>{{tarefa.0.titulo}}</td>
+                <td>{{tarefa.0.materia}}</td>
+                <td>{{tarefa.0.get_tipo_display}}</td>
+                <td>{{tarefa.0.descricao|truncatechars:30}}</td>
+                <td>{{tarefa.0.deadline}}</td>
+                <td>{{tarefa.1.completo|yesno:"Sim,Não,Hmmm:("}}</td>
+                <td><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}">CONCLUIR</a></td>
+                {%if perms.escola.can_edit_cargo%}
+                <td><a href="{% url 'escola:edit-tarefa' tarefa.0.pk %}">EDIT</a></td>
+                {%endif%}
+                {%if perms.escola.can_delete_cargo%}
+                <td><a href="{% url 'escola:delete-tarefa' tarefa.0.pk %}">DELETE</a></td>
+                {%endif%}
+            </tr>
+        {%endfor%}
+    </tbody>
+        </table></div>

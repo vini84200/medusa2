@@ -20,6 +20,16 @@
 {% if request.sentry.id %}
 <script>
   Sentry.init({ dsn: 'https://4cc5a783be3d448c892650255b403196@sentry.io/1422015' });
-  Sentry.showReportDialog({ eventId: '{{ request.sentry.id }}',  title: 'Cafe'})
+  Sentry.showReportDialog({ eventId: '{{ request.sentry.id }}',
+    title: 'Parece que tivemos aluguns problemas internos.',
+    subtitle: "Nosso time foi notificado.",
+    subtitle2: "Se você gostaria de ajudar, conte-nos abaixo o que aconteceu",
+    labelName: "Nome",
+    labelComments:"O quê aconteceu?", 
+    labelClose: "Fechar",
+    labelSubmit: "Enviar",
+    errorGeneric: "Um erro desconhecido aconteceu enquanto enviavamos. Por favor, tente novamente.",
+    errorFormEntry: "Alguns campos estão invalidos, corija os erros e tente novamente.",
+    successMessage: "Seu feedback foi enviado. Muito obrigado."})
 </script>
 {% endif %}

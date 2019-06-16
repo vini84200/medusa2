@@ -24,22 +24,11 @@ def index(request):
     logger.info('views:index; user_id: %s', request.user.pk)
     context = {'request': request}
 
-    if request.user.profile_escola.is_aluno:  # TODO: Transformar as tarefas em um panel
-        turma_pk = request.user.aluno.turma.pk
-        logger.info('views:index; user_id: %s é aluno.', request.user.pk)
-        # TAREFAS
-        logger.info("Lembre-se de retirar as tarefas daqui e generalizar;")
-        tarefas = Tarefa.objects.filter(turma__pk=turma_pk, deadline__gte=datetime.date.today()).order_by('deadline')
-        tarefas_c = []
-        for tarefa in tarefas:
-            tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
-        logger.debug(f'Encontrei {len(tarefas_c)} tarefas.')
-        context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
-
     logger.info('Antes de renderizar a view index, user: %s', request.user.pk)
 
     if request.user.profile_escola.is_aluno:
         logger.info('É um aluno renderizando tela do aluno')
+        context.update({'turma': request.user.aluno.turma})
         return render(request, 'escola/home_aluno.html', context=context)
 
     if request.user.profile_escola.is_professor:
