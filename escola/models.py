@@ -249,8 +249,9 @@ class MateriaManager(models.Manager):
     def filter_from_professor(self, professor):
         return super().filter(professor=professor).all()
 
-    def filter_from_professor_for_day(self, professor, day):
-        return [a for a in self.filter_from_professor(professor).all() if a.has_aula_in_day(day)]
+    def filter_from_professor_for_day(self, professor: Professor, day):
+        # return [a for a in self.filter_from_professor(professor).all() if a.has_aula_in_day(day)]
+        return {p.materia for p in Periodo.objects.filter(turnoAula__diaDaSemana=day, materia__professor=professor)}
 
 
 class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
@@ -447,14 +448,14 @@ class TurnoAula(models.Model, ExportModelOperationsMixin('TurnoAula')):
     """Um turno de aula tem um dia da semana, turno e uma turma """
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     horario = models.ForeignKey(Horario, on_delete=models.CASCADE)
-    DIAS_DA_SEMANA = (
-        (1, 'domingo'),
-        (2, 'segunda-feira'),
-        (3, 'terca-feira'),
-        (4, 'quarta-feira'),
-        (5, 'quinta-feira'),
-        (6, 'sexta-feira'),
-        (7, 'sabado'),
+    DIAS_DA_SEMANA = (   # Segundo a ISO
+        (1, 'Segunda-feira'),
+        (2, 'Terça-feira'),
+        (3, 'Quarta-feira'),
+        (4, 'Quinta-feira'),
+        (5, 'Sexta-feira'),
+        (6, 'Sábado'),
+        (7, 'Domingo'),
     )
     diaDaSemana = models.PositiveSmallIntegerField(choices=DIAS_DA_SEMANA)
     turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
@@ -472,7 +473,7 @@ class Periodo(models.Model, ExportModelOperationsMixin('Periodo')):
 
     @property
     def turma(self):
-        return self.turnoAula.turno.turma
+        return self.turnoAula.turma
 
     @property
     def turno_cod(self):
@@ -573,11 +574,11 @@ class EventoTurma(models.Model):
     evento: Evento = models.ForeignKey(Evento, on_delete=models.CASCADE)
 
     block_prova = models.BooleanField(default=True)
-    
+
     def delete(self, using=None, keep_parents=False):
         self.evento.delete(using, keep_parents)
         super(EventoTurma, self).delete(using, keep_parents)
-    
+
     def __str__(self):
         return self.get_nome()
 
@@ -627,7 +628,7 @@ class ProvaMarcada(models.Model):
     """Uma prova"""
     conteudos = models.ManyToManyField(Conteudo, blank=True)
     evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
-    
+
     def delete(self, using=None, keep_parents=False):
         self.evento.delete(using, keep_parents)
         super(ProvaMarcada, self).delete(using, keep_parents)
@@ -708,7 +709,7 @@ class ProvaMateriaMarcada(models.Model):
     materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, related_name='provas_materia')
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
     _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_materia')
-    
+
     def delete(self, using=None, keep_parents=False):
         self._prova.delete(using, keep_parents)
         super(ProvaMateriaMarcada, self).delete(using, keep_parents)
@@ -784,7 +785,7 @@ class ProvaAreaMarcada(models.Model):
     area: AreaConhecimento = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='provas_area')
     # item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
     _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_area')
-    
+
     def delete(self, using=None, keep_parents=False):
         self._prova.delete(using, keep_parents)
         super(ProvaAreaMarcada, self).delete(using, keep_parents)

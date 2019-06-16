@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 def get_materias_professor_for_day(professor: Professor, dia: date):
     """Return a list of materias of the professor for today"""
-    return MateriaDaTurma.helper.filter_from_professor_for_day(professor, dia)
+    return MateriaDaTurma.helper.filter_from_professor_for_day(professor, dia.isoweekday())
 
 
 def get_data_for_sort(prova):
