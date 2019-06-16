@@ -33,3 +33,5 @@ pytest-splinter==2.0.1
 django-polymorphic==2.0.3
 django-rest-polymorphic==0.1.8
 pytest-faker
+# Feedback
+django-tellme==0.6.5   # https://github.com/ludrao/django-tellme

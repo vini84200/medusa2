@@ -33,6 +33,7 @@ urlpatterns = \
         path('', include('django_prometheus.urls')),
         path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
         path('', include('pwa.urls')),
+        path('tellme/', include("tellme.urls")),
     ]
 if settings.DEBUG:
     urlpatterns.append(path('500', server_error))

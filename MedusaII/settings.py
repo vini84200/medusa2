@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'rules',
     'rolepermissions',
     'polymorphic',
+    'tellme',
 ]
 
 MIDDLEWARE = [
