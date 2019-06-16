@@ -269,9 +269,6 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
     def __str__(self):
         return f"{self.nome}/{self.turma.numero}"
 
-    def has_aula_in_day(self, day):
-        return True  # FIXME: FINISH
-
     def get_professor(self):
         return self.professor
 
