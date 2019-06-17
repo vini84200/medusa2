@@ -1,0 +1,23 @@
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 22/05/19 14:42.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+{% extends "escola/base.html" %}
+
+{% load panels %}
+{% load permission_tags %}
+
+{% block conteudo %}
+
+<section class="container">
+  {% if user|can:'create_provas'%}
+    <a href="{%url 'escola:marcar-prova-materia'%}"></a>
+  {% endif %}
+
+  <h1>Provas Marcadas da {{turma}}</h1>
+  {% panel_lista_provas_marcadas_turma turma %}
+</section>
+
+{% endblock conteudo %}

@@ -1,0 +1,18 @@
+{% extends "escola/home_base.html" %}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 28/04/19 07:35.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+{%load dict_key %}
+{% load panels %}
+{% block especific_cargo %}
+
+<section>
+  {%panel_resumo_do_dia_prof user%}
+</section>
+<section>
+{%panel_quote%}
+</section>
+{% endblock especific_cargo %}

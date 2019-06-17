@@ -1,48 +1,9 @@
 {% extends "../base.html" %}
 
 
+{% load crispy_forms_tags %}
 {% block conteudo %}
 
-    <style>
-ul{
-overflow:hidden;
-white-space:nowrap;
-}
-li{
-display:inline-block;
-}
-th{width:173px}
-    </style>
-<table>
-        <tr>
-            <th>
-                Chamada
-            </th>
-            <th>
-                Nome
-            </th>
-            <th>
-                Username
-            </th>
-            <th>
-                Senha
-            </th>
-            <th>
-                Turma
-            </th>
-        </tr><br/>
-</table>
-<form action="" method="post">
-    {%csrf_token%}
-    {{formset.management_form}}
-    <table>
-        <tr>
-        {%for form in formset%}
-            {{form.as_ul}}<br/>
-        {%endfor%}
-        </tr>
-    </table>
-    <input type="submit" value="Enviar">
-</form>
+{% crispy formset helper%}
 
 {%endblock%}

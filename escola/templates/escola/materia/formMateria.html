@@ -1,11 +1,17 @@
 {% extends "../base.html" %}
 
+{% load crispy_forms_tags %}
+{%block title%}Adicionar Materia - Medusa II{%endblock%}
 {% block conteudo %}
-  <form action="" method="post">
-    {% csrf_token %}
-    <table>
-    {{ form.as_table }}
-    </table>
-    <input type="submit" value="Enviar">
-  </form>
+
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 26/04/19 23:09.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+<div class="container">
+  {% crispy form %}
+</div>
+
 {% endblock %}

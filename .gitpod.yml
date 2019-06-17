@@ -1,0 +1,6 @@
+ports:
+- port: 3000
+- port: 80
+- port: 8000
+tasks:
+- command: python3 manage.py runserver 0.0.0.0:8000

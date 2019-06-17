@@ -1,36 +1,46 @@
 {% extends "../base.html" %}
-
+{% load permission_tags %}
 {%block conteudo%}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 25/04/19 16:17.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
 
+<div class="container">
 <h1>Listagem de Alunos da turma {{turma.numero}}</h1>
-{%if perms.escola.can_add_aluno%}
-    <a href="{% url 'escola:add-aluno' turma.pk %}">Adicionar Aluno</a>
+{%can "add_aluno" turma as can_add_aluno%}
+{%if can_add_aluno%}
+    <a href="{% url 'escola:add-aluno' turma.pk %}" class="btn btn-primary">Adicionar Aluno</a>
+    <br/><br/>
 {%endif%}
-
-<table>
-<tr>
-    <th>Num.</th>
-    <th>Nome de Usuario</th>
-    <th>Nome</th>
-    {%if perms.escola.can_edit_aluno%}
-    <th></th>
-    {%endif%}
-    {%if perms.escola.can_delete_aluno%}
-    <th></th>
-    {%endif%}
-</tr>
-{%for aluno in alunos%}
-<tr>
-    <th>{{aluno.chamada}}</th>
-    <th>{{aluno.user.username}}</th>
-    <th>{{aluno.nome}}</th>
-    {%if perms.escola.can_edit_aluno%}
-    <th><a href="{% url 'escola:edit-aluno' aluno.pk %}">EDIT</a></th>
-    {%endif%}
-    {%if perms.escola.can_delete_aluno%}
-    <th><a href="{% url 'escola:delete-aluno' aluno.pk %}">DELETE</a></th>
-    {%endif%}
-</tr>
-{%endfor%}
-</table>
+<div class="table-responsive">
+    <table class="table table-striped">
+    <tr>
+        <th>Num.</th>
+        <th>Nome de Usuario</th>
+        <th>Nome</th>
+        {%if perms.escola.can_edit_aluno%}
+        <th></th>
+        {%endif%}
+        {%if perms.escola.can_delete_aluno%}
+        <th></th>
+        {%endif%}
+    </tr>
+    {%for aluno in alunos%}
+    <tr>
+        <td class="aluno_n">{{aluno.chamada}}</td>
+        <td>{{aluno.user.username}}</td>
+        <td class="aluno_nome">{{aluno.nome}}</td>
+        {%if perms.escola.can_edit_aluno%}
+        <td><a href="{% url 'escola:edit-aluno' aluno.pk %}" class="btn btn-primary">Editar</a></td>
+        {%endif%}
+        {%if perms.escola.can_delete_aluno%}
+        <td><a href="{% url 'escola:delete-aluno' aluno.pk %}" class="btn btn-danger">Apagar</a></td>
+        {%endif%}
+    </tr>
+    {%endfor%}
+    </table>
+    </div>
+</div>
 {%endblock%}

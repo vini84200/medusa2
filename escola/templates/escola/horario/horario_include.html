@@ -1,0 +1,52 @@
+{%load dict_key %}
+{% load permission_tags %}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 28/04/19 11:46.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+<div class="table-responsive">
+<table style='table-layout: fixed;' class="table horario_table">
+  <tr>
+      <th></th>
+      {%for d in DIAS_DA_SEMANA%}
+         <th class="primary">
+          {{d}}
+          </th>
+      {%endfor%}
+
+  </tr>
+   {% for turno in turnos %}
+    <tr id="turno_{{turno.cod}}">
+        <th class="text-center">{{turno.nome}}</th>
+        {%for dia in DIAS_DA_SEMANA_N%}
+        <td class="text-center" id="dia_{{dia}}">
+
+
+           {%dia_teste turno dia ta as verdade%}
+          {% can "edit_horario" turma as edit_hor%}
+            {%if verdade%}
+                {%for p in range%}
+                    {%get_p turno dia p ta%} <br />
+                {%endfor%}
+
+                {%if edit_hor%}
+          <!--FIXME Verificar as permissões na linha superior-->
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
+                {%endif%}
+            {%else%}
+                <br/><br/>
+                NADA
+                <br/><br/><br/>
+                {%if edit_hor%}
+          <!--FIXME Verificar as permissões na linha superior-->
+                <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
+                {%endif%}
+            {%endif%}
+        </td>
+        {%endfor%}
+    </tr>
+    {%endfor%}
+</table>
+</div>

@@ -1,13 +1,21 @@
 {% extends "../base.html" %}
-
+{% load permission_tags %}
+{%block title%}Lista de Professores - Medusa II{%endblock%}
 {%block conteudo%}
 
-<h1>Listagem de Professores</h1>
-{%if perms.escola.can_add_professores%}
-    <a href="{% url 'escola:add-professor' %}">Adicionar Professor</a>
-{%endif%}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 26/04/19 23:04.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
 
-<table>
+<div class="container">
+<h1>Listagem de Professores</h1>
+{%if user|can:"add_professor" %}
+    <a href="{% url 'escola:add-professor' %}" class="btn btn-primary">Adicionar Professor</a><br><br>
+{%endif%}
+<div class="teble-responsive">
+<table class="table table-striped">
 <tr>
     <th>Nome de Usuario</th>
     <th>Nome</th>
@@ -20,15 +28,17 @@
 </tr>
 {%for prof in professores%}
 <tr>
-    <th>{{prof.user.username}}</th>
-    <th>{{prof.nome}}</th>
+    <td>{{prof.user.username}}</td>
+    <td class="professor_nome">{{prof.nome}}</td>
     {%if perms.escola.can_edit_professor%}
-    <th><a href="{% url 'escola:edit-professor' prof.pk %}">EDIT</a></th>
+    <td><a href="{% url 'escola:edit-professor' prof.pk %}"class="btn btn-primary">Editar</a></td>
     {%endif%}
     {%if perms.escola.can_delete_professor%}
-    <th><a href="{% url 'escola:delete-professor' prof.pk %}">DELETE</a></th>
+    <td><a href="{% url 'escola:delete-professor' prof.pk %}" class="btn btn-danger">Apagar</a></td>
     {%endif%}
 </tr>
 {%endfor%}
 </table>
+    </div>
+</div>
 {%endblock%}

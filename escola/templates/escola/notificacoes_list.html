@@ -1,0 +1,29 @@
+{% extends "escola/base.html" %}
+
+{%load dict_key %}
+
+
+{% block title %} Notificações {% endblock %}
+
+
+{% block conteudo %}
+
+<article class="container">
+<h2>Notificações</h2>
+    <div class="list-group">
+        {% for noti in notificacoes%}
+            <a href="{% if noti.link%}{{noti.link}}{%else%}#{%endif%}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{% if not noti.visualizado%}<i class="fas fa-circle" style="color:red"></i>{%endif%}{{noti.title}}</h5>
+                    <small>{{noti.dataCriado|timesince}} ago</small>
+                </div>
+                <p class="mb-1">{{noti.msg}}</p>
+              {% if noti.link%}
+                <small>{{noti.link}}</small>
+              {%endif%}
+            </a>
+        {%endfor%}
+    </div>
+</article>
+
+{% endblock %}

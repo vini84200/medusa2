@@ -1,0 +1,21 @@
+{% extends "escola/base.html" %}
+
+{% load panels %}
+{% load permission_tags %}
+
+{% block conteudo %}
+
+<section class="container">
+  <h1>Minhas Provas marcadas</h1>
+  <div class="btn-group" role="group" aria-label="Ações">
+  {% if user|can:'create_provas'%}
+    <a href="{%url 'escola:marcar-prova-materia'%}" class="btn btn-primary">Marcar Prova</a>
+  {% endif %}
+  {% if user|can:'create_provas'%}
+    <a href="{%url 'escola:marcar-prova-area'%}" class="btn btn-primary">Marcar Prova Area</a>
+  {% endif %}
+  </div>
+  {% panel_lista_provas_marcadas_professor professor %}
+</section>
+
+{% endblock conteudo %}

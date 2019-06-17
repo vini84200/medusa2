@@ -1,0 +1,35 @@
+<!--&lt;!&ndash; Sentry JS SDK 2.1.+ required &ndash;&gt;-->
+<!--<script src="https://cdn.ravenjs.com/2.3.0/raven.min.js"></script>-->
+
+<!--ERRO 500: Erro Interno do Servidor-->
+
+<!--{% if request.sentry.id %}-->
+  <!--<script>-->
+  <!--Raven.showReportDialog({-->
+    <!--eventId: '{{ request.sentry.id }}',-->
+
+    <!--// use the public DSN (dont include your secret!)-->
+    <!--dsn: 'https://4cc5a783be3d448c892650255b403196@sentry.io/1422015',-->
+    <!--title: 'Teste',-->
+
+  <!--});-->
+  <!--</script>-->
+<!--{% endif %}-->
+<script src="https://browser.sentry-cdn.com/5.3.0/bundle.min.js" crossorigin="anonymous"></script>
+
+{% if request.sentry.id %}
+<script>
+  Sentry.init({ dsn: 'https://4cc5a783be3d448c892650255b403196@sentry.io/1422015' });
+  Sentry.showReportDialog({ eventId: '{{ request.sentry.id }}',
+    title: 'Parece que tivemos aluguns problemas internos.',
+    subtitle: "Nosso time foi notificado.",
+    subtitle2: "Se você gostaria de ajudar, conte-nos abaixo o que aconteceu",
+    labelName: "Nome",
+    labelComments:"O quê aconteceu?", 
+    labelClose: "Fechar",
+    labelSubmit: "Enviar",
+    errorGeneric: "Um erro desconhecido aconteceu enquanto enviavamos. Por favor, tente novamente.",
+    errorFormEntry: "Alguns campos estão invalidos, corija os erros e tente novamente.",
+    successMessage: "Seu feedback foi enviado. Muito obrigado."})
+</script>
+{% endif %}

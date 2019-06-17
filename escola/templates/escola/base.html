@@ -1,48 +1,134 @@
-<!DOCTYPE html>
-<html>
-  {% load static %}
-  <head>
-    <!-- Title -->
-    <title>
-      {% block title %}Sistema Escola{% endblock %}
-    </title>
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 26/04/19 16:45.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
 
-    <!-- Favicon -->
+{% extends "escola/base_imports.html" %}
+{% block extrahead %}
+{%endblock%}
+{% block body %}
 
-    <!-- Arquivos CSS -->
+{% block navbar %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <a class="navbar-brand" href="#">Medusa II</a>
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-item nav-link active" href="{% url 'escola:index' %}">Home</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle"
+           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Escola
+        </a>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="{% url 'escola:list-turmas' %}">Lista de Turmas</a>
+            <a class="dropdown-item" href="{% url 'escola:list-professores' %}">Lista de Professores</a>
+        </div>
+      </li>
+      {% if user.profile_escola.is_aluno %}
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:list-materias' user.aluno.turma.id %}">Materias</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>
+      </li>
+      {%endif%}
+      {% if user.profile_escola.is_professor%}
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" id="navbarDropdown"
+           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Area do Professor
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a href="{%url 'escola:materias_professor'%}" class="dropdown-item">Minhas Disciplinas</a>
+            <a href="{%url 'escola:conteudos-professor'%}" class="dropdown-item">Meus Conteudos</a>
+            <a href="{%url 'escola:provas-professor'%}" class="dropdown-item">Minhas Provas</a>
+        </div>
+      </li>
 
+      {%endif%}
 
-    <!-- Bloco de Estilos -->
-    {% block styles %}{% endblock %}
-  </head>
+      {%if user.is_staff%}
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'admin:index'%}">Admin</a>
+      </li>
+      {%endif%}
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:sobre'%}">Sobre</a>
+      </li>
+    </ul>
+  </div>
+  {% if user.is_authenticated%}
+  <span class="navbar-text">Ola, {{user.username}} </span>
 
-  <body>
-    
-    <nav>
-        <a href="{% url 'escola:index' %}">Home</a>|
-        <a href="{% url 'escola:list-turmas' %}">Lista de turmas</a>|
-        <a href="{% url 'escola:list-professores' %}">Lista de Professores</a>|
-        {% if user.profile_escola.is_aluno %}
-        <a href="{% url 'escola:list-materias' user.aluno.turma.id %}">Materias</a>|
-        <a href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>|
-        {%endif%}
-        {% if user.is_authenticated%}
-        Ola, {{user.username}}, <a href="{% url 'logout'%}">Sair</a>, <a href="{% url 'password_change'%}">Alterar senha</a>|
-        {%if user.profile_escola.template_data.notificacao_count == 0%}
-            Você não tem notificações.
-        {%else%}
-        Você tem {{user.profile_escola.template_data.notificacao_count}} notifica{{user.profile_escola.template_data.notificacao_count|pluralize:"ção,ções"}}.
-        {%endif%}
-        {% endif %}
-    </nav>
-      
-    <!-- Bloco de conteúdo -->
-    {% block conteudo %}{% endblock %}
+  <a class="nav-item nav-link" href="{% url 'logout'%}">Sair</a>
+  <a class="nav-item nav-link" href="{% url 'password_change'%}">Alterar senha</a>
+  {%else%}
+  <button class="btn btn-outline-success" type="button" onclick="window.location.href = '{%url 'login' %}';">Login
+  </button>
+  {% endif %}
+  <div><a href="{% url 'escola:notificacoes-list'%}">
+    <i class="fas fa-bell" style="color:Dodgerblue; font-size:21.5px;"></i>
+    {%if user.profile_escola.template_data.notificacao_count != 0%}
+    <span class="badge badge-light">{{user.profile_escola.template_data.notificacao_count}}</span>
+    {%endif%}</a>
+  </div>
+  </div>
+</nav>
+{%if warnings%}
+  <!--Avisos a serem exibidos-->
+{%for warn in warnings%}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    {{warn.message}}
+    {%if warn.link_page_name%}
+    <a href="{% url warn.link_page_name%}" >
+      <i class="far fa-arrow-alt-circle-right"></i>
+    </a>
+    {%endif%}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+{%endfor%}
+{%endif%}
+{% endblock navbar %}
 
-    <!-- Bloco de scripts -->
-    {% block scripts %}{% endblock %}
+<!-- Bloco de conteúdo -->
+<div class="container">
+{% block conteudo %}{% endblock %}
+</div>
+<!--Feedback btn-->
+<a href="{%url 'escola:feedback'%}" id="feedback-btn" class="btn btn-info" style="
+transform: rotate(-90deg);
+transform-origin: 100% 100%;
+position: fixed;
+right: 0;
+top: 50%;
+z-index: 100;">
+    Feedback</span>
+</a>
+<div id="feedback-modal" class="modal fade text-center">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
 
-    <!-- Scripts.js -->
-    
-  </body>
-</html>
+<!--Rodapé-->
+
+{% endblock body %}
+
+{% block feed_scripts %}
+  <script>
+      $('#feedback-btn').on('click', function(e){
+        e.preventDefault();
+        $('#feedback-modal').modal('show').find('.modal-content').load($(this).attr('href'));
+      });
+  </script>
+{%endblock%}

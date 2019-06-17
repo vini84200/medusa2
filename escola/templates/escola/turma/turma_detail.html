@@ -1,0 +1,32 @@
+{% extends "../base.html" %}
+
+{% load permission_tags %}
+{% load panels %}
+
+{% block conteudo %}
+
+<div class="container">
+
+  <h1>{{turma}}</h1>
+
+  {% can 'marcar_prova_m_turma' turma as can_marcar_prova_materia%}
+  <div class="btn-group" role="group" aria-label="Ações">
+  {%if can_marcar_prova_materia%}
+    <a href="{%url 'escola:marcar-prova-materia' %}" class="btn btn-primary">Marcar Prova Materia</a>
+  {%endif%}
+  {%if user|can:'marcar_prova_area'%}
+    <a href="{%url 'escola:marcar-prova-area' %}" class="btn btn-primary">Marcar Prova Area</a>
+  {%endif%}
+    <a href="{%url 'escola:turma-provas-calendario' turma.id%}" class="btn btn-primary">Ver calendario</a>
+
+  </div>
+  <h3>Provas</h3>
+  {%panel_lista_provas_marcadas_turma turma 4%}
+  <a href="{%url 'escola:provas-turma-list' turma.id%}" class="btn btn-secondary">Ver mais...</a>
+
+  <h3>Tarefas</h3>
+  {# TODO #}
+  WIP
+</div>
+
+{% endblock conteudo %}

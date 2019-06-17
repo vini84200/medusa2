@@ -1,12 +1,34 @@
+dist: xenial
 language: python
 python:
   - '3.6'
   - '3.7-dev'
+  - '3.7'
+env:
+  MOZ_HEADLESS=1
+addons:
+  firefox: latest
 services:
   - postgresql
   - redis-server
+notifications:
+  slack: pesquisa2019:JYDcZ0S8d0nZ2ql3jtm78Q2h
+before_install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 install:
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
+  - mkdir geckodriver
+  - tar -xzf geckodriver-v0.24.0-linux64.tar.gz -C geckodriver
+  - export PATH=$PATH:$PWD/geckodriver
+  - geckodriver --version
+  - export MOZ_HEADLESS=1
   - pip install -r requirements.txt
+  - pip install pytest-cov
+
   # - cat "class Mixin(object):pass" >> .vEnv/Lib/site-packages/django_prometheus/models.py
 script:
-  - pytest
+  - pytest --cov-report xml
+after_script:
+  - ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT

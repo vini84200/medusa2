@@ -1,0 +1,35 @@
+{% extends "escola/home_base.html" %}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 28/04/19 07:35.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
+
+{%load dict_key panels %}
+{% block especific_cargo %}
+<div  class="row">
+    <div class="col">
+        <h2>Horario</h2>
+        {% mostra_horario_proprio user %}
+    </div>
+</div> <br/>
+
+<div class="row">
+    <div class="col">
+        <h2>Tarefas</h2>
+        {%if perms.escola.can_add_tarefa%}
+        <!-- TODO ageitar permissões e mover isso para outro lugar. -->
+            <a href="{% url 'escola:add-tarefa' turma.pk %}" class="btn btn-primary">Adicionar Tarefa</a>
+        {%endif%}
+        {%panel_tarefas_aluno user%}
+    </div>
+</div> <br/>
+<div  class="row">
+    <div class="col">
+        <h2>Provas marcadas</h2>
+        {% panel_lista_provas_marcadas_turma user.aluno.turma 6%}
+        <a href="{%url 'escola:provas-turma-list' turma.id%}" class="btn btn-secondary">Ver mais...</a>
+    </div>
+</div> <br/>
+{%panel_quote%}
+{% endblock especific_cargo %}

@@ -10,13 +10,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
+#  Developed by Vinicius José Fritzen
+#  Last Modified 25/04/19 18:14.
+#  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+
+import json
+import logging.config
 import os
+from pathlib import Path
+
+import raven
 from decouple import config
 from dj_database_url import parse as dburl
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -25,14 +33,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104', '10.0.0.105', '10.0.0.106']
 
+ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104',
+                 '10.0.0.105', '10.0.0.106', '127.0.0.1', 'medusa2-brancha.herokuapp.com', '*']
 
 # Application definition
 
+
 INSTALLED_APPS = [
-    'leituras.apps.LeiturasConfig',
-    'voting.apps.VotingConfig',
     'escola.apps.EscolaConfig',
     'django_prometheus',
     'django.contrib.admin',
@@ -41,6 +49,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'raven.contrib.django.raven_compat',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'taggit',
+    'taggit_labels',
+    'taggit_serializer',
+    'mptt',
+    'crispy_forms',
+    'debug_permissions',
+    'pwa',
+    'rules',
+    'rolepermissions',
+    'polymorphic',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +76,16 @@ MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'rules.permissions.ObjectPermissionBackend',
+    'django.contrib.auth.backends.ModelBackend',  # default
+)
+
+ROLEPERMISSIONS_MODULE = 'escola.roles'
+
+ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True
+ROLEPERMISSIONS_REGISTER_ADMIN = True
+
 ROOT_URLCONF = 'MedusaII.urls'
 
 TEMPLATES = [
@@ -68,6 +99,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'escola.context_processors.google_analytics',
+                'escola.context_processors.warnings',
             ],
         },
     },
@@ -75,25 +108,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MedusaII.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 
 default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 default_dbengine = 'django_prometheus.db.backends.sqlite3',
-# DATABASES = {
-#     'default': {
-#         'ENGINE': config('DATABASE_ENGINE', default_dbengine),
-#         'NAME': config('DATABASE_URL', default=default_dburl, cast=dburl),
-#     }
-# }
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django_prometheus.db.backends.sqlite3',
-#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#    }
-#}
+
 DATABASES = {'default': config('DATABASE_URL', default=default_dburl, cast=dburl), }
 
 # Password validation
@@ -114,7 +135,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
@@ -129,6 +149,7 @@ USE_L10N = True
 USE_TZ = True
 
 ADMINS = [('Vinicius', 'www.vini84200@hotmail.com')]
+ADMINS += json.loads(config('ADMINS_JSON', '[]'))
 MANAGERS = [('Vinicius', 'www.vini84200@hotmail.com')]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -136,6 +157,92 @@ MANAGERS = [('Vinicius', 'www.vini84200@hotmail.com')]
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-#Login info
+# Login info
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+SECURE_SSL_REDIRECT = config('HTTPS_OKAY', 0)
+
+# Progresive Web App Settings:
+
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'escola/static/escola', 'service-worker.js')
+PWA_APP_NAME = 'Medusa II'
+PWA_APP_DESCRIPTION = "Site Escolar, criado por Vinicius J F"
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_START_URL = '/'
+PWA_APP_SCOPE = '/'
+PWA_APP_THEME_COLOR = '#343a40'
+PWA_APP_ICONS = [
+    {'src': '/static/escola/icons/icon-v1-hr-128.png', 'sizes': '128x128'},
+    {'src': '/static/escola/icons/icon-v1-hr-144.png', 'sizes': '144x144'},
+    {'src': '/static/escola/icons/icon-v1-hr-152.png', 'sizes': '152x152'},
+    {'src': '/static/escola/icons/icon-v1-hr-192.png', 'sizes': '192x192'},
+    {'src': '/static/escola/icons/icon-v1-hr-512.png', 'sizes': '512x512'},
+]
+
+# Google Analytics
+
+GA_TRACKING_ID = config("GA_TRACKING_ID", None)
+
+
+def get_release():
+    try:
+        return raven.fetch_git_sha(Path(__file__).parent.parent)
+    except:
+        return config('HEROKU_SLUG_COMMIT', config('SOURCE_VERSION', config('DEFAULT_VERSION', "NotFound")))
+
+
+RAVEN_CONFIG = {
+    'dsn': config('DSN_SENTRY'),
+    # If you are using git, you can also automatically configure the
+    # release based on the git info.
+    'release': get_release(),
+    'environment': config('ENVIRONMENT', 'Default')
+}
+
+LOGGING_CONFIG = None
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            # exact format is not important, this is the minimum information
+            'format': '%(asctime)s %(name)-12s %(thread)d %(levelname)-8s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'console',
+        },
+        # Add Handler for Sentry for `warning` and above
+        'sentry': {
+            'level': 'WARNING',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
+    },
+    'loggers': {
+        # root logger
+        '': {
+            'level': 'WARNING',
+            'handlers': ['console', 'sentry'],
+        },
+        'escola': {
+            'level': 'DEBUG',
+            'handlers': ['console', 'sentry'],
+            # required to avoid double logging with root logger
+            'propagate': False,
+        },
+    },
+})
+
+EMAIL_BACKEND = config('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+EMAIL_HOST = config('EMAIL_HOST')
+EMAIL_USE_TLS = True
+EMAIL_PORT = config('EMAIL_PORT')
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+FEEDBACK_FROM_EMAIL = config('EMAIL_FEEDACK_FROM')

@@ -1,36 +1,48 @@
 {% extends "../base.html" %}
-
+{% load permission_tags %}
+{%block title%}Materias da {{turma.numero}} - Medusa II{%endblock%}
 {%block conteudo%}
 
-<h1>Listagem de Materias da turma {{turma.numero}}</h1>
-{%if perms.escola.can_add_materia%}
-    <a href="{% url 'escola:add-materia' turma.id %}">Adicionar Materia</a>
-{%endif%}
+<!--
+  ~ Developed by Vinicius José Fritzen
+  ~ Last Modified 26/04/19 23:11.
+  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+  -->
 
-<table>
+<div class="container">
+
+{% can 'add_materia' turma as can_add_materia %}
+<h1>Listagem de materias da turma {{turma.numero}}</h1>
+{%if can_add_materia%}
+    <a href="{% url 'escola:add-materia' turma.id %}" class="btn btn-primary">Adicionar Materia</a>
+    <br><br>
+{%endif%}
+<div class="table-responsive">
+<table class="table table-striped table-hover">
 <tr>
     <th>Nome</th>
     <th>Professor</th>
-    <th>Abreviação</th>
-    {%if perms.escola.can_edit_materia%}
+    <th class="text-center">Abreviação</th>
     <th></th>
-    {%endif%}
-    {%if perms.escola.can_delete_materia%}
+
     <th></th>
-    {%endif%}
 </tr>
 {%for materia in materias%}
 <tr>
-    <th>{{materia.nome}}</th>
-    <th>{{materia.professor.nome}}</th>
-    <th>{{materia.abreviacao}}</th>
-    {%if perms.escola.can_edit_materia%}
-    <th><a href="{% url 'escola:edit-materia' materia.turma.pk materia.pk %}">EDIT</a></th>
+    <td><a href="{% url 'escola:detail-materia' materia.pk %}">{{materia.nome}}</a></td>
+    <td>{{materia.professor.nome}}</td>
+    <td class="text-center">{{materia.abreviacao}}</td>
+    {% can 'edit_materia' materia as can_edit_materia%}
+    {%if can_edit_materia%}
+    <td><a href="{% url 'escola:edit-materia' materia.pk %}" class="btn btn-primary">Editar</a></td>
     {%endif%}
-    {%if perms.escola.can_delete_materia%}
-    <th><a href="{% url 'escola:delete-materia' materia.turma.pk materia.pk %}">DELETE</a></th>
+    {% can 'delete_materia' materia as can_delete_materia%}
+    {%if can_delete_materia%}
+    <td><a href="{% url 'escola:delete-materia' materia.pk %}" class="btn btn-danger">Apagar</a></td>
     {%endif%}
 </tr>
 {%endfor%}
 </table>
+    </div>
+</div>
 {%endblock%}
