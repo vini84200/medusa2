@@ -193,7 +193,7 @@ def get_release():
 
 
 RAVEN_CONFIG = {
-    'dsn': config('DSN_SENTRY'),
+    'dsn': config('DSN_SENTRY', None),
     # If you are using git, you can also automatically configure the
     # release based on the git info.
     'release': get_release(),

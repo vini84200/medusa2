@@ -1,4 +1,5 @@
 {%load dict_key %}
+{% load index %}
 {% load permission_tags %}
 <!--
   ~ Developed by Vinicius José Fritzen
@@ -6,7 +7,7 @@
   ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
   -->
 
-<div class="table-responsive">
+<div class="table-responsive d-none d-lg-block">
 <table style='table-layout: fixed;' class="table horario_table">
   <tr>
       <th></th>
@@ -25,14 +26,14 @@
 
 
            {%dia_teste turno dia ta as verdade%}
-          {% can "edit_horario" turma as edit_hor%}
+            {% can "edit_horario" turma as edit_hor%}
             {%if verdade%}
                 {%for p in range%}
                     {%get_p turno dia p ta%} <br />
                 {%endfor%}
 
                 {%if edit_hor%}
-          <!--FIXME Verificar as permissões na linha superior-->
+                <!--FIXME Verificar as permissões na linha superior-->
                 <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
                 {%endif%}
             {%else%}
@@ -49,4 +50,45 @@
     </tr>
     {%endfor%}
 </table>
+</div>
+<div id="accordion" class="d-lg-none ">
+    
+    <button class="btn btn-outline-primary" data-toggle="collapse" data-target="#horario-collapse" aria-expanded="true" aria-controls="collapseOne">
+        Mostrar
+    </button>
+    <div id="horario-collapse" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+        <div class="row">
+    {%for dia in DIAS_DA_SEMANA_N%}
+    
+        {% for turno in turnos %}
+        <div class="card col-xs-6 col-sm-4">
+            <div class="card-body">
+                <h5 class="card-title">{{DIAS_DA_SEMANA|index1:dia}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{turno.nome}}</h6>
+                {% can "edit_horario" turma as edit_hor%}
+                {%dia_teste turno dia ta as verdade%}
+                {%if verdade%}
+                    {%for p in range%}
+                        {%get_p turno dia p ta%} <br />
+                    {%endfor%}
+
+                    {%if edit_hor%}
+                        <!--FIXME Verificar as permissões na linha superior-->
+                        <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
+                    {%endif%}
+                {%else%}
+                    NADA
+                    {%if edit_hor%}
+                        <!--FIXME Verificar as permissões na linha superior-->
+                        <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
+                    {%endif%}
+                {%endif%}
+            </div>
+        </div>
+        
+        {%endfor%}
+    
+    {%endfor%}
+</div>
+</div>
 </div>
