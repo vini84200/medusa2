@@ -18,13 +18,17 @@
                 <span class="sr-only">Loading...</span>
             </div>
         </span>
-        <span class="success-message text-success" style="display: none"></span>
-        <span class="error-message text-danger" style="display: none"></span>
+        <span class="success-message text-success" style="display: none">
+            <strong>Sua mensagem foi enviada, agradecemos por sua participação!</strong>
+        </span>
+        <span class="error-message text-danger" style="display: none">
+            <strong>Ocoreu um erro, por favor tente novamente mais tarde.</strong>
+        </span>
     </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <button onclick="form_feedback_submit()" type="button" class="btn btn-primary">Enviar</button>
+    <button onclick="form_feedback_submit()" type="button" class="btn send-btn btn-primary">Enviar</button>
 </div>
 
 {% endblock %}
@@ -67,6 +71,7 @@
     };
     function success(){
         $(example_form).hide();
+        $('.send-btn').hide();
         $('.sending-message').hide();
         $('.success-message').show();
     }
