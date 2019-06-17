@@ -11,7 +11,16 @@
 
 <div class="modal-body">
     {% crispy form %}
-    <h3 style="display: none" class="success-message">Enviado com sucesso</h3>
+    <div class="messages">
+        <span class="sending-message text-info" style="display: none">
+            <strong>Sua mensagem está sendo enviada...</strong>
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        </span>
+        <span class="success-message text-success" style="display: none"></span>
+        <span class="error-message text-danger" style="display: none"></span>
+    </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -33,6 +42,8 @@
         });
     });
     function submitForm(){
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        $('.sending-message').show();
         $.ajax({
             url: "{% url 'escola:feedback' %}",
             type: "POST",
@@ -41,6 +52,7 @@
                 if (!(data['success'])) {
                     // Here we replace the form, for the
                     $(example_form).replaceWith(data['form_html']);
+                    $('.sending-message').hide();
                 }
                 else {
                     // Here you can show the user a success message or do whatever you need
@@ -48,12 +60,15 @@
                 }
             },
             error: function () {
-                $(example_form).find('.error-message').show()
+                $('.sending-message').hide();
+                $('.error-message').show();
             }
         });
     };
     function success(){
-        $(example_form).hide()
+        $(example_form).hide();
+        $('.sending-message').hide();
+        $('.success-message').show();
     }
     </script>
 {% endblock %}

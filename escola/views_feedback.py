@@ -1,8 +1,9 @@
 import logging
 
+from crispy_forms.utils import render_crispy_form
 from django.http import JsonResponse
 from django.shortcuts import reverse
-from crispy_forms.utils import render_crispy_form
+from django.template.context_processors import csrf
 from django.views.generic import FormView
 
 from escola.forms import FeedbackForm
@@ -18,7 +19,9 @@ class AjaxableResponseMixin:
     def form_invalid(self, form):
         response = super().form_invalid(form)
         if self.request.is_ajax():
-            form_html = render_crispy_form(form)
+            ctx = {}
+            ctx.update(csrf(self.request))
+            form_html = render_crispy_form(form, context=ctx)
             return JsonResponse({'form_html': form_html, 'success': False})
         else:
             return response
