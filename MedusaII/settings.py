@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 #  Last Modified 25/04/19 18:14.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
+import json
 import logging.config
 import os
 from pathlib import Path
@@ -148,6 +149,7 @@ USE_L10N = True
 USE_TZ = True
 
 ADMINS = [('Vinicius', 'www.vini84200@hotmail.com')]
+ADMINS += json.loads(config('ADMINS_JSON', '[]'))
 MANAGERS = [('Vinicius', 'www.vini84200@hotmail.com')]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
