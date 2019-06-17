@@ -11,6 +11,7 @@
 
 <div class="modal-body">
     {% crispy form %}
+    <h3 style="display: none" class="success-message">Enviado com sucesso</h3>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -43,7 +44,7 @@
                 }
                 else {
                     // Here you can show the user a success message or do whatever you need
-                    $(example_form).find('.success-message').show();
+                    success();
                 }
             },
             error: function () {
@@ -51,5 +52,8 @@
             }
         });
     };
+    function success(){
+        $(example_form).hide()
+    }
     </script>
 {% endblock %}
