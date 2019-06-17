@@ -6,12 +6,16 @@ import logging
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
+from django.conf import settings
 from django.contrib.admin.widgets import AdminDateWidget
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
                                        PasswordResetForm)
 from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
 from django.forms import ModelForm
+from django.template import Context
+from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from mptt.forms import TreeNodeMultipleChoiceField
 from rolepermissions.checkers import has_permission
@@ -409,3 +413,42 @@ class MarcarProvaAreaProfessorForm(forms.Form):
                                 self.cleaned_data['data'],
                                 self.cleaned_data['descricao'],
                                 self.user)
+
+
+# Feedback
+class FeedbackForm(forms.Form):
+    """Formulario que permite que um usuario envie seu feedback, deve enviar email."""
+
+    error_messages = {
+
+    }
+
+    nome = forms.CharField(max_length=100, required=False, label="Nome(Opicional)")
+    email = forms.EmailField(required=False, label="Email(Opicional)")
+    assunto = forms.CharField(required=False, label="Assunto(Opcional)")
+    mensagem = forms.CharField(max_length=3000, widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Enviar"))
+
+    def save(self):
+        nome = self.cleaned_data['nome']
+        email = self.cleaned_data['email']
+        assunto = self.cleaned_data['assunto']
+        mensagem = self.cleaned_data['mensagem']
+
+        plaintext = get_template('escola/feedback/email_feedback.txt')
+        htmly = get_template('escola/feedback/email_feedback.html')
+
+        c = Context({'nome': nome, 'email': email, 'assunto': assunto, 'mensagem': mensagem})
+
+        subject, from_email, to = f'Novo feedback: {assunto}', settings.FEEDBACK_FROM_EMAIL, [b for a, b in settings.ADMINS]
+
+        text_content = plaintext.render(c)
+        html_content = htmly.render(c)
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
