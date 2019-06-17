@@ -434,10 +434,11 @@ class FeedbackForm(forms.Form):
         self.helper.add_input(Submit('submit', "Enviar"))
 
     def save(self):
-        nome = self.cleaned_data['nome']
-        email = self.cleaned_data['email']
-        assunto = self.cleaned_data['assunto']
+        nome = self.cleaned_data['nome'] or "Anonimo"
+        email = self.cleaned_data['email'] or "Anonimo"
+        assunto = self.cleaned_data['assunto'] or "[SEM ASSUNTO]"
         mensagem = self.cleaned_data['mensagem']
+
 
         plaintext = get_template('escola/feedback/email_feedback.txt')
         htmly = get_template('escola/feedback/email_feedback.html')
