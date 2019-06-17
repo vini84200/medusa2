@@ -431,25 +431,29 @@ class FeedbackForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.add_input(Submit('submit', "Enviar"))
+        s = Submit('submit', "Enviar")#, style="display:none")
+        self.helper.add_input(s)
 
     def save(self):
-        nome = self.cleaned_data['nome'] or "Anonimo"
-        email = self.cleaned_data['email'] or "Anonimo"
+        logger.info("Preparando para enviar email de feedback")
+        nome = self.cleaned_data['nome'] or "[ANONIMO]"
+        email = self.cleaned_data['email'] or "[ANONIMO]"
         assunto = self.cleaned_data['assunto'] or "[SEM ASSUNTO]"
         mensagem = self.cleaned_data['mensagem']
-
 
         plaintext = get_template('escola/feedback/email_feedback.txt')
         htmly = get_template('escola/feedback/email_feedback.html')
 
-        c = Context({'nome': nome, 'email': email, 'assunto': assunto, 'mensagem': mensagem})
+        c = {'nome': nome, 'email': email, 'assunto': assunto, 'mensagem': mensagem}
 
         subject, from_email, to = f'Novo feedback: {assunto}', settings.FEEDBACK_FROM_EMAIL, [b for a, b in settings.ADMINS]
 
         text_content = plaintext.render(c)
         html_content = htmly.render(c)
 
+        logger.info("Ultimas preparações para enviar o email de feedback!")
         msg = EmailMultiAlternatives(subject, text_content, from_email, to)
         msg.attach_alternative(html_content, "text/html")
+        logger.info("Enviando o email de feedback...")
         msg.send()
+        logger.info("Enviado o email de feedback!!")

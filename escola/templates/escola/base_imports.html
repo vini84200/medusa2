@@ -19,7 +19,7 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', '{{GA_TRACKING_ID}}'{%if user.is_authenticated%} {'user_id': '{{user.id}}'}{%endif%});
+      gtag('config', '{{GA_TRACKING_ID}}'{%if user.is_authenticated%}, {'user_id': '{{user.id}}'}{%endif%});
     </script>
   {%endif%}
   <!-- Title -->
@@ -58,9 +58,10 @@
 
 <!-- Scripts.js -->
 <!--JQuerry-->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
 <!--Bootstrap-->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
@@ -72,8 +73,9 @@
 <!--Bootstrap Modal-->
 <!--<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>-->
 <!-- Bloco de scripts -->
+
 {% block scripts %}{% endblock %}
-
-
+{% block feed_scripts %}{% endblock %}
 </body>
+
 </html>
