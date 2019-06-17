@@ -59,6 +59,9 @@
         <a class="nav-item nav-link" href="{% url 'admin:index'%}">Admin</a>
       </li>
       {%endif%}
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:sobre'%}">Sobre</a>
+      </li>
     </ul>
   </div>
   {% if user.is_authenticated%}
