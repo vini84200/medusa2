@@ -26,14 +26,14 @@
 
 
            {%dia_teste turno dia ta as verdade%}
-          {% can "edit_horario" turma as edit_hor%}
+            {% can "edit_horario" turma as edit_hor%}
             {%if verdade%}
                 {%for p in range%}
                     {%get_p turno dia p ta%} <br />
                 {%endfor%}
 
                 {%if edit_hor%}
-          <!--FIXME Verificar as permissões na linha superior-->
+                <!--FIXME Verificar as permissões na linha superior-->
                 <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
                 {%endif%}
             {%else%}
@@ -57,6 +57,7 @@
         <div class="card col-3-md">
             <div class="card-body">
                 <h5 class="card-title">{{DIAS_DA_SEMANA|index1:dia}}</h5>
+                {% can "edit_horario" turma as edit_hor%}
                 {%dia_teste turno dia ta as verdade%}
                 {%if verdade%}
                     {%for p in range%}
