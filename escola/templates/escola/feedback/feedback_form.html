@@ -14,6 +14,42 @@
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    <button onclick="form_feedback_submit()" type="button" class="btn btn-primary">Enviar</button>
 </div>
 
+{% endblock %}
+{%block scripts%}
+<script type="text/javascript">
+    function form_feedback_submit() {
+        submitForm();
+    }
+    var example_form = '#send-feedback-form';
+    var form = $(example_form);
+    $(document).ready(function(){	
+        form.submit(function(event){
+            submitForm();
+            return false;
+        });
+    });
+    function submitForm(){
+        $.ajax({
+            url: "{% url 'escola:feedback' %}",
+            type: "POST",
+            data: $(example_form).serialize(),
+            success: function(data) {
+                if (!(data['success'])) {
+                    // Here we replace the form, for the
+                    $(example_form).replaceWith(data['form_html']);
+                }
+                else {
+                    // Here you can show the user a success message or do whatever you need
+                    $(example_form).find('.success-message').show();
+                }
+            },
+            error: function () {
+                $(example_form).find('.error-message').show()
+            }
+        });
+    };
+    </script>
 {% endblock %}

@@ -431,8 +431,8 @@ class FeedbackForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        s = Submit('submit', "Enviar")#, style="display:none")
-        self.helper.add_input(s)
+        self.helper.form_id = "send-feedback-form"
+        self.helper.form_action = ""
 
     def save(self):
         logger.info("Preparando para enviar email de feedback")
