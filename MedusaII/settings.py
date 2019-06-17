@@ -14,6 +14,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 #  Last Modified 25/04/19 18:14.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
+import json
 import logging.config
 import os
 from pathlib import Path
@@ -148,6 +149,7 @@ USE_L10N = True
 USE_TZ = True
 
 ADMINS = [('Vinicius', 'www.vini84200@hotmail.com')]
+ADMINS += json.loads(config('ADMINS_JSON', '[]'))
 MANAGERS = [('Vinicius', 'www.vini84200@hotmail.com')]
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
@@ -234,7 +236,7 @@ logging.config.dictConfig({
     },
 })
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = config('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_USE_TLS = True
 EMAIL_PORT = config('EMAIL_PORT')
@@ -243,3 +245,4 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
+FEEDBACK_FROM_EMAIL = config('EMAIL_FEEDACK_FROM')

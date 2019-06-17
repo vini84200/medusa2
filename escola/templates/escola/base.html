@@ -100,6 +100,32 @@
 <div class="container">
 {% block conteudo %}{% endblock %}
 </div>
+<!--Feedback btn-->
+<a href="{%url 'escola:feedback'%}" id="feedback-btn" class="btn btn-info" style="
+transform: rotate(-90deg);
+transform-origin: 100% 100%;
+position: fixed;
+right: 0;
+top: 50%;
+z-index: 100;">
+    Feedback</span>
+</a>
+<div id="feedback-modal" class="modal fade text-center">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      </div>
+    </div>
+  </div>
+
 <!--Rodapé-->
 
 {% endblock body %}
+
+{% block feed_scripts %}
+  <script>
+      $('#feedback-btn').on('click', function(e){
+        e.preventDefault();
+        $('#feedback-modal').modal('show').find('.modal-content').load($(this).attr('href'));
+      });
+  </script>
+{%endblock%}

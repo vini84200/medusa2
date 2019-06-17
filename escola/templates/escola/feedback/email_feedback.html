@@ -1,0 +1,15 @@
+{%extends 'escola/base_imports.html'%}
+{%block body%}
+
+    <div class="container">
+        <h1>Um novo feedback foi enviado</h1>
+        <p class='lead'>ASSUNTO: {{assunto}} </p>
+        <p>De: {{nome}} <{{email}}></p>
+        <div class="container">
+            {{mensagem}}
+        </div>
+        <hr/>
+        Lembre-se de responder, e de adicionar a lista de afazeres.
+    </div>
+
+{%endblock%}

@@ -1,0 +1,7 @@
+Um novo feedback foi registrado
+Assunto: {{assunto}}
+De: {{nome}} <{{email}}>
+===========================================================
+{{mensagem}}
+===========================================================
+Lembre-se de responder, e de adicionar a lista de afazeres.
