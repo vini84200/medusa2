@@ -51,12 +51,20 @@
     {%endfor%}
 </table>
 </div>
-<div class="d-lg-none">
-    {% for turno in turnos %}
-        {%for dia in DIAS_DA_SEMANA_N%}
-        <div class="card col-3-md">
+<div id="accordion" class="d-lg-none ">
+    
+    <button class="btn btn-outline-primary" data-toggle="collapse" data-target="#horario-collapse" aria-expanded="true" aria-controls="collapseOne">
+        Mostrar
+    </button>
+    <div id="horario-collapse" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+        <div class="row">
+    {%for dia in DIAS_DA_SEMANA_N%}
+    
+        {% for turno in turnos %}
+        <div class="card col-xs-6 col-sm-4">
             <div class="card-body">
                 <h5 class="card-title">{{DIAS_DA_SEMANA|index1:dia}}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{turno.nome}}</h6>
                 {% can "edit_horario" turma as edit_hor%}
                 {%dia_teste turno dia ta as verdade%}
                 {%if verdade%}
@@ -69,9 +77,7 @@
                         <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
                     {%endif%}
                 {%else%}
-                    <br/><br/>
                     NADA
-                    <br/><br/><br/>
                     {%if edit_hor%}
                         <!--FIXME Verificar as permissões na linha superior-->
                         <a href="{%url 'escola:alterar-horario' turma_pk turno.cod dia%}" class="btn btn-block btn-primary btn-sm">Alterar</a>
@@ -81,5 +87,8 @@
         </div>
         
         {%endfor%}
+    
     {%endfor%}
+</div>
+</div>
 </div>
