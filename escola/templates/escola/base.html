@@ -65,7 +65,7 @@
     </ul>
   </div>
   {% if user.is_authenticated%}
-  <span class="navbar-text">Ola, {{user.username}} </span>
+  <span class="navbar-text">Olá, {{user.username}} </span>
 
   <a class="nav-item nav-link" href="{% url 'logout'%}">Sair</a>
   <a class="nav-item nav-link" href="{% url 'password_change'%}">Alterar senha</a>
