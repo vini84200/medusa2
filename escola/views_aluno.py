@@ -34,7 +34,7 @@ class AlunosFormSetHelper(FormHelper):
 
 @has_permission_decorator('populate_alunos')
 def populate_alunos(request):
-    AlunosFormSet = formset_factory(AlunoCreateFormOutLabel, extra=5)
+    AlunosFormSet = formset_factory(AlunoCreateFormOutLabel, extra=20)
     formset = AlunosFormSet(data=request.POST or None)
     helper = AlunosFormSetHelper()
     if request.method == "POST":

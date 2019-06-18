@@ -3,7 +3,11 @@
 
 {% load crispy_forms_tags %}
 {% block conteudo %}
-
+<style>
+    .hidden{
+        display: none;
+    }
+</style>
 {% crispy formset helper%}
 
 {%endblock%}
