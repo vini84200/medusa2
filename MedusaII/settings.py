@@ -42,7 +42,6 @@ ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102
 
 INSTALLED_APPS = [
     'escola.apps.EscolaConfig',
-    'django_prometheus',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
