@@ -11,7 +11,6 @@ from typing import List
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-from django_prometheus.models import ExportModelOperationsMixin
 from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
 
@@ -21,7 +20,7 @@ from escola.customFields import ColorField
 logger = logging.getLogger(__name__)
 
 
-class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
+class Profile(models.Model):
     """Perfil basico, todos os usuarios do sistema tem um."""
     user = models.OneToOneField(User, related_name='profile_escola', on_delete=models.CASCADE)
     is_aluno = models.BooleanField('student status', default=False)
@@ -52,7 +51,7 @@ class Profile(models.Model, ExportModelOperationsMixin('Profiles')):
         return f"Profile de {self.user.__str__()}"
 
 
-class Turma(models.Model, ExportModelOperationsMixin('Turma')):
+class Turma(models.Model):
     """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
     numero = models.IntegerField()
     ano = models.IntegerField()
@@ -89,7 +88,7 @@ class Turma(models.Model, ExportModelOperationsMixin('Turma')):
         return f"Turma {self.numero}"
 
 
-class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager')):
+class SeguidorManager(models.Model):
     """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
     link = models.URLField(null=True, blank=True)
     seguidores = models.ManyToManyField(User)
@@ -114,7 +113,7 @@ class SeguidorManager(models.Model, ExportModelOperationsMixin('SeguidorManager'
             noti.save()
 
 
-class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
+class CargoTurma(models.Model):
     """Um cargo dentro de uma turma como lider, regente e vice"""
     nome = models.CharField(max_length=50)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
@@ -141,7 +140,7 @@ class CargoTurma(models.Model, ExportModelOperationsMixin('Cargos')):
         return f"Cargo {self.nome} da turma {self.turma.numero}"
 
 
-class Professor(models.Model, ExportModelOperationsMixin('Professor')):
+class Professor(models.Model):
     """Um professor, não esecifico para uma turma."""
     user = models.OneToOneField(User, related_name='professor', on_delete=models.CASCADE)
     nome = models.CharField(max_length=70)
@@ -254,7 +253,7 @@ class MateriaManager(models.Manager):
         return {p.materia for p in Periodo.objects.filter(turnoAula__diaDaSemana=day, materia__professor=professor)}
 
 
-class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
+class MateriaDaTurma(models.Model):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='materias')
@@ -279,7 +278,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
         ordering = ['nome', 'area', 'professor']
 
 
-class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
+class Aluno(models.Model):
     """Aluno de uma turma."""
     chamada = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
     nome = models.CharField(max_length=70)
@@ -295,7 +294,7 @@ class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
                        ('can_delete_aluno', 'Pode deletar um aluno.'),)
 
 
-class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
+class Tarefa(models.Model):
     """Tarefa para com prazo, como um tema, ou pesquisa"""
     titulo = models.CharField(max_length=60)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
@@ -338,14 +337,14 @@ class Tarefa(models.Model, ExportModelOperationsMixin('Tarefa')):
                        ('can_delete_tarefa', 'Pode deletar uma tarefa.'),)
 
 
-class TarefaCompletacao(models.Model, ExportModelOperationsMixin('TarefaCompletação')):
+class TarefaCompletacao(models.Model):
     """Completação de uma tarefa especifica por um aluno especifico."""
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
     completo = models.BooleanField(default=False)
 
 
-class TarefaComentario(models.Model, ExportModelOperationsMixin('TarefaComentario')):
+class TarefaComentario(models.Model):
     """Comentario em uma tarefa por um usuario."""
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
@@ -354,7 +353,7 @@ class TarefaComentario(models.Model, ExportModelOperationsMixin('TarefaComentari
     created_on = models.DateTimeField(auto_now_add=True)
 
 
-class Notificacao(models.Model, ExportModelOperationsMixin('Alerta')):
+class Notificacao(models.Model):
     """Notificação para os usuarios, campos obrigatorios: user, title, msg; Campos Livres: link"""
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     visualizado = models.BooleanField(default=False)
@@ -364,7 +363,7 @@ class Notificacao(models.Model, ExportModelOperationsMixin('Alerta')):
     link = models.URLField(blank=True, null=True)
 
 
-class Horario(models.Model, ExportModelOperationsMixin('Horario')):
+class Horario(models.Model):
     """O horario de uma turma."""
     turma = models.OneToOneField(Turma, related_name='horario', on_delete=models.CASCADE)
 
@@ -413,7 +412,7 @@ class Horario(models.Model, ExportModelOperationsMixin('Horario')):
         return ta
 
 
-class Turno(models.Model, ExportModelOperationsMixin('Turno')):
+class Turno(models.Model):
     """Um turno como matututino ou vespertino"""
     # TODO: 12/05/2019 por wwwvi: Adicionar maneira de flexibilizar quantidade de periodos
     nome = models.CharField(max_length=30)
@@ -442,7 +441,7 @@ class Turno(models.Model, ExportModelOperationsMixin('Turno')):
         return Turno.objects.filter(cod=cod)[0]
 
 
-class TurnoAula(models.Model, ExportModelOperationsMixin('TurnoAula')):
+class TurnoAula(models.Model):
     """Um turno de aula tem um dia da semana, turno e uma turma """
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     horario = models.ForeignKey(Horario, on_delete=models.CASCADE)
@@ -459,7 +458,7 @@ class TurnoAula(models.Model, ExportModelOperationsMixin('TurnoAula')):
     turno = models.ForeignKey(Turno, on_delete=models.CASCADE)
 
 
-class Periodo(models.Model, ExportModelOperationsMixin('Periodo')):
+class Periodo(models.Model):
     """Um periodo de aula"""
     num = models.PositiveSmallIntegerField()
     turnoAula = models.ForeignKey(TurnoAula, on_delete=models.CASCADE)
