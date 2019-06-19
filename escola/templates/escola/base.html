@@ -104,7 +104,7 @@
 {% block conteudo %}{% endblock %}
 </div>
 <!--Feedback btn-->
-<a href="{%url 'escola:feedback'%}" id="feedback-btn" class="btn btn-info" style="
+<!--<a href="{%url 'escola:feedback'%}" id="feedback-btn" class="btn btn-info" style="
 transform: rotate(-90deg);
 transform-origin: 100% 100%;
 position: fixed;
@@ -119,16 +119,17 @@ z-index: 100;">
       </div>
     </div>
   </div>
-
+-->
 <!--Rodapé-->
-
+<script src="https://desk.zoho.com/portal/api/feedbackwidget/404958000000121623?orgId=691522109&displayType=popout"></script>
 {% endblock body %}
 
 {% block feed_scripts %}
+<!--
   <script>
       $('#feedback-btn').on('click', function(e){
         e.preventDefault();
         $('#feedback-modal').modal('show').find('.modal-content').load($(this).attr('href'));
       });
-  </script>
+  </script>-->
 {%endblock%}
