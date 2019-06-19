@@ -276,6 +276,7 @@ class MateriaDaTurma(models.Model, ExportModelOperationsMixin('Materias')):
         """Meta"""
         permissions = (('can_edit_materia', 'Pode editar uma materia'),
                        ('can_delete_materia', 'Pode deletar uma materia'),)
+        ordering = ['nome', 'area', 'professor']
 
 
 class Aluno(models.Model, ExportModelOperationsMixin('Aluno')):
