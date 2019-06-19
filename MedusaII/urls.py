@@ -30,7 +30,6 @@ urlpatterns = \
         path('accounts/', include('escola.urlsAuth')),
         # path('escola/', include('escola.urls')),
         path('', include('escola.urls')),
-        path('', include('django_prometheus.urls')),
         path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
         path('', include('pwa.urls')),
     ]
