@@ -80,7 +80,7 @@ class ConteudoDetail(DetailView):
         categorias = []
         for cat in CategoriaConteudo.objects.all():
             categorias.append({'obj': cat,
-                               'links': LinkConteudo.objects.filter(conteudo=context['object'])
+                               'links': LinkConteudo.objects.filter(conteudo=context['object'], categoria=cat)
                                })
         context['categorias'] = categorias
         return context

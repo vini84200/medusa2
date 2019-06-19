@@ -206,11 +206,11 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     # Agora Pedro volta a lista de turmas, e abre a lista de materias
     navigate_navbar(browser, ['Escola', 'Lista de Turmas'])
     turma_row = browser.find_by_css('.turma_302')
-    click_button(turma_row, "Materias")
-    assert 'Materias da 302' in browser.title
+    click_button(turma_row, "Matérias")
+    assert 'Matérias da 302' in browser.title
     # Lá ele clica para adicionar uma nova materia 'Matematica' com a professora 'Maria das Dores'
-    click_button(browser, 'Adicionar Materia')
-    assert 'Adicionar Materia' in browser.title
+    click_button(browser, 'Adicionar Matéria')
+    assert 'Adicionar Matéria' in browser.title
     fill_form_id(browser, {
         'id_nome': 'Matematica',
         'id_abreviacao': 'MAT'
@@ -220,7 +220,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     browser.select_by_text('professor', 'Maria das Dores')
     submit_form(browser)
     # Tambem adiciona a materia 'Geografia' com a professora 'Patricia Klainir'
-    click_button(browser, 'Adicionar Materia')
+    click_button(browser, 'Adicionar Matéria')
     fill_form_id(browser, {
         'id_nome': 'Geografia',
         'id_abreviacao': 'GEO'

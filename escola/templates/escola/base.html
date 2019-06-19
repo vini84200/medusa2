@@ -33,7 +33,7 @@
       </li>
       {% if user.profile_escola.is_aluno %}
       <li class="nav-item">
-        <a class="nav-item nav-link" href="{% url 'escola:list-materias' user.aluno.turma.id %}">Materias</a>
+        <a class="nav-item nav-link" href="{% url 'escola:list-materias' user.aluno.turma.id %}">Matérias</a>
       </li>
       <li class="nav-item">
         <a class="nav-item nav-link" href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>
