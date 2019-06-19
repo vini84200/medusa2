@@ -17,6 +17,7 @@ from .models import *
 
 logger = logging.getLogger(__name__)
 
+
 @login_required()
 def email_change(request):
     form = EmailChangeForm(request.user)
@@ -24,6 +25,6 @@ def email_change(request):
         form = EmailChangeForm(request.user, request.POST)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("/accounts/profile/")
+            return reverse('escola:index')
 
     return render(request, "escola/email_change.html", {'form': form})
