@@ -275,7 +275,7 @@ def test_novo_aluno_pode_logar(live_server, browser, dummy_aluno, transactional_
     # Ele é redirecionado a pagina inicial,
     AssertHeader("Página Inicial", browser)
     # Na pagina inicial ele vê uma tabela de horarios vazia
-    assert "Horario" in [a.text for a in browser.find_by_tag('h2')]
+    assert "Horário" in [a.text for a in browser.find_by_tag('h2')]
     # Tambem ele vê uma tabela de Tarefas
     assert "Tarefas" in [a.text for a in browser.find_by_tag('h2')]
     # Ele resolve sair, sua curiosidade foi saciada
