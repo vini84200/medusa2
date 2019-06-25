@@ -5,14 +5,14 @@ import datetime
 import logging
 import random
 
+from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import register
 from django.utils.safestring import mark_safe
-from django.shortcuts import get_object_or_404
 
 from escola.controller_provas_marcadas import (get_materias_professor_for_day,
                                                get_provas_professor_futuras,
                                                get_provas_turma_futuras)
-from escola.models import Professor, Turma, Turno, Tarefa
+from escola.models import Professor, Tarefa, Turma, Turno, TurnoAula
 from escola.quotes.quotes_conf import QUOTES
 
 logger = logging.getLogger(__name__)
@@ -20,44 +20,36 @@ logger = logging.getLogger(__name__)
 
 @register.inclusion_tag('escola/horario/horario_include.html')
 def panel_mostra_horario_proprio(user):
+    logger.debug('panel_mostra_horario_proprio():')
     aluno_turma = user.aluno.turma
     horario = aluno_turma.get_or_create_horario()
     ta = horario.get_horario()
     context = {'turnos': Turno.objects.all().order_by('cod'),
-               'DIAS_DA_SEMANA': ['Domingo',
-                                  'Segunda-feira',
-                                  'Terça-feira',
-                                  'Quarta-feira',
-                                  'Quinta-feira',
-                                  'Sexta-feira',
-                                  'Sabado', ],
+               'DIAS_DA_SEMANA': [nome for num, nome in TurnoAula.DIAS_DA_SEMANA],
                'DIAS_DA_SEMANA_N': range(1, 8),
                'ta': ta,
                'turma_pk': aluno_turma.pk,
                'range': range(1, 6),
                'user': user,
                'turma': aluno_turma}
+    logger.debug(context['DIAS_DA_SEMANA'])
     return context
 
 
 @register.inclusion_tag('escola/horario/horario_include.html')
 def panel_mostra_horario(turma, user):
+    logger.debug('panel_mostra_horario():')
     horario = turma.get_or_create_horario()
     ta = horario.get_horario()
     context = {'turnos': Turno.objects.all().order_by('cod'),
-               'DIAS_DA_SEMANA': ['Domingo',
-                                  'Segunda-feira',
-                                  'Terça-feira',
-                                  'Quarta-feira',
-                                  'Quinta-feira',
-                                  'Sexta-feira',
-                                  'Sabado', ],
+               'DIAS_DA_SEMANA': [nome for num, nome in TurnoAula.DIAS_DA_SEMANA],
                'DIAS_DA_SEMANA_N': range(1, 8),
                'ta': ta,
                'turma_pk': turma.pk,
                'range': range(1, 6),
                'user': user,
                'turma': turma}
+    logger.debug(context['DIAS_DA_SEMANA'])
     return context
 
 
