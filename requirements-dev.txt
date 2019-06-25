@@ -32,3 +32,5 @@ pytest-splinter==2.0.1
 django-polymorphic==2.0.3
 django-rest-polymorphic==0.1.8
 pytest-faker
+# Sistema para permitir entrar em manutenção:
+django-maintenance-mode==0.13.1
