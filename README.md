@@ -36,3 +36,6 @@ ADMINS_JSON: Formato JSON, uma lista de admins, eles receberão emails de feedba
 ``` json
 '[["Nome", "Email@exemple.com"], ["Nome", "Email@exemple.com"]]'
 ```
+````
+MAINTENANCE_MODE: Se mudado para 'True' impedo todos os usarios que não são superusers, ou staff de acessar o site.
+```

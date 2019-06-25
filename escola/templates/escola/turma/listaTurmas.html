@@ -25,7 +25,7 @@
     <th>Cargos</th>
     <th>Alunos</th>
     <th>Matérias</th>
-    <th>Horario</th>
+    <th>Horário</th>
     <th>Tarefas</th>
     {%if perms.escola.can_edit_turma%}
     <th></th>
@@ -42,7 +42,7 @@
     <td><a href="{% url 'escola:list-cargos' turma.pk %}" class="btn btn-secondary">Cargos</a></td>
     <td><a href="{% url 'escola:list-alunos' turma.pk %}" class="btn btn-secondary">Alunos</a></td>
     <td><a href="{% url 'escola:list-materias' turma.pk %}" class="btn btn-secondary">Matérias</a></td>
-    <td><a href="{% url 'escola:show-horario' turma.pk %}" class="btn btn-secondary">Horario</a></td>
+    <td><a href="{% url 'escola:show-horario' turma.pk %}" class="btn btn-secondary">Horário</a></td>
     <td><a href="{% url 'escola:list-tarefa' turma.pk %}" class="btn btn-secondary">Tarefas</a></td>
     {%if perms.escola.can_edit_turma%}
     <td><a href="{% url 'escola:edit-turma' turma.pk %}" class="btn btn-primary">Modificar</a></td>

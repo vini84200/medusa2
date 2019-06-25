@@ -960,7 +960,7 @@ class TestIndex(TestCase):
         c.force_login(aluno.user)
         response = c.get(reverse(self.page_name))
         self.assertEqual(200, response.status_code)
-        self.assertContains(response, '<h2>Horario</h2>')
+        self.assertContains(response, '<h2>Horário</h2>')
         # TODO: Adicionar mais aspectos a serem verificados
 
     def test_aparece_tarefas(self):
