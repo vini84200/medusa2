@@ -33,6 +33,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
+MAINTENANCE_MODE = config('MAINTENANCE_MODE', default=False, cast=bool)
+
+MAINTENANCE_MODE_IGNORE_SUPERUSER = True
+MAINTENANCE_MODE_IGNORE_STAFF = True
 
 ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104',
                  '10.0.0.105', '10.0.0.106', '127.0.0.1', 'medusa2-brancha.herokuapp.com', '*']
@@ -61,6 +65,7 @@ INSTALLED_APPS = [
     'rules',
     'rolepermissions',
     'polymorphic',
+    'maintenance_mode',  # Sistema de manutenção
 ]
 
 MIDDLEWARE = [
@@ -71,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'maintenance_mode.middleware.MaintenanceModeMiddleware' # ULTIMO - Sistema da pagina de manutenção
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -98,6 +104,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'escola.context_processors.google_analytics',
                 'escola.context_processors.warnings',
+                'maintenance_mode.context_processors.maintenance_mode'  # Sis. Pagina de manutenção
             ],
         },
     },

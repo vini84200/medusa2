@@ -9,11 +9,11 @@
 
 from django.contrib.auth import views
 from django.urls import path
-
+from maintenance_mode.decorators import force_maintenance_mode_off
 from escola import forms
 
 urlpatterns = [
-    path('login/', views.LoginView.as_view(authentication_form=forms.LoginForm), name='login'),
+    path('login/', force_maintenance_mode_off(views.LoginView.as_view(authentication_form=forms.LoginForm)), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
 
     path('password_change/', views.PasswordChangeView.as_view(form_class=forms.MyPasswordChangeForm), name='password_change'),
