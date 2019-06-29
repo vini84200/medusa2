@@ -20,7 +20,7 @@
     <tbody>
         {%for tarefa in tarefas%}
             <tr>
-                <td>{{tarefa.0.titulo}}</td>
+                <td><a href="{% url 'escola:detalhes-tarefa' tarefa.0.pk %}">{{tarefa.0.titulo}}</a></td>
                 <td>{{tarefa.0.materia}}</td>
                 <td>{{tarefa.0.get_tipo_display}}</td>
                 <td>{{tarefa.0.descricao|truncatechars:30}}</td>
