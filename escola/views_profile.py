@@ -9,7 +9,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
 
-from escola.form import EmailChangeForm
+from escola.forms import EmailChangeForm
 
 logger = logging.getLogger(__name__)
 
