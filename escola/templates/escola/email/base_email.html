@@ -1,0 +1,32 @@
+{%extends 'escola/base_imports.html'%}
+{%block body%}
+    <style>
+        body{
+            background-color: #f5f5f5;
+        }
+        .title{
+            align-items: center;
+        }
+    </style>
+    <div class="container">
+        {%block title%}
+        <div class="row">
+            <div class="col title">
+                <h2>Medusa II</h2>
+            </div>
+        </div>
+        {%endblock title%}
+        
+    {%block content%}
+    {%endblock content%}
+    <br />
+    {%block nao_responda%}
+    <small>Por favor, não responda este email, caso necessite de suporte, envie um email para: support@medusa2.zohodesk.com
+        ou acesse <a href="https://desk.zoho.com/portal/medusa2/home">https://desk.zoho.com/portal/medusa2/home</a></small>
+    {%endblock nao_responda%}
+
+    </div>
+    
+
+
+{%endblock%}

@@ -1,0 +1,12 @@
+
+{%block title%}
+Medusa II
+{%endblock title%}
+    
+{%block content%}
+{%endblock content%}
+
+{%block nao_responda%}Por favor, não responda este email, caso necessite de suporte, envie um email para: support@medusa2.zohodesk.com
+    ou acesse https://desk.zoho.com/portal/medusa2/home
+{%endblock nao_responda%}
+    

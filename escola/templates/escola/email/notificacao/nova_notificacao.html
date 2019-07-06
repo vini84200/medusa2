@@ -1,0 +1,10 @@
+{%extends 'escola/email/base_email.html'%}
+
+{%block content%}
+<h2>Você recebeu uma notificação</h2>
+<h3>{{title}}</h3>
+<p>{{msg}}</p>
+{%if link%}
+<a href="{{link}}">Seguir link -> </a>
+{%endif%}
+{%endblock content%}

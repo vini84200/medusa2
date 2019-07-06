@@ -8,12 +8,15 @@ import datetime
 import logging
 from typing import List
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
-
+from django.template.loader import get_template
+from smtplib import SMTPException
 import escola
 from escola.customFields import ColorField
 
@@ -27,6 +30,8 @@ class Profile(models.Model):
     is_professor = models.BooleanField('teacher status', default=False)
     bio = models.TextField(blank=True, null=True)
     cor = models.CharField(max_length=12, blank=True, null=True)
+
+    receber_email_notificacao = models.BooleanField(default=True)
 
     @property
     def template_data(self):
@@ -105,12 +110,13 @@ class SeguidorManager(models.Model):
     def comunicar_todos(self, title, msg):
         """Cria uma notificação para cada usuario."""
         for seguidor in self.seguidores.all():
-            noti = Notificacao(user=seguidor, title=title, msg=msg)
-            # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
-            #  usuario.
-            if self.link:
-                noti.link = self.link
-            noti.save()
+            # noti = Notificacao(user=seguidor, title=title, msg=msg)
+            # # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
+            # #  usuario.
+            # if self.link:
+            #     noti.link = self.link
+            # noti.save()
+            Notificacao().create(seguidor, title, msg, deve_enviar=seguidor.profile_escola.receber_email_notificacao, link=self.link)  # FIXME: o Deve enviar deve seguir preferencia do usuario
 
 
 class CargoTurma(models.Model):
@@ -361,6 +367,53 @@ class Notificacao(models.Model):
     title = models.CharField(max_length=160)
     msg = models.TextField()
     link = models.URLField(blank=True, null=True)
+
+    email_criado = models.BooleanField(default=False)
+    deve_enviar = models.BooleanField(default=False)
+
+    @staticmethod
+    def create(user, title, msg, deve_enviar=False, link=None):
+        noti = Notificacao(user=user, title=title, msg=msg)
+        # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
+        #  usuario.
+        if link:
+            noti.link = link
+        noti.deve_enviar = deve_enviar
+        noti.save()
+
+    def send_email(self):
+        if self.deve_enviar and not self.email_criado:
+            if self.user.email is not None:
+                logger.info(f"Preparando para enviar email de notificação {self.pk}")
+                plaintext = get_template('escola/email/notificacao/nova_notificacao.txt') 
+                htmly = get_template('escola/email/notificacao/nova_notificacao.html')
+
+                c = {'user': self.user,
+                     'dataCriado': self.dataCriado,
+                     'title': self.title,
+                     'msg': self.msg,
+                     'link': self.link or None,
+                     }
+
+                subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [self.user.email, ]
+
+                text_content = plaintext.render(c)
+                html_content = htmly.render(c)
+
+                logger.info("Ultimas preparações para enviar o email de notificação!")
+                msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+                msg.attach_alternative(html_content, "text/html")
+                logger.info("Enviando o email de notificação...")
+                try:
+                    msg.send()  # TODO Enviar assicrono
+                except SMTPException as e:
+                    logger.error(f"Um email não foi enviado por causa de um error. {e}")
+                else:
+                    logger.info("Enviado o email de notificação!!")
+                    self.email_criado = True
+                    self.save()
+            else:
+                logger.info(f'O usuario {self.user} não possui email, e portanto não pode receber notificações.')
 
 
 class Horario(models.Model):

@@ -105,6 +105,7 @@ urlpatterns += \
 urlpatterns += \
     [
         path('notificacoes', escola.views.NotificacaoListView.as_view(), name='notificacoes-list'),
+        path('update-email', escola.views.atualisar_emails, name='update-email')
     ]
 
 # Pagina de sobre
