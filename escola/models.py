@@ -58,43 +58,6 @@ class Profile(models.Model):
         return f"Profile de {self.user.__str__()}"
 
 
-class Turma(models.Model):
-    """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
-    numero = models.IntegerField()
-    ano = models.IntegerField()
-    lider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
-    vicelider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True,
-                                  related_name='turma_vicelider')
-    regente = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
-
-    class Meta:
-        """Meta das Models"""
-        permissions = (('can_add_turma', "Pode criar turmas"),
-                       ('can_edit_turma', "Pode editar turmas"),
-                       ('can_delete_turma', "Pode deletar turmas"),
-                       ('can_populate_turma', "Pode popular turmas"),
-                       ('can_add_aluno', "Pode adicionar um aluno a turma."),
-                       ('editar_horario', "Pode editar o horario."),
-                       ('can_add_materia', 'Pode adicionar uma materia a turma.'),
-                       ('can_add_tarefa', "Pode adicionar uma tarefa."))
-
-    def get_or_create_horario(self):
-        """Retorna ou cria e retorna o horario."""
-        try:
-            return self.horario
-        except escola.models.Turma.horario.RelatedObjectDoesNotExist:
-            h = Horario(turma=self)
-            h.save()
-            return h
-
-    def get_list_alunos(self):
-        """Retorna a lista de user da aluno"""
-        return [a.user for a in self.aluno_set.all()]
-
-    def __str__(self):
-        return f"Turma {self.numero}"
-
-
 class SeguidorManager(models.Model):
     """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
     link = models.URLField(null=True, blank=True)
@@ -134,6 +97,64 @@ class SeguidorManager(models.Model):
             #     noti.link = self.link
             # noti.save()
             Notificacao().create(seguidor, title, msg, deve_enviar=seguidor.profile_escola.receber_email_notificacao, link=self.link)  # FIXME: o Deve enviar deve seguir preferencia do usuario
+
+
+class Turma(models.Model):
+    """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
+    numero = models.IntegerField()
+    ano = models.IntegerField()
+
+    lider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
+    vicelider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True,
+                                  related_name='turma_vicelider')
+    regente = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
+
+    poss_noti = (
+        "nova_tarefa",
+        "nova_prova",
+        "prova_proxima",
+        "tarefa_nao_completa_proxima",
+        "tarefa_completa_proxima",
+        "novo_conteudo",
+        "aviso_geral_professor"
+    )
+
+    noti_nova_tarefa = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_nova_prova = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_prova_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_tarefa_nao_completa_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True) = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_tarefa_completa_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_novo_conteudo = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_aviso_geral_professor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    
+
+
+    class Meta:
+        """Meta das Models"""
+        permissions = (('can_add_turma', "Pode criar turmas"),
+                       ('can_edit_turma', "Pode editar turmas"),
+                       ('can_delete_turma', "Pode deletar turmas"),
+                       ('can_populate_turma', "Pode popular turmas"),
+                       ('can_add_aluno', "Pode adicionar um aluno a turma."),
+                       ('editar_horario', "Pode editar o horario."),
+                       ('can_add_materia', 'Pode adicionar uma materia a turma.'),
+                       ('can_add_tarefa', "Pode adicionar uma tarefa."))
+
+    def get_or_create_horario(self):
+        """Retorna ou cria e retorna o horario."""
+        try:
+            return self.horario
+        except escola.models.Turma.horario.RelatedObjectDoesNotExist:
+            h = Horario(turma=self)
+            h.save()
+            return h
+
+    def get_list_alunos(self):
+        """Retorna a lista de user da aluno"""
+        return [a.user for a in self.aluno_set.all()]
+
+    def __str__(self):
+        return f"Turma {self.numero}"
 
 
 class CargoTurma(models.Model):
@@ -331,7 +352,7 @@ class Tarefa(models.Model):
     tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
     descricao = models.TextField()
     deadline = models.DateField(verbose_name='Data limite')
-    manager_seguidor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_comentario = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def get_completacao(self, aluno: Aluno):
         """Retorna se já foi completado."""
