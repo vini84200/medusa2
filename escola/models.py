@@ -108,7 +108,7 @@ class SeguidorManager(models.Model):
         """Adiciona um usuario a lista de seguidores."""
         self.seguidores.add(user)
         self.save()
-    
+
     def remover_seguidor(self, user):
         if self.is_seguidor(user):
             self.seguidores.remove(user)
@@ -120,7 +120,7 @@ class SeguidorManager(models.Model):
                 self.adicionar_seguidor(user)
             else:
                 self.remover_seguidor(user)
-    
+
     def toggle_seguidor(self, user):
         self.set_seguidor_state(user, self.is_seguidor(user))
 
@@ -397,10 +397,10 @@ class Notificacao(models.Model):
             noti.link = link
         noti.deve_enviar = deve_enviar
         noti.save()
-    
+
     def get_email_message(self):
         logger.info(f"Preparando para enviar email de notificação {self.pk}")
-        plaintext = get_template('escola/email/notificacao/nova_notificacao.txt') 
+        plaintext = get_template('escola/email/notificacao/nova_notificacao.txt')
         htmly = get_template('escola/email/notificacao/nova_notificacao.html')
 
         c = {'user': self.user,
@@ -438,7 +438,7 @@ class Notificacao(models.Model):
 
     @classmethod
     def send_all_emails(cls):
-        logger = logging.getLogger(__name__+"-SendEmails")
+        logger = logging.getLogger(__name__ + "-SendEmails")
         logger.info("Iniciando a coleta de notificações para mandar emails.")
         notificacoes = cls.objects.filter(email_criado=False, deve_enviar=True)
         c = len(notificacoes)
@@ -467,7 +467,7 @@ class Notificacao(models.Model):
                 n.save()
         finally:
             connection.close()
-        return len(notificacoes) 
+        return len(notificacoes)
 
 
 class Horario(models.Model):
