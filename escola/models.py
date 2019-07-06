@@ -108,6 +108,21 @@ class SeguidorManager(models.Model):
         """Adiciona um usuario a lista de seguidores."""
         self.seguidores.add(user)
         self.save()
+    
+    def remover_seguidor(self, user):
+        if self.is_seguidor(user):
+            self.seguidores.remove(user)
+            self.save()
+
+    def set_seguidor_state(self, user, state):
+        if not self.is_seguidor(user) == state:
+            if state:
+                self.adicionar_seguidor(user)
+            else:
+                self.remover_seguidor(user)
+    
+    def toggle_seguidor(self, user):
+        self.set_seguidor_state(user, self.is_seguidor(user))
 
     def comunicar_todos(self, title, msg):
         """Cria uma notificação para cada usuario."""
