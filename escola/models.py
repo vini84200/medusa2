@@ -122,11 +122,11 @@ class Turma(models.Model):
     noti_nova_tarefa = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
     noti_nova_prova = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
     noti_prova_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_tarefa_nao_completa_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True) = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_tarefa_nao_completa_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
     noti_tarefa_completa_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
     noti_novo_conteudo = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
     noti_aviso_geral_professor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    
+
 
 
     class Meta:
