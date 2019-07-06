@@ -105,7 +105,5 @@ def base_layout(request):
 
 
 def atualisar_emails(request):
-    notificacoes = Notificacao.objects.filter(email_criado=False, deve_enviar=True)
-    for n in notificacoes:
-        n.send_email()
-    return JsonResponse({'success': True, 'q': len(notificacoes)})
+    count = Notificacao.send_all_emails()
+    return JsonResponse({'success': True, 'q': count})

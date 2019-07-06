@@ -6,17 +6,19 @@ Models gerais do aplicativo Escola.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import datetime
 import logging
+from smtplib import SMTPException
 from typing import List
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.template.loader import get_template
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
-from django.template.loader import get_template
-from smtplib import SMTPException
+
 import escola
 from escola.customFields import ColorField
 
@@ -380,29 +382,33 @@ class Notificacao(models.Model):
             noti.link = link
         noti.deve_enviar = deve_enviar
         noti.save()
+    
+    def get_email_message(self):
+        logger.info(f"Preparando para enviar email de notificação {self.pk}")
+        plaintext = get_template('escola/email/notificacao/nova_notificacao.txt') 
+        htmly = get_template('escola/email/notificacao/nova_notificacao.html')
+
+        c = {'user': self.user,
+             'dataCriado': self.dataCriado,
+             'title': self.title,
+             'msg': self.msg,
+             'link': self.link or None,
+             }
+
+        subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [self.user.email, ]
+
+        text_content = plaintext.render(c)
+        html_content = htmly.render(c)
+
+        logger.info("Ultimas preparações para enviar o email de notificação!")
+        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+        msg.attach_alternative(html_content, "text/html")
+        return msg
 
     def send_email(self):
         if self.deve_enviar and not self.email_criado:
             if self.user.email is not None:
-                logger.info(f"Preparando para enviar email de notificação {self.pk}")
-                plaintext = get_template('escola/email/notificacao/nova_notificacao.txt') 
-                htmly = get_template('escola/email/notificacao/nova_notificacao.html')
-
-                c = {'user': self.user,
-                     'dataCriado': self.dataCriado,
-                     'title': self.title,
-                     'msg': self.msg,
-                     'link': self.link or None,
-                     }
-
-                subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [self.user.email, ]
-
-                text_content = plaintext.render(c)
-                html_content = htmly.render(c)
-
-                logger.info("Ultimas preparações para enviar o email de notificação!")
-                msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-                msg.attach_alternative(html_content, "text/html")
+                msg = self.get_email_message()
                 logger.info("Enviando o email de notificação...")
                 try:
                     msg.send()  # TODO Enviar assicrono
@@ -414,6 +420,39 @@ class Notificacao(models.Model):
                     self.save()
             else:
                 logger.info(f'O usuario {self.user} não possui email, e portanto não pode receber notificações.')
+
+    @classmethod
+    def send_all_emails(cls):
+        logger = logging.getLogger(__name__+"-SendEmails")
+        logger.info("Iniciando a coleta de notificações para mandar emails.")
+        notificacoes = cls.objects.filter(email_criado=False, deve_enviar=True)
+        c = len(notificacoes)
+        if c == 0:
+            logger.info("Não há notificações")
+            return 0
+        logger.info(f"Coletado {c} notificacoes.")
+        messages = []
+        logger.info("Gerando messages")
+        for n in notificacoes:
+            messages.append(n.get_email_message())
+        try:
+            logger.info("Mandando mensagens...")
+            connection = mail.get_connection()
+            logger.info("Abrindo conexão...")
+            connection.open()
+            logger.info("Enviando...")
+            connection.send_messages(messages)
+        except SMTPException as e:
+            logger.error(f"Erro inexperado: {e}")
+            raise
+        else:
+            logger.info(f"{c} mensagens foram enviadas!")
+            for n in notificacoes:
+                n.email_criado = True
+                n.save()
+        finally:
+            connection.close()
+        return len(notificacoes) 
 
 
 class Horario(models.Model):
