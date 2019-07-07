@@ -58,7 +58,7 @@ class Profile(models.Model):
         return f"Profile de {self.user.__str__()}"
 
 
-class SeguidorManager(models.Model):
+class Notificador(models.Model):
     """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
     link = models.URLField(null=True, blank=True)
     seguidores = models.ManyToManyField(User)
@@ -119,15 +119,13 @@ class Turma(models.Model):
         "aviso_geral_professor"
     )
 
-    noti_nova_tarefa = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_nova_prova = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_prova_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_tarefa_nao_completa_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_tarefa_completa_proxima = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_novo_conteudo = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_aviso_geral_professor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
-
-
+    noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, reverse='')
+    noti_nova_prova = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_prova_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_tarefa_nao_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_tarefa_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_aviso_geral_professor = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     class Meta:
         """Meta das Models"""
@@ -352,7 +350,7 @@ class Tarefa(models.Model):
     tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
     descricao = models.TextField()
     deadline = models.DateField(verbose_name='Data limite')
-    noti_comentario = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_comentario = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def get_completacao(self, aluno: Aluno):
         """Retorna se já foi completado."""
@@ -369,7 +367,7 @@ class Tarefa(models.Model):
         if self.manager_seguidor:
             return self.manager_seguidor
         else:
-            m = SeguidorManager(link=reverse('escola:detalhes-tarefa', args=[self.pk, ]))
+            m = Notificador(link=reverse('escola:detalhes-tarefa', args=[self.pk, ]))
             m.save()
             self.manager_seguidor = m
             self.save()

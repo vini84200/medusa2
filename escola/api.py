@@ -49,7 +49,7 @@ class TurmaViewSet(viewsets.ModelViewSet):
 class SeguidorManagerViewSet(viewsets.ModelViewSet):
     """ViewSet for the SeguidorManager class"""
 
-    queryset = models.SeguidorManager.objects.all()
+    queryset = models.Notificador.objects.all()
     serializer_class = serializers.SeguidorManagerSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
 

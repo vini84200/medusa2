@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template import RequestContext
 from django.views.generic import ListView, TemplateView
 
-from escola.models import (Horario, Notificacao, SeguidorManager, Turno,
+from escola.models import (Horario, Notificacao, Notificador, Turno,
                            TurnoAula)
 
 from .decorators import *
@@ -65,7 +65,7 @@ class SobreView(TemplateView):
 @is_user_escola
 @login_required
 def seguir_manager(request, pk):
-    seguidor = SeguidorManager.objects.get(pk=pk)
+    seguidor = Notificador.objects.get(pk=pk)
     seguidor.adicionar_seguidor(request.user)
     return HttpResponseRedirect(request.GET.get('next', reverse('escola:index')))
 

@@ -59,7 +59,7 @@ class SeguidorManagerSerializer(serializers.ModelSerializer):
     seguidores = UserSerializer(many=True, read_only=True)
 
     class Meta:
-        model = models.SeguidorManager
+        model = models.Notificador
         fields = (
             'pk',
             'link',
