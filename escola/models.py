@@ -211,13 +211,13 @@ class Turma(models.Model):
     regente = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
 
     poss_noti = (
-        ("nova_tarefa", "Há uma nova tarefa"),
-        ("nova_prova", "Há uma nova prova"),
-        ("prova_proxima", "Uma prova está próxima"),
-        ("tarefa_nao_completa_proxima", "Uma tarefa não completa está próxima"),
-        ("tarefa_completa_proxima", "Há uma tarefa já completada próxima"),
-        ("novo_conteudo", "Um professor postou um novo conteúdo"),
-        ("aviso_geral_professor", "Um professor postou um novo conteudo"),
+        ("nova_tarefa", "Há uma nova tarefa", True),
+        ("nova_prova", "Há uma nova prova", True),
+        ("prova_proxima", "Uma prova está próxima", True),
+        ("tarefa_nao_completa_proxima", "Uma tarefa não completa está próxima", True),
+        ("tarefa_completa_proxima", "Há uma tarefa já completada próxima", False),
+        ("novo_conteudo", "Um professor postou um novo conteúdo", True),
+        ("aviso_geral_professor", "Um professor postou um novo conteudo", True),
     )
 
     noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
@@ -241,11 +241,23 @@ class Turma(models.Model):
 
     def has_noti(self, name):
         """Verifica se possui o notificador"""
-        return name in [nome for nome, desc in self.get_poss_notis()]
+        return name in [nome for nome, desc, default in self.get_poss_notis()]
 
     def has_def_noti(self, name):
         """Verifica se possui o notificador"""
         return hasattr(self, self.formatar_nome(name))
+
+    def get_noti_default(self, nome):
+        return [default for name, desc, default in self.get_poss_notis() if name == nome].first()
+
+    def create_notificador(self, name):
+        notificador = Notificador()
+        notificador.save()
+        if self.get_noti_default(name):
+            for user in self.get_list_alunos():
+                notificador.seguidores.add(user)
+        notificador.save()
+        setattr(self, self.formatar_nome(name), notificador)
 
     def get_noti(self, name) -> Notificador:
         """Retorna o notificador que possui este nome"""
@@ -253,9 +265,7 @@ class Turma(models.Model):
             if self.has_def_noti(name):
                 return getattr(self, self.formatar_nome(name))
             else:
-                notificador = Notificador()
-                notificador.save()
-                setattr(self, self.formatar_nome(name), notificador)
+                create_notificador(name)
         else:
             raise NotificacaoDoesNotExistError
 
@@ -265,7 +275,7 @@ class Turma(models.Model):
 
     def get_all_notis_and_status(self, user):
         """Retorna os notificadores e seus estados"""
-        return [(nome, desc, self.get_noti_status(nome, user)) for nome, desc in self.get_poss_notis()]
+        return [(nome, desc, self.get_noti_status(nome, user)) for nome, desc, default in self.get_poss_notis()]
 
     class Meta:
         """Meta das Models"""
