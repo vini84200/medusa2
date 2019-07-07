@@ -85,7 +85,7 @@ class Notificador(models.Model):
                 self.remover_seguidor(user)
 
     def toggle_seguidor(self, user):
-        self.set_seguidor_state(user, self.is_seguidor(user))
+        self.set_seguidor_state(user, not self.is_seguidor(user))
 
     def comunicar_todos(self, title, msg):
         """Cria uma notificação para cada usuario."""
@@ -99,6 +99,108 @@ class Notificador(models.Model):
             Notificacao().create(seguidor, title, msg, deve_enviar=seguidor.profile_escola.receber_email_notificacao, link=self.link)  # FIXME: o Deve enviar deve seguir preferencia do usuario
 
 
+class Notificacao(models.Model):
+    """Notificação para os usuarios, campos obrigatorios: user, title, msg; Campos Livres: link"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    visualizado = models.BooleanField(default=False)
+    dataCriado = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=160)
+    msg = models.TextField()
+    link = models.URLField(blank=True, null=True)
+
+    email_criado = models.BooleanField(default=False)
+    deve_enviar = models.BooleanField(default=False)
+
+    @staticmethod
+    def create(user, title, msg, deve_enviar=False, link=None):
+        noti = Notificacao(user=user, title=title, msg=msg)
+        # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
+        #  usuario.
+        if link:
+            noti.link = link
+        noti.deve_enviar = deve_enviar
+        noti.save()
+
+    def get_email_message(self):
+        logger.info(f"Preparando para enviar email de notificação {self.pk}")
+        plaintext = get_template('escola/email/notificacao/nova_notificacao.txt')
+        htmly = get_template('escola/email/notificacao/nova_notificacao.html')
+
+        c = {'user': self.user,
+             'dataCriado': self.dataCriado,
+             'title': self.title,
+             'msg': self.msg,
+             'link': self.link or None,
+             }
+
+        subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [self.user.email, ]
+
+        text_content = plaintext.render(c)
+        html_content = htmly.render(c)
+
+        logger.info("Ultimas preparações para enviar o email de notificação!")
+        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+        msg.attach_alternative(html_content, "text/html")
+        return msg
+
+    def send_email(self):
+        if self.deve_enviar and not self.email_criado:
+            if self.user.email is not None:
+                msg = self.get_email_message()
+                logger.info("Enviando o email de notificação...")
+                try:
+                    msg.send()  # TODO Enviar assicrono
+                except SMTPException as e:
+                    logger.error(f"Um email não foi enviado por causa de um error. {e}")
+                else:
+                    logger.info("Enviado o email de notificação!!")
+                    self.email_criado = True
+                    self.save()
+            else:
+                logger.info(f'O usuario {self.user} não possui email, e portanto não pode receber notificações.')
+
+    @classmethod
+    def send_all_emails(cls):
+        logger = logging.getLogger(__name__ + "-SendEmails")
+        logger.info("Iniciando a coleta de notificações para mandar emails.")
+        notificacoes = cls.objects.filter(email_criado=False, deve_enviar=True)
+        c = len(notificacoes)
+        if c == 0:
+            logger.info("Não há notificações")
+            return 0
+        logger.info(f"Coletado {c} notificacoes.")
+        messages = []
+        logger.info("Gerando messages")
+        for n in notificacoes:
+            messages.append(n.get_email_message())
+        try:
+            logger.info("Mandando mensagens...")
+            connection = mail.get_connection()
+            logger.info("Abrindo conexão...")
+            connection.open()
+            logger.info("Enviando...")
+            connection.send_messages(messages)
+        except SMTPException as e:
+            logger.error(f"Erro inexperado: {e}")
+            raise
+        else:
+            logger.info(f"{c} mensagens foram enviadas!")
+            for n in notificacoes:
+                n.email_criado = True
+                n.save()
+        finally:
+            connection.close()
+        return len(notificacoes)
+
+
+class NotificacaoDoesNotExistError(Exception):
+    pass
+
+
+class NotificacaoCantHaveNoName(Exception):
+    pass
+
+
 class Turma(models.Model):
     """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
     numero = models.IntegerField()
@@ -110,13 +212,13 @@ class Turma(models.Model):
     regente = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
 
     poss_noti = (
-        "nova_tarefa",
-        "nova_prova",
-        "prova_proxima",
-        "tarefa_nao_completa_proxima",
-        "tarefa_completa_proxima",
-        "novo_conteudo",
-        "aviso_geral_professor"
+        ("nova_tarefa", "Há uma nova tarefa"),
+        ("nova_prova", "Há uma nova prova"),
+        ("prova_proxima", "Uma prova está próxima"),
+        ("tarefa_nao_completa_proxima", "Uma tarefa não completa está próxima"),
+        ("tarefa_completa_proxima", "Há uma tarefa já completada próxima"),
+        ("novo_conteudo", "Um professor postou um novo conteúdo"),
+        ("aviso_geral_professor", "Um professor postou um novo conteudo"),
     )
 
     noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, reverse='')
@@ -126,6 +228,36 @@ class Turma(models.Model):
     noti_tarefa_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
     noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
     noti_aviso_geral_professor = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+
+    def get_poss_notis(self):
+        """Retorna lista de possiveis notificadores"""
+        return [a for a in self.poss_noti if self.has_noti(a[0])]
+
+    @staticmethod
+    def formatar_nome(name):
+        """Formata o nome para o formato das variaveis"""
+        if name == "":
+            raise NotificacaoCantHaveNoName
+        return f"noti_{name}"
+
+    def has_noti(self, name):
+        """Verifica se possui o notificador"""
+        return hasattr(self, self.formatar_nome(name))
+
+    def get_noti(self, name) -> Notificador:
+        """Retorna o notificador que possui este nome"""
+        if self.has_noti(name):
+            return getattr(self, self.formatar_nome(name))
+        else:
+            raise NotificacaoDoesNotExistError
+
+    def get_noti_status(self, name, user):
+        """Retorna o status de uma noti"""
+        return self.get_noti(name).is_seguidor(user)
+
+    def get_all_notis_and_status(self, user):
+        """Retorna os notificadores e seus estados"""
+        return [(nome, desc, self.get_noti_status(nome, user)) for nome, desc in self.get_poss_notis()]
 
     class Meta:
         """Meta das Models"""
@@ -393,100 +525,6 @@ class TarefaComentario(models.Model):
     texto = models.TextField()
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
-
-
-class Notificacao(models.Model):
-    """Notificação para os usuarios, campos obrigatorios: user, title, msg; Campos Livres: link"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    visualizado = models.BooleanField(default=False)
-    dataCriado = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=160)
-    msg = models.TextField()
-    link = models.URLField(blank=True, null=True)
-
-    email_criado = models.BooleanField(default=False)
-    deve_enviar = models.BooleanField(default=False)
-
-    @staticmethod
-    def create(user, title, msg, deve_enviar=False, link=None):
-        noti = Notificacao(user=user, title=title, msg=msg)
-        # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
-        #  usuario.
-        if link:
-            noti.link = link
-        noti.deve_enviar = deve_enviar
-        noti.save()
-
-    def get_email_message(self):
-        logger.info(f"Preparando para enviar email de notificação {self.pk}")
-        plaintext = get_template('escola/email/notificacao/nova_notificacao.txt')
-        htmly = get_template('escola/email/notificacao/nova_notificacao.html')
-
-        c = {'user': self.user,
-             'dataCriado': self.dataCriado,
-             'title': self.title,
-             'msg': self.msg,
-             'link': self.link or None,
-             }
-
-        subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [self.user.email, ]
-
-        text_content = plaintext.render(c)
-        html_content = htmly.render(c)
-
-        logger.info("Ultimas preparações para enviar o email de notificação!")
-        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
-        msg.attach_alternative(html_content, "text/html")
-        return msg
-
-    def send_email(self):
-        if self.deve_enviar and not self.email_criado:
-            if self.user.email is not None:
-                msg = self.get_email_message()
-                logger.info("Enviando o email de notificação...")
-                try:
-                    msg.send()  # TODO Enviar assicrono
-                except SMTPException as e:
-                    logger.error(f"Um email não foi enviado por causa de um error. {e}")
-                else:
-                    logger.info("Enviado o email de notificação!!")
-                    self.email_criado = True
-                    self.save()
-            else:
-                logger.info(f'O usuario {self.user} não possui email, e portanto não pode receber notificações.')
-
-    @classmethod
-    def send_all_emails(cls):
-        logger = logging.getLogger(__name__ + "-SendEmails")
-        logger.info("Iniciando a coleta de notificações para mandar emails.")
-        notificacoes = cls.objects.filter(email_criado=False, deve_enviar=True)
-        c = len(notificacoes)
-        if c == 0:
-            logger.info("Não há notificações")
-            return 0
-        logger.info(f"Coletado {c} notificacoes.")
-        messages = []
-        logger.info("Gerando messages")
-        for n in notificacoes:
-            messages.append(n.get_email_message())
-        try:
-            logger.info("Mandando mensagens...")
-            connection = mail.get_connection()
-            logger.info("Abrindo conexão...")
-            connection.open()
-            logger.info("Enviando...")
-            connection.send_messages(messages)
-        except SMTPException as e:
-            logger.error(f"Erro inexperado: {e}")
-            raise
-        else:
-            logger.info(f"{c} mensagens foram enviadas!")
-            for n in notificacoes:
-                n.email_criado = True
-                n.save()
-        finally:
-            connection.close()
-        return len(notificacoes)
 
 
 class Horario(models.Model):
