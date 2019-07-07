@@ -60,7 +60,6 @@ class Profile(models.Model):
 
 class Notificador(models.Model):
     """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
-    link = models.URLField(null=True, blank=True)
     seguidores = models.ManyToManyField(User)
 
     def is_seguidor(self, user):
@@ -242,12 +241,21 @@ class Turma(models.Model):
 
     def has_noti(self, name):
         """Verifica se possui o notificador"""
+        return name in [nome for nome, desc in self.get_poss_notis()]
+
+    def has_def_noti(self, name):
+        """Verifica se possui o notificador"""
         return hasattr(self, self.formatar_nome(name))
 
     def get_noti(self, name) -> Notificador:
         """Retorna o notificador que possui este nome"""
         if self.has_noti(name):
-            return getattr(self, self.formatar_nome(name))
+            if self.has_def_noti(name):
+                return getattr(self, self.formatar_nome(name))
+            else:
+                notificador = Notificador()
+                notificador.save()
+                setattr(self, self.formatar_nome(name), notificador)
         else:
             raise NotificacaoDoesNotExistError
 
