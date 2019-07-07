@@ -221,13 +221,13 @@ class Turma(models.Model):
         ("aviso_geral_professor", "Um professor postou um novo conteudo"),
     )
 
-    noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, reverse='')
-    noti_nova_prova = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_prova_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_tarefa_nao_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_tarefa_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
-    noti_aviso_geral_professor = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_nova_prova = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_prova_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_tarefa_nao_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_tarefa_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_aviso_geral_professor = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
 
     def get_poss_notis(self):
         """Retorna lista de possiveis notificadores"""
