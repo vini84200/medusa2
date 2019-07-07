@@ -86,7 +86,7 @@ class Notificador(models.Model):
     def toggle_seguidor(self, user):
         self.set_seguidor_state(user, not self.is_seguidor(user))
 
-    def comunicar_todos(self, title, msg):
+    def comunicar_todos(self, title, msg, link=None):
         """Cria uma notificação para cada usuario."""
         for seguidor in self.seguidores.all():
             # noti = Notificacao(user=seguidor, title=title, msg=msg)
@@ -95,7 +95,7 @@ class Notificador(models.Model):
             # if self.link:
             #     noti.link = self.link
             # noti.save()
-            Notificacao().create(seguidor, title, msg, deve_enviar=seguidor.profile_escola.receber_email_notificacao, link=self.link)  # FIXME: o Deve enviar deve seguir preferencia do usuario
+            Notificacao().create(seguidor, title, msg, deve_enviar=seguidor.profile_escola.receber_email_notificacao, link=link)  # FIXME: o Deve enviar deve seguir preferencia do usuario
 
 
 class Notificacao(models.Model):
@@ -262,10 +262,9 @@ class Turma(models.Model):
     def get_noti(self, name) -> Notificador:
         """Retorna o notificador que possui este nome"""
         if self.has_noti(name):
-            if self.has_def_noti(name):
-                return getattr(self, self.formatar_nome(name))
-            else:
-                create_notificador(name)
+            if not self.has_def_noti(name):
+                self.create_notificador(name)
+            return getattr(self, self.formatar_nome(name))
         else:
             raise NotificacaoDoesNotExistError
 
@@ -276,6 +275,9 @@ class Turma(models.Model):
     def get_all_notis_and_status(self, user):
         """Retorna os notificadores e seus estados"""
         return [(nome, desc, self.get_noti_status(nome, user)) for nome, desc, default in self.get_poss_notis()]
+
+    def comunicar_noti(self, nome_noti, titulo, msg, link=None):
+        self.get_noti(nome_noti).comunicar_todos(titulo, msg, link)
 
     class Meta:
         """Meta das Models"""
