@@ -278,13 +278,15 @@ class SelectConteudosForm(forms.Form):
             # TODO: 06/04/2019 por wwwvi: Adicionar forma de retirar conteudos
             self.add_conteudo_na_materia(conteudo)
 
-    def add_conteudo_na_materia(self, conteudo):
+    def add_conteudo_na_materia(self, conteudo: Conteudo):
 
         if conteudo not in self.materia.conteudos.all():
             if conteudo.parent:
                 if conteudo.parent not in self.materia.conteudos.all():
                     self.add_conteudo_na_materia(conteudo.parent)
             self.materia.conteudos.add(conteudo)
+            self.materia.turma.comunicar_noti('novo_conteudo', f"Um novo conteudo foi postado na materia {self.materia}", f"A materia {self.materia} recebeu um novo conteudo, " \
+                                                               f"ele se chama {conteudo.nome}, para ver mais detalhes acesse o conteudo.", conteudo.get_absolute_url())
 
 
 class EmailChangeForm(forms.Form):
