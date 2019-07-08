@@ -308,17 +308,29 @@ class Turma(models.Model):
     @staticmethod
     def atualizaProvas():
         startdate = datetime.date.today()
-        enddate = startdate + datetime.timedelta(days=1, hour=6)
+        enddate = startdate + datetime.timedelta(days=1, hours=6)
         provas_ma = ProvaMateriaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
         for prova in provas_ma:
             prova: ProvaMateriaMarcada
-            prova.get_turma().comunicar_noti('prova_proxima', f'A prova {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data()}, da materia {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, da materia {prova.get_apresentacao()}', prova.get_absolute_url())
             prova.set_notificado(True)
         provas_a = ProvaAreaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
         for prova in provas_a:
             prova: ProvaAreaMarcada
-            prova.get_turma().comunicar_noti('prova_proxima', f'A prova de area {prova.get_nome} está se aproximando', f'Ela ocorrerá dia {prova.get_data()}, das materias {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova de area {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, das materias {prova.get_apresentacao()}', prova.get_absolute_url())
             prova.set_notificado(True)
+    
+    @staticmethod
+    def atualizaTarefas():
+        startdate = datetime.date.today()
+        enddate = startdate + datetime.timedelta(days=1, hours=6)
+        tarefas = Tarefa.objects.filter(deadline__range=[startdate, enddate], notificado = False)
+        for tarefa in tarefas:
+            tarefa: Tarefa
+            tarefa.turma.comunicar_noti('tarefa_proxima', "Uma tarefa está proxima de sua data de completação.", f"A tarefa {tarefa.titulo} está proxima de sua data final. Verifique se você já a completou. A data máxima é dia {tarefa.deadline.strftime('%d/%m/%Y')}")
+            tarefa.notificado = True
+            tarefa.save()
+
 
 
 class CargoTurma(models.Model):
@@ -505,7 +517,7 @@ class Aluno(models.Model):
 class Tarefa(models.Model):
     """Tarefa para com prazo, como um tema, ou pesquisa"""
     titulo = models.CharField(max_length=60)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    turma: Turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     TIPOS = (
         (1, 'Tema'),
@@ -517,6 +529,7 @@ class Tarefa(models.Model):
     descricao = models.TextField()
     deadline = models.DateField(verbose_name='Data limite')
     noti_comentario = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    notificado = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('escola:detalhes-tarefa', args=(self.pk, ))
@@ -1006,7 +1019,7 @@ class ProvaMateriaMarcada(models.Model):
         a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
         a.materia = materia
         a.save()
-        turma.comunicar_noti('nova_prova', f"Uma prova foi marcada para dia {data}", f"A prova {nome}, foi marcada para dia {data}, da materia {materia}. Estude até lá!", a.get_absolute_url())
+        turma.comunicar_noti('nova_prova', f"Uma prova foi marcada para dia {data.strftime('%d/%m/%y')} ", f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da materia {materia}. Estude até lá!", a.get_absolute_url())
         return a
 
 
@@ -1084,7 +1097,7 @@ class ProvaAreaMarcada(models.Model):
         a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
         a.area = area
         a.save()
-        turma.comunicar_noti('nova_prova', f"Uma prova de área foi marcada para dia {data}", f"A prova {nome}, foi marcada para dia {data}, da área {area}. Estude até lá!", a.get_absolute_url())
+        turma.comunicar_noti('nova_prova', f"Uma prova de área foi marcada para dia {data.strftime('%d/%m/%y')}", f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da área {area}. Estude até lá!", a.get_absolute_url())
         return a
 
     def get_absolute_url(self):

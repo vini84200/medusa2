@@ -106,5 +106,6 @@ def base_layout(request):
 
 def atualisar_emails(request):
     Turma.atualizaProvas()
+    Turma.atualizaTarefas()
     count = Notificacao.send_all_emails()
     return JsonResponse({'success': True, 'emails_sended': count})
