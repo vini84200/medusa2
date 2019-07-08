@@ -4,8 +4,8 @@ Models gerais do aplicativo Escola.
 #  Developed by Vinicius José Fritzen
 #  Last Modified 28/04/19 09:52.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
-import datetime
 import logging
+import datetime
 from smtplib import SMTPException
 from typing import List
 
@@ -230,7 +230,7 @@ class Turma(models.Model):
 
     def get_poss_notis(self):
         """Retorna lista de possiveis notificadores"""
-        return [a for a in self.poss_noti if self.has_noti(a[0])]
+        return [a for a in self.poss_noti]
 
     @staticmethod
     def formatar_nome(name):
@@ -245,10 +245,10 @@ class Turma(models.Model):
 
     def has_def_noti(self, name):
         """Verifica se possui o notificador"""
-        return hasattr(self, self.formatar_nome(name))
+        return hasattr(self, self.formatar_nome(name)) and getattr(self, self.formatar_nome(name)) is not None
 
     def get_noti_default(self, nome):
-        return [default for name, desc, default in self.get_poss_notis() if name == nome].first()
+        return [default for name, desc, default in self.get_poss_notis() if name == nome][0]
 
     def create_notificador(self, name):
         notificador = Notificador()
@@ -258,6 +258,7 @@ class Turma(models.Model):
                 notificador.seguidores.add(user)
         notificador.save()
         setattr(self, self.formatar_nome(name), notificador)
+        self.save()
 
     def get_noti(self, name) -> Notificador:
         """Retorna o notificador que possui este nome"""
@@ -538,7 +539,7 @@ class Tarefa(models.Model):
         if self.noti_comentario:
             return self.noti_comentario
         else:
-            m = Notificador(link=reverse('escola:detalhes-tarefa', args=[self.pk, ]))
+            m = Notificador()
             m.save()
             self.noti_comentario = m
             self.save()
