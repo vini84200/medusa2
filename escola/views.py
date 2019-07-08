@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, render, render_to_response
 from django.template import RequestContext
 from django.views.generic import ListView, TemplateView
 
-from escola.models import (Horario, Notificacao, Notificador, Turno,
+from escola.models import (Horario, Notificacao, Notificador, Turma, Turno,
                            TurnoAula)
 
 from .decorators import *
@@ -105,5 +105,6 @@ def base_layout(request):
 
 
 def atualisar_emails(request):
+    Turma.atualizaProvas()
     count = Notificacao.send_all_emails()
-    return JsonResponse({'success': True, 'q': count})
+    return JsonResponse({'success': True, 'emails_sended': count})

@@ -9,8 +9,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from rolepermissions.checkers import has_object_permission
 
-from escola.forms import TarefaForm, ComentarioTarefaForm
-from escola.models import Turma, Tarefa, TarefaComentario
+from escola.forms import ComentarioTarefaForm, TarefaForm
+from escola.models import Tarefa, TarefaComentario, Turma
 
 
 def add_tarefa(request, turma_pk):

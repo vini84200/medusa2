@@ -1,11 +1,11 @@
 """
 Models gerais do aplicativo Escola.
 """
+import datetime
 #  Developed by Vinicius José Fritzen
 #  Last Modified 28/04/19 09:52.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
-import datetime
 from smtplib import SMTPException
 from typing import List
 
@@ -214,8 +214,7 @@ class Turma(models.Model):
         ("nova_tarefa", "Há uma nova tarefa", True),
         ("nova_prova", "Há uma nova prova", True),
         ("prova_proxima", "Uma prova está próxima", True),
-        ("tarefa_nao_completa_proxima", "Uma tarefa não completa está próxima", True),
-        ("tarefa_completa_proxima", "Há uma tarefa já completada próxima", False),
+        ("tarefa_proxima", "Uma tarefa não completa está próxima", True),
         ("novo_conteudo", "Um professor postou um novo conteúdo", True),
         ("aviso_geral_professor", "Um professor postou um novo conteudo", True),
     )
@@ -223,8 +222,7 @@ class Turma(models.Model):
     noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
     noti_nova_prova = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
     noti_prova_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_tarefa_nao_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_tarefa_completa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_tarefa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
     noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
     noti_aviso_geral_professor = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
 
@@ -306,6 +304,21 @@ class Turma(models.Model):
 
     def __str__(self):
         return f"Turma {self.numero}"
+
+    @staticmethod
+    def atualizaProvas():
+        startdate = datetime.date.today()
+        enddate = startdate + datetime.timedelta(days=1, hour=6)
+        provas_ma = ProvaMateriaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
+        for prova in provas_ma:
+            prova: ProvaMateriaMarcada
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data()}, da materia {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.set_notificado(True)
+        provas_a = ProvaAreaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
+        for prova in provas_a:
+            prova: ProvaAreaMarcada
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova de area {prova.get_nome} está se aproximando', f'Ela ocorrerá dia {prova.get_data()}, das materias {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.set_notificado(True)
 
 
 class CargoTurma(models.Model):
@@ -829,10 +842,18 @@ class ProvaMarcada(models.Model):
     """Uma prova"""
     conteudos = models.ManyToManyField(Conteudo, blank=True)
     evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
+    notificado = models.BooleanField(default=False)
 
     def delete(self, using=None, keep_parents=False):
         self.evento.delete(using, keep_parents)
         super(ProvaMarcada, self).delete(using, keep_parents)
+
+    def set_notificado(self, value: bool):
+        self.notificado = value
+        self.save()
+
+    def get_notificado(self) -> bool:
+        return self.notificado
 
     def get_uper(self):
         if hasattr(self, 'p_area'):
@@ -918,6 +939,12 @@ class ProvaMateriaMarcada(models.Model):
     def __str__(self):
         return self.get_nome()
 
+    def set_notificado(self, value):
+        self._prova.set_notificado(value)
+
+    def get_notificado(self):
+        return self._prova.get_notificado()
+
     def get_apresentacao(self):
         return f"{self.materia.nome}"
 
@@ -975,9 +1002,11 @@ class ProvaMateriaMarcada(models.Model):
     @staticmethod
     def create(materia: MateriaDaTurma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMateriaMarcada()
-        a._prova = ProvaMarcada.create(materia.turma, nome, data, descricao, owner, conteudos)
+        turma: Turma = materia.turma
+        a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
         a.materia = materia
         a.save()
+        turma.comunicar_noti('nova_prova', f"Uma prova foi marcada para dia {data}", f"A prova {nome}, foi marcada para dia {data}, da materia {materia}. Estude até lá!", a.get_absolute_url())
         return a
 
 
@@ -994,6 +1023,12 @@ class ProvaAreaMarcada(models.Model):
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return self.area.get_materias()
+
+    def set_notificado(self, value):
+        self._prova.set_notificado(value)
+
+    def get_notificado(self):
+        return self._prova.get_notificado()
 
     def __str__(self):
         return self.get_nome()
@@ -1043,11 +1078,13 @@ class ProvaAreaMarcada(models.Model):
         return f"Area: {self.area}({self.area.get_materias_str()})"
 
     @staticmethod
-    def create(area, nome, data, descricao, owner, conteudos=None):
+    def create(area: AreaConhecimento, nome, data, descricao, owner, conteudos=None):
         a = ProvaAreaMarcada()
-        a._prova = ProvaMarcada.create(area.turma, nome, data, descricao, owner, conteudos)
+        turma = area.turma
+        a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
         a.area = area
         a.save()
+        turma.comunicar_noti('nova_prova', f"Uma prova de área foi marcada para dia {data}", f"A prova {nome}, foi marcada para dia {data}, da área {area}. Estude até lá!", a.get_absolute_url())
         return a
 
     def get_absolute_url(self):
