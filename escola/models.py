@@ -504,6 +504,9 @@ class Tarefa(models.Model):
     deadline = models.DateField(verbose_name='Data limite')
     noti_comentario = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
 
+    def get_absolute_url(self):
+        return reverse('escola:detalhes-tarefa', args=(self.pk, ))
+
     def get_completacao(self, aluno: Aluno):
         """Retorna se já foi completado."""
         completo = self.tarefacompletacao_set.filter(aluno=aluno)
@@ -514,16 +517,32 @@ class Tarefa(models.Model):
             completo.save()
             return completo
 
+    @classmethod
+    def create(cls, titulo, turma: Turma, materia, tipo, descricao, deadline):
+        tarefa = cls()
+        tarefa.titulo = titulo
+        tarefa.turma = turma
+        tarefa.materia = materia
+        tarefa.tipo = tipo
+        tarefa.descricao = descricao
+        tarefa.deadline = deadline
+        tarefa.save()
+        turma.comunicar_noti('nova_tarefa',
+                             "Há uma nova tarefa em sua turma",
+                             f"A Tarefa \"{titulo}\" foi criada com data final em {deadline}. Para ver mais detalhes siga o link.", 
+                             tarefa.get_absolute_url())
+        return tarefa
+
     def get_seguidor_manager(self):
         """Retorna o SeguidorManager dessa tarefa."""
-        if self.manager_seguidor:
-            return self.manager_seguidor
+        if self.noti_comentario:
+            return self.noti_comentario
         else:
             m = Notificador(link=reverse('escola:detalhes-tarefa', args=[self.pk, ]))
             m.save()
-            self.manager_seguidor = m
+            self.noti_comentario = m
             self.save()
-            return self.manager_seguidor
+            return self.noti_comentario
 
     class Meta:
         """Meta"""
