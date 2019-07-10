@@ -17,13 +17,14 @@ from django.forms import ModelForm
 from django.template import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+from markdownx.fields import MarkdownxFormField
 from mptt.forms import TreeNodeMultipleChoiceField
 from rolepermissions.checkers import has_permission
 
-from escola.models import (AreaConhecimento, CargoTurma, Conteudo,
+from escola.models import (AreaConhecimento, AvisoGeral, CargoTurma, Conteudo,
                            MateriaDaTurma, Periodo, ProvaAreaMarcada,
                            ProvaMateriaMarcada, Tarefa, TarefaComentario,
-                           Turma, AvisoGeral)
+                           Turma)
 from escola.verificacao_forms import (VerificarDataFutura, VerificarMinimo,
                                       VerificarNomeUsuario, VerificarPositivo,
                                       VerificarSenha, verificar)
