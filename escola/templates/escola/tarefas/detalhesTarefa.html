@@ -1,6 +1,6 @@
 {% extends "../base.html" %}
 
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags markdown %}
 
 {% block conteudo %}
 <div class="container">
@@ -21,15 +21,15 @@
 Você tem atê dia {{tarefa.deadline}} para terminar essa tarefa. <br>
 {{completacao.completo|yesno:'Você já a completou,Você ainda não a completou'}} <br>
 <span class="text-primary h5">Detalhes: </span><br>
-    <div class="container">
-        <p class="text-justify">{{tarefa.descricao}}</p>
+    <div class="row">
+        <p class="text-justify">{{tarefa.descricao|md}}</p>
     </div>
     <br/>
 <hr>
     {% crispy form %}
 {%for comentario in comentarios%}
     <strong>{{comentario.user.username}}: <br/></strong>
-{{comentario.texto}}<br/>
+{{comentario.texto|md}}<br/>
 <small><em>{{comentario.created_on}}</em></small><br/><br/>
 {%endfor%}
 </div>

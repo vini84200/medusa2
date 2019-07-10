@@ -526,7 +526,7 @@ class Tarefa(models.Model):
         (4, 'Redação'),
     )
     tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
-    descricao = models.TextField()
+    descricao = MarkdownxField()
     deadline = models.DateField(verbose_name='Data limite')
     noti_comentario = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
     notificado = models.BooleanField(default=False)
