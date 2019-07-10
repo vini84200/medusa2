@@ -1,9 +1,9 @@
 {%extends 'escola/email/base_email.html'%}
-
+{%load markdown%}
 {%block content%}
 <h2>Você recebeu uma notificação</h2>
 <h3>{{title}}</h3>
-<p>{{msg}}</p>
+<p>{{msg|md}}</p>
 {%if link%}
 <a href="https://medusa2.herokuapp.com{{link}}">Seguir link -> </a>
 {%endif%}

@@ -1,6 +1,6 @@
 {% extends "escola/base.html" %}
 
-{%load dict_key %}
+{%load dict_key markdown %}
 
 
 {% block title %} {{conteudo.nome}} {% endblock %}
@@ -11,7 +11,7 @@
   <div class="jumbotron">
 
     <h1 class="display-4">{{conteudo.nome}}</h1>
-    <p class="lead">{{conteudo.descricao}}</p>
+    <p class="lead">{{conteudo.descricao|md}}</p>
   </div>
   <hr/>
 
