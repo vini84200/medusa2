@@ -22,7 +22,8 @@ from rolepermissions.checkers import has_permission
 
 from escola.models import (AreaConhecimento, CargoTurma, Conteudo,
                            MateriaDaTurma, Periodo, ProvaAreaMarcada,
-                           ProvaMateriaMarcada, Tarefa, TarefaComentario)
+                           ProvaMateriaMarcada, Tarefa, TarefaComentario,
+                           Turma, AvisoGeral)
 from escola.verificacao_forms import (VerificarDataFutura, VerificarMinimo,
                                       VerificarNomeUsuario, VerificarPositivo,
                                       VerificarSenha, verificar)
@@ -459,3 +460,19 @@ class FeedbackForm(forms.Form):
         logger.info("Enviando o email de feedback...")
         msg.send()
         logger.info("Enviado o email de feedback!!")
+
+
+class AvisoTurmaForm(forms.Form):
+    titulo = forms.CharField(max_length=170)
+    msg = forms.CharField(max_length=3000, widget=forms.Textarea)
+    turma = forms.ModelChoiceField(queryset=None)
+
+    def __init__(self, owner, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['turma'].queryset = Turma.objects.all()
+        self.owner = owner
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
+
+    def save(self):
+        AvisoGeral.create_for_turma(self.cleaned_data['titulo'], self.cleaned_data['msg'], self.owner, self.cleaned_data['turma'])

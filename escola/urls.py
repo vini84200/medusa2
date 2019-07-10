@@ -13,6 +13,7 @@ import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
 import escola.views_conteudo
+from escola.views_aviso import AvisoDetailView, AvisoTurmaCreateView
 from escola.views_feedback import FeedbackView
 from escola.quotes.quotes_views import AllQuotesView
 from escola import api, views_profile, views_provas_marcadas
@@ -167,6 +168,14 @@ urlpatterns += \
 urlpatterns += \
     [
         path('feedback', FeedbackView.as_view(), name='feedback'),
+    ]
+
+# Avisos
+
+urlpatterns += \
+    [
+        path('aviso/add-turma', AvisoTurmaCreateView.as_view(), name='aviso-add-turma'),
+        path('aviso/<int:pk>', AvisoDetailView.as_view(), name='aviso-detail'),
     ]
 
 # Temporarias

@@ -216,7 +216,7 @@ class Turma(models.Model):
         ("prova_proxima", "Uma prova está próxima", True),
         ("tarefa_proxima", "Uma tarefa não completa está próxima", True),
         ("novo_conteudo", "Um professor postou um novo conteúdo", True),
-        ("aviso_geral_professor", "Um professor postou um novo conteudo", True),
+        ("aviso_geral_turma", "Um professor postou um novo conteudo", True),
     )
 
     noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
@@ -224,7 +224,7 @@ class Turma(models.Model):
     noti_prova_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
     noti_tarefa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
     noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_aviso_geral_professor = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_aviso_geral_turma = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
 
     def get_poss_notis(self):
         """Retorna lista de possiveis notificadores"""
@@ -1102,3 +1102,36 @@ class ProvaAreaMarcada(models.Model):
 
     def get_absolute_url(self):
         return reverse('escola:prova-detail', kwargs={'pk': self._prova.pk})
+
+
+class AvisoGeral(models.Model):
+    titulo = models.CharField(max_length=170)
+    msg = models.TextField()
+    owner = models.ForeignKey(User, models.DO_NOTHING, related_name="avisos_publicados", null=True, blank=True)
+    destinatarios = models.ManyToManyField(User, related_name="avisos_recebidos")
+
+    def gerar_notis():
+        raise NotImplementedError  # TODO Finish
+
+    def get_absolute_url(self):
+        # return reverse
+        return reverse('escola:aviso-detail', args=(self.pk))
+
+    @staticmethod
+    def create(titulo, msg, owner, destinatarios, gerar_notis=True):
+        aviso = AvisoGeral()
+        aviso.titulo = titulo
+        aviso.msg = msg
+        aviso.owner = owner
+        aviso.save()
+        aviso.destinatarios.add(*destinatarios)
+
+        if gerar_notis:
+            aviso.gerar_notis()
+        
+        return aviso
+
+    @staticmethod
+    def create_for_turma(titulo, msg, owner, turma: Turma):
+        a = AvisoGeral.create(titulo, msg, owner, turma.get_list_alunos(), gerar_notis=False)
+        turma.comunicar_noti('aviso_geral_turma', f"AVISO DA TURMA: {titulo}", f"Aviso enviado por {owner}. {msg}", a.get_absolute_url())
