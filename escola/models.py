@@ -1115,7 +1115,7 @@ class AvisoGeral(models.Model):
 
     def get_absolute_url(self):
         # return reverse
-        return reverse('escola:aviso-detail', args=(self.pk))
+        return reverse('escola:aviso-detail', args=(self.pk, ))
 
     @staticmethod
     def create(titulo, msg, owner, destinatarios, gerar_notis=True):
