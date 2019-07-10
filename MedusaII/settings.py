@@ -92,6 +92,8 @@ ROLEPERMISSIONS_REGISTER_ADMIN = True
 
 ROOT_URLCONF = 'MedusaII.urls'
 
+MARKDOWNX_MARKDOWNIFY_FUNCTION = 'misaka.html'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
