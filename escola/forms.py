@@ -357,7 +357,7 @@ class MarcarProvaMateriaProfessorForm(forms.Form):
 
     titulo = forms.CharField(max_length=70)
     data = forms.DateTimeField(widget=AdminDateWidget)
-    descricao = forms.CharField(widget=forms.Textarea())
+    descricao = MarkdownxFormField(widget=forms.Textarea())
     materia = forms.ModelChoiceField(queryset=None)
 
     def __init__(self, *args, instance, professor, **kwargs):
@@ -390,7 +390,7 @@ class MarcarProvaAreaProfessorForm(forms.Form):
 
     titulo = forms.CharField(max_length=70)
     data = forms.DateTimeField()
-    descricao = forms.CharField(widget=forms.Textarea())
+    descricao = MarkdownxFormField(widget=forms.Textarea())
     area = forms.ModelChoiceField(queryset=None)
 
     def __init__(self, *args, instance, professor, **kwargs):
@@ -465,7 +465,7 @@ class FeedbackForm(forms.Form):
 
 class AvisoTurmaForm(forms.Form):
     titulo = forms.CharField(max_length=170)
-    msg = forms.CharField(max_length=3000, widget=forms.Textarea)
+    msg = MarkdownxFormField(max_length=5000)
     turma = forms.ModelChoiceField(queryset=None)
 
     def __init__(self, owner, *args, **kwargs):
