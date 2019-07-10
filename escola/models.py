@@ -31,7 +31,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, related_name='profile_escola', on_delete=models.CASCADE)
     is_aluno = models.BooleanField('student status', default=False)
     is_professor = models.BooleanField('teacher status', default=False)
-    bio = models.MarkdownxField(blank=True, null=True)
+    bio = MarkdownxField(blank=True, null=True)
     cor = models.CharField(max_length=12, blank=True, null=True)
 
     receber_email_notificacao = models.BooleanField(default=True)
@@ -105,7 +105,7 @@ class Notificacao(models.Model):
     visualizado = models.BooleanField(default=False)
     dataCriado = models.DateTimeField(auto_now_add=True)
     title = models.CharField(max_length=160)
-    msg = models.MarkdownxField()
+    msg = MarkdownxField()
     link = models.URLField(blank=True, null=True)
 
     email_criado = models.BooleanField(default=False)
@@ -379,7 +379,7 @@ class Conteudo(MPTTModel):
     """Conteudo que pode ser o filho de outro."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    descricao = models.MarkdownxField()
+    descricao = MarkdownxField()
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     def get_absolute_url(self):
@@ -421,7 +421,7 @@ class LinkConteudo(models.Model):
     titulo = models.CharField(max_length=50)
     link = models.URLField()
     categoria = models.ForeignKey(CategoriaConteudo, on_delete=models.CASCADE)
-    descricao = models.MarkdownxField(null=True, blank=True)
+    descricao = MarkdownxField(null=True, blank=True)
     conteudo = models.ForeignKey(Conteudo, on_delete=models.CASCADE)
     tags = TaggableManager()
 
@@ -588,7 +588,7 @@ class TarefaComentario(models.Model):
     """Comentario em uma tarefa por um usuario."""
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    texto = models.MarkdownxField()
+    texto = MarkdownxField()
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
@@ -752,7 +752,7 @@ class Evento(models.Model):
     """Uma data especial que aparecerá em um calendario"""
     nome = models.CharField(max_length=70)
     data = models.DateTimeField()
-    descricao = models.MarkdownxField()
+    descricao = MarkdownxField()
 
     owner = models.ForeignKey(User, models.CASCADE, null=True, blank=True)
 
@@ -1106,7 +1106,7 @@ class ProvaAreaMarcada(models.Model):
 
 class AvisoGeral(models.Model):
     titulo = models.CharField(max_length=170)
-    msg = models.MarkdownxField()
+    msg = MarkdownxField()
     owner = models.ForeignKey(User, models.DO_NOTHING, related_name="avisos_publicados", null=True, blank=True)
     destinatarios = models.ManyToManyField(User, related_name="avisos_recebidos")
 
