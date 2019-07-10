@@ -1,7 +1,9 @@
+import misaka as m
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.utils.safestring import mark_safe
-import misaka as m
+
+from MedusaII.settings import MARKDOWNX_MARKDOWN_EXTENSIONS
 
 register = template.Library()
 
@@ -10,6 +12,6 @@ register = template.Library()
 @stringfilter
 def md(value):
     rendered_text = mark_safe(m.html(value,
-                              extensions=m.EXT_FENCED_CODE,
-                              render_flags=m.HTML_ESCAPE))
+                                     extensions=MARKDOWNX_MARKDOWN_EXTENSIONS,
+                                     render_flags=('skip-html',)))
     return rendered_text

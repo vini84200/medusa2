@@ -1,6 +1,6 @@
 from misaka import html
 
-from .settings import MARKDOWNX_MARKDOWN_EXTENSIONS
+from MedusaII.settings import MARKDOWNX_MARKDOWN_EXTENSIONS
 
 
 def to_html(content):
