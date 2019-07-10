@@ -1135,4 +1135,4 @@ class AvisoGeral(models.Model):
     @staticmethod
     def create_for_turma(titulo, msg, owner, turma: Turma):
         a = AvisoGeral.create(titulo, msg, owner, turma.get_list_alunos(), gerar_notis=False)
-        turma.comunicar_noti('aviso_geral_turma', f"AVISO DA TURMA: {titulo}", f"Aviso enviado por {owner}.{to_space_safe_html(msg)}", a.get_absolute_url())
+        turma.comunicar_noti('aviso_geral_turma', f"AVISO DA TURMA: {titulo}", f"Aviso enviado por {owner}.", a.get_absolute_url())
