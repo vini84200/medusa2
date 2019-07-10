@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'rolepermissions',
     'polymorphic',
     'maintenance_mode',  # Sistema de manutenção
+    'markdownx',  # Para adicionar MarkDown
 ]
 
 MIDDLEWARE = [
