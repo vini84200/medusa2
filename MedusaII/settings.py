@@ -92,7 +92,17 @@ ROLEPERMISSIONS_REGISTER_ADMIN = True
 
 ROOT_URLCONF = 'MedusaII.urls'
 
-MARKDOWNX_MARKDOWNIFY_FUNCTION = 'misaka.html'
+MARKDOWNX_MARKDOWNIFY_FUNCTION = 'escola.misaka.to_html'
+
+MARKDOWNX_MARKDOWN_EXTENSIONS = (
+    'tables',
+    'fenced-code',
+    'footnotes',
+    'quote',
+    'strikethrough',
+    'autolink',
+    'math',
+)
 
 TEMPLATES = [
     {
