@@ -34,3 +34,6 @@ django-rest-polymorphic==0.1.8
 pytest-faker
 # Sistema para permitir entrar em manutenção:
 django-maintenance-mode==0.13.1
+# Para adicionar markdown
+django-markdownx==2.0.28
+misaka==2.1.1 # Python fast-renderer de Markdown

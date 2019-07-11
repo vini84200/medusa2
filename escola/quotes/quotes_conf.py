@@ -25,5 +25,6 @@ QUOTES = [
     ('Nós somos mais do que as partes que nos formam.', 'Patrick Rothfuss'),
     ('Os ossos se consolidam. O arrependimento fica com a gente para sempre.', 'Patrick Rothfuss'),
     ('Metade de parecer inteligente tem a ver com ficar de boca fechada nas horas certas.', 'Patrick Rothfuss'),
+    ('Auri o pegou e espiou o interior do saquinho de couro. ―Ora, é lindo, Kvothe! O que vive no sal? Traços de minerais, pensei. Cromo, bassal, malium, iodo... Tudo de que seu corpo precisa, mas provavelmente não pode extrair de maçãs e pão e do que mais você cata por aí quando não consigo encontrá-la. ― Os sonhos dos peixes. E as cantigas dos marinheiros.', 'Patrick Rothfuss'),
     # ('', ''),
 ]

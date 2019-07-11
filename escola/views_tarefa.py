@@ -9,8 +9,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from rolepermissions.checkers import has_object_permission
 
-from escola.forms import TarefaForm, ComentarioTarefaForm
-from escola.models import Turma, Tarefa, TarefaComentario
+from escola.forms import ComentarioTarefaForm, TarefaForm
+from escola.models import Tarefa, TarefaComentario, Turma
 
 
 def add_tarefa(request, turma_pk):
@@ -20,19 +20,17 @@ def add_tarefa(request, turma_pk):
     if request.method == 'POST':
         form = TarefaForm(turma, request.POST)
         if form.is_valid():
-            tarefa = Tarefa()
-            tarefa.titulo = form.cleaned_data['titulo']
-            tarefa.turma = turma
-            tarefa.materia = form.cleaned_data['materia']
-            if not has_object_permission('add_tarefa_mat', request.user, form.cleaned_data['materia']):
-                return redirect_to_login(request.get_full_path())
-            tarefa.tipo = form.cleaned_data['tipo']
-            tarefa.descricao = form.cleaned_data['descricao']
-            tarefa.deadline = form.cleaned_data['deadline']
-            tarefa.save()
-            seg = tarefa.get_seguidor_manager()
+            t = Tarefa.create(
+                form.cleaned_data['titulo'],
+                turma,
+                form.cleaned_data['materia'],
+                form.cleaned_data['tipo'],
+                form.cleaned_data['descricao'],
+                form.cleaned_data['deadline']
+            )
+            seg = t.get_seguidor_manager()
             seg.adicionar_seguidor(request.user)
-            seg.adicionar_seguidor(tarefa.materia.professor.user)
+            seg.adicionar_seguidor(t.materia.professor.user)
             return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
         form = TarefaForm(turma=turma)

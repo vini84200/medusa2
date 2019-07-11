@@ -15,7 +15,7 @@
             <a href="{% if noti.link%}{{noti.link}}{%else%}#{%endif%}" class="list-group-item list-group-item-action">
                 <div class="d-flex w-100 justify-content-between">
                     <h5 class="mb-1">{% if not noti.visualizado%}<i class="fas fa-circle" style="color:red"></i>{%endif%}{{noti.title}}</h5>
-                    <small>{{noti.dataCriado|timesince}} ago</small>
+                    <small>{{noti.dataCriado|timesince}} atras</small>
                 </div>
                 <p class="mb-1">{{noti.msg}}</p>
               {% if noti.link%}

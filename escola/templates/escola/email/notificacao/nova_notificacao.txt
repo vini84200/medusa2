@@ -1,0 +1,12 @@
+{%extends 'escola/email/base_email.txt'%}
+
+{%block content%}
+Você recebeu uma notificação
+{{title}}
+
+{{msg}}
+
+{%if link%}
+Seguir: {{link}}
+{%endif%}
+{%endblock content%}

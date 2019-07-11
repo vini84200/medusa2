@@ -1,11 +1,13 @@
 {% extends "escola/base.html" %}
 
+{%load markdown%}
+
 {% block conteudo %}
 <div class="container">
 
 
 <h1>Prova {{prova}}</h1>
 <p class="lead">Matérias: {{prova.get_materias_text}}</p>
-<p>{{prova.get_descricao}}</p>
+<p>{{prova.get_descricao|md}}</p>
 </div>
 {% endblock conteudo %}

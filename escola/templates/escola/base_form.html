@@ -17,7 +17,16 @@
 {% block form %}
   {% crispy form %}
 {% endblock form %}
+{{ form.media }}
+<script>
+let element = document.getElementsByClassName('markdownx');
 
+Object.keys(element).map(key =>
+
+    element[key].addEventListener('markdownx.update', event => MathJax.Hub.Queue(["Typeset",MathJax.Hub]))
+
+);
+</script>
 {% block posform %}{% endblock posform %}
 </div>
 {% endblock %}

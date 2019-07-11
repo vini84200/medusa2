@@ -1859,7 +1859,7 @@ class TestSeguirManager(TestCase):
         # Cria aluno
         aluno = create_aluno()
         # Cria um seguidor para o aluno seguir
-        seguidor = mixer.blend(SeguidorManager)
+        seguidor = mixer.blend(Notificador)
         # Faz login(forcado)
         c.force_login(aluno.user)
         # Pega a resposta dessa operação

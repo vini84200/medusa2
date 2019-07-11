@@ -24,6 +24,7 @@ class Admin(AbstractUserRole):
         'marcar_prova_g': True,
         'add_prova_area_geral': True,
         'marcar_prova_area': True,
+        'send_aviso': True,
     }
 
 
@@ -31,4 +32,5 @@ class Professor(AbstractUserRole):
     available_permissions = {
         'marcar_prova_area': True,
         'create_provas': True,
+        'send_aviso': True,
     }
