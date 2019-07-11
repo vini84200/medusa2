@@ -33,6 +33,7 @@ urlpatterns = \
         path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
         path('', include('pwa.urls')),
         path('maintenance-mode/', include('maintenance_mode.urls')),
+        path('markdownx/', include('markdownx.urls')),
     ]
 if settings.DEBUG:
     urlpatterns.append(path('500', server_error))

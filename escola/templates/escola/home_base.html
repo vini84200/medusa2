@@ -17,20 +17,44 @@
 <article class="container">
 
         <h2>Notificações</h2>
-    <div class="list-group">
+    <div class="row">
         {% for noti in user.profile_escola.template_data.notificacoes%}
-            <a href="{% if noti.link%}{{noti.link}}{%else%}#{%endif%}" class="list-group-item list-group-item-action">
-                <div class="d-flex w-100 justify-content-between">
-                    <h5 class="mb-1">{{noti.title}}</h5>
-                    <small>{{noti.dataCriado|timesince}} ago</small>
-                </div>
-                <p class="mb-1">{{noti.msg}}</p>
-            </a>
+            <div class="alert alert-secondary w-100 notificacao-item" role="alert" data-noti_id="{{noti.id}}">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                          </button>
+                <h4 class="alert-heading"><svg class=" rounded mr-2" width="20" height="20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice"
+                    focusable="false" role="img">
+                    <rect fill="#007aff" width="100%" height="100%" /></svg>{{noti.title}}</h4><br>
+                <p>{{noti.msg}}</p>
+                {%if noti.link%}
+                <a href="{{noti.link}}" class="btn btn-primary">Ver...</a>
+                {%endif%}
+              </div>
         {%endfor%}
     </div>
 </article> <br/>
 {%endif%}
 
 {% block especific_cargo %}{% endblock especific_cargo %}
-
 {% endblock %}
+{%block scripts%}
+<script>
+        $('.notificacao-item').on('closed.bs.alert', function () {
+            var id_noti = $(this).attr('data-noti_id')
+            var url = "{% url 'escola:notificacao-set-as-read' 1234561234%}".replace("1234561234", id_noti)
+            console.log(id_noti)
+            console.log(url)
+            $.ajax({
+                headers:{  
+                    "Accept":"application/json",//depends on your api
+                    "Content-type":"application/x-www-form-urlencoded"//depends on your api
+                },   url:url,
+                success:function(response){
+                  var r=JSON.parse(response);
+                }
+              });
+            console.log(r)
+          })
+        </script>
+{%endblock%}

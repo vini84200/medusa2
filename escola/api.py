@@ -3,13 +3,14 @@
 #  Last Modified 12/04/19 13:19.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group, User
+from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from escola import api_permissions
-from . import models
-from . import serializers
-from rest_framework import viewsets, permissions
+
+from . import models, serializers
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -49,7 +50,7 @@ class TurmaViewSet(viewsets.ModelViewSet):
 class SeguidorManagerViewSet(viewsets.ModelViewSet):
     """ViewSet for the SeguidorManager class"""
 
-    queryset = models.SeguidorManager.objects.all()
+    queryset = models.Notificador.objects.all()
     serializer_class = serializers.SeguidorManagerSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
 
@@ -117,12 +118,13 @@ class NotificacaoViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NotificacaoSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
 
-    @action(detail=True, methods=['post'], permission_classes=[api_permissions.IsAdminOrIsTheUser])
+    @action(detail=True, methods=['get','post'], permission_classes=[api_permissions.IsAdminOrIsTheUser])
     def set_as_read(self, request, pk=None):
         """Define o campo de visualizado de uma notificação."""
         noti: models.Notificacao = self.get_object()
-        noti.visualizado = request.date['visu']
+        noti.visualizado = True
         noti.save()
+        return Response({'success': 'True'})
 
 
 class HorarioViewSet(viewsets.ModelViewSet):

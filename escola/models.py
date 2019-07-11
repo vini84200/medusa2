@@ -1,21 +1,28 @@
 """
 Models gerais do aplicativo Escola.
 """
+import datetime
 #  Developed by Vinicius José Fritzen
 #  Last Modified 28/04/19 09:52.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
-import datetime
 import logging
+from smtplib import SMTPException
 from typing import List
 
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core import mail
+from django.core.mail import EmailMultiAlternatives
 from django.db import models
+from django.template.loader import get_template
 from django.urls import reverse
 from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
 
 import escola
 from escola.customFields import ColorField
+from markdownx.models import MarkdownxField
+from escola.misaka import to_space_safe_html
 
 logger = logging.getLogger(__name__)
 
@@ -25,8 +32,10 @@ class Profile(models.Model):
     user = models.OneToOneField(User, related_name='profile_escola', on_delete=models.CASCADE)
     is_aluno = models.BooleanField('student status', default=False)
     is_professor = models.BooleanField('teacher status', default=False)
-    bio = models.TextField(blank=True, null=True)
+    bio = MarkdownxField(blank=True, null=True)
     cor = models.CharField(max_length=12, blank=True, null=True)
+
+    receber_email_notificacao = models.BooleanField(default=True)
 
     @property
     def template_data(self):
@@ -51,14 +60,225 @@ class Profile(models.Model):
         return f"Profile de {self.user.__str__()}"
 
 
+class Notificador(models.Model):
+    """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
+    seguidores = models.ManyToManyField(User)
+
+    def is_seguidor(self, user):
+        """Verifica se determinado ususario está na lista de seguidores desse conteudo."""
+        return user in self.seguidores.all()
+
+    def adicionar_seguidor(self, user):
+        """Adiciona um usuario a lista de seguidores."""
+        self.seguidores.add(user)
+        self.save()
+
+    def remover_seguidor(self, user):
+        if self.is_seguidor(user):
+            self.seguidores.remove(user)
+            self.save()
+
+    def set_seguidor_state(self, user, state):
+        if not self.is_seguidor(user) == state:
+            if state:
+                self.adicionar_seguidor(user)
+            else:
+                self.remover_seguidor(user)
+
+    def toggle_seguidor(self, user):
+        self.set_seguidor_state(user, not self.is_seguidor(user))
+
+    def comunicar_todos(self, title, msg, link=None):
+        """Cria uma notificação para cada usuario."""
+        for seguidor in self.seguidores.all():
+            # noti = Notificacao(user=seguidor, title=title, msg=msg)
+            # # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
+            # #  usuario.
+            # if self.link:
+            #     noti.link = self.link
+            # noti.save()
+            Notificacao().create(seguidor, title, msg, deve_enviar=seguidor.profile_escola.receber_email_notificacao, link=link)  # FIXME: o Deve enviar deve seguir preferencia do usuario
+
+
+class Notificacao(models.Model):
+    """Notificação para os usuarios, campos obrigatorios: user, title, msg; Campos Livres: link"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    visualizado = models.BooleanField(default=False)
+    dataCriado = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=160)
+    msg = MarkdownxField()
+    link = models.URLField(blank=True, null=True)
+
+    email_criado = models.BooleanField(default=False)
+    deve_enviar = models.BooleanField(default=False)
+
+    @staticmethod
+    def create(user, title, msg, deve_enviar=False, link=None):
+        noti = Notificacao(user=user, title=title, msg=msg)
+        # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
+        #  usuario.
+        if link:
+            noti.link = link
+        noti.deve_enviar = deve_enviar
+        noti.save()
+
+    def get_email_message(self):
+        logger.info(f"Preparando para enviar email de notificação {self.pk}")
+        plaintext = get_template('escola/email/notificacao/nova_notificacao.txt')
+        htmly = get_template('escola/email/notificacao/nova_notificacao.html')
+
+        c = {'user': self.user,
+             'dataCriado': self.dataCriado,
+             'title': self.title,
+             'msg': self.msg,
+             'link': self.link or None,
+             }
+
+        subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [self.user.email, ]
+
+        text_content = plaintext.render(c)
+        html_content = htmly.render(c)
+
+        logger.info("Ultimas preparações para enviar o email de notificação!")
+        msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+        msg.attach_alternative(html_content, "text/html")
+        return msg
+
+    def send_email(self):
+        if self.deve_enviar and not self.email_criado:
+            if self.user.email is not None:
+                msg = self.get_email_message()
+                logger.info("Enviando o email de notificação...")
+                try:
+                    msg.send()  # TODO Enviar assicrono
+                except SMTPException as e:
+                    logger.error(f"Um email não foi enviado por causa de um error. {e}")
+                else:
+                    logger.info("Enviado o email de notificação!!")
+                    self.email_criado = True
+                    self.save()
+            else:
+                logger.info(f'O usuario {self.user} não possui email, e portanto não pode receber notificações.')
+
+    @classmethod
+    def send_all_emails(cls):
+        logger = logging.getLogger(__name__ + "-SendEmails")
+        logger.info("Iniciando a coleta de notificações para mandar emails.")
+        notificacoes = cls.objects.filter(email_criado=False, deve_enviar=True)
+        c = len(notificacoes)
+        if c == 0:
+            logger.info("Não há notificações")
+            return 0
+        logger.info(f"Coletado {c} notificacoes.")
+        messages = []
+        logger.info("Gerando messages")
+        for n in notificacoes:
+            messages.append(n.get_email_message())
+        try:
+            logger.info("Mandando mensagens...")
+            connection = mail.get_connection()
+            logger.info("Abrindo conexão...")
+            connection.open()
+            logger.info("Enviando...")
+            connection.send_messages(messages)
+        except SMTPException as e:
+            logger.error(f"Erro inexperado: {e}")
+            raise
+        else:
+            logger.info(f"{c} mensagens foram enviadas!")
+            for n in notificacoes:
+                n.email_criado = True
+                n.save()
+        finally:
+            connection.close()
+        return len(notificacoes)
+
+
+class NotificacaoDoesNotExistError(Exception):
+    pass
+
+
+class NotificacaoCantHaveNoName(Exception):
+    pass
+
+
 class Turma(models.Model):
     """ Uma turma, conjunto de alunos, materias, tarefas, tambem possui um horario"""
     numero = models.IntegerField()
     ano = models.IntegerField()
+
     lider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
     vicelider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True,
                                   related_name='turma_vicelider')
     regente = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
+
+    poss_noti = (
+        ("nova_tarefa", "Há uma nova tarefa", True),
+        ("nova_prova", "Há uma nova prova", True),
+        ("prova_proxima", "Uma prova está próxima", True),
+        ("tarefa_proxima", "Uma tarefa não completa está próxima", True),
+        ("novo_conteudo", "Um professor postou um novo conteúdo", True),
+        ("aviso_geral_turma", "Um professor postou um novo conteudo", True),
+    )
+
+    noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_nova_prova = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_prova_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_tarefa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_aviso_geral_turma = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+
+    def get_poss_notis(self):
+        """Retorna lista de possiveis notificadores"""
+        return [a for a in self.poss_noti]
+
+    @staticmethod
+    def formatar_nome(name):
+        """Formata o nome para o formato das variaveis"""
+        if name == "":
+            raise NotificacaoCantHaveNoName
+        return f"noti_{name}"
+
+    def has_noti(self, name):
+        """Verifica se possui o notificador"""
+        return name in [nome for nome, desc, default in self.get_poss_notis()]
+
+    def has_def_noti(self, name):
+        """Verifica se possui o notificador"""
+        return hasattr(self, self.formatar_nome(name)) and getattr(self, self.formatar_nome(name)) is not None
+
+    def get_noti_default(self, nome):
+        return [default for name, desc, default in self.get_poss_notis() if name == nome][0]
+
+    def create_notificador(self, name):
+        notificador = Notificador()
+        notificador.save()
+        if self.get_noti_default(name):
+            for user in self.get_list_alunos():
+                notificador.seguidores.add(user)
+        notificador.save()
+        setattr(self, self.formatar_nome(name), notificador)
+        self.save()
+
+    def get_noti(self, name) -> Notificador:
+        """Retorna o notificador que possui este nome"""
+        if self.has_noti(name):
+            if not self.has_def_noti(name):
+                self.create_notificador(name)
+            return getattr(self, self.formatar_nome(name))
+        else:
+            raise NotificacaoDoesNotExistError
+
+    def get_noti_status(self, name, user):
+        """Retorna o status de uma noti"""
+        return self.get_noti(name).is_seguidor(user)
+
+    def get_all_notis_and_status(self, user):
+        """Retorna os notificadores e seus estados"""
+        return [(nome, desc, self.get_noti_status(nome, user)) for nome, desc, default in self.get_poss_notis()]
+
+    def comunicar_noti(self, nome_noti, titulo, msg, link=None):
+        self.get_noti(nome_noti).comunicar_todos(titulo, msg, link)
 
     class Meta:
         """Meta das Models"""
@@ -87,30 +307,31 @@ class Turma(models.Model):
     def __str__(self):
         return f"Turma {self.numero}"
 
-
-class SeguidorManager(models.Model):
-    """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
-    link = models.URLField(null=True, blank=True)
-    seguidores = models.ManyToManyField(User)
-
-    def is_seguidor(self, user):
-        """Verifica se determinado ususario está na lista de seguidores desse conteudo."""
-        return user in self.seguidores.all()
-
-    def adicionar_seguidor(self, user):
-        """Adiciona um usuario a lista de seguidores."""
-        self.seguidores.add(user)
-        self.save()
-
-    def comunicar_todos(self, title, msg):
-        """Cria uma notificação para cada usuario."""
-        for seguidor in self.seguidores.all():
-            noti = Notificacao(user=seguidor, title=title, msg=msg)
-            # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
-            #  usuario.
-            if self.link:
-                noti.link = self.link
-            noti.save()
+    @staticmethod
+    def atualizaProvas():
+        startdate = datetime.date.today()
+        enddate = startdate + datetime.timedelta(days=1, hours=6)
+        provas_ma = ProvaMateriaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
+        for prova in provas_ma:
+            prova: ProvaMateriaMarcada
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, da materia {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.set_notificado(True)
+        provas_a = ProvaAreaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
+        for prova in provas_a:
+            prova: ProvaAreaMarcada
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova de area {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, das materias {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.set_notificado(True)
+    
+    @staticmethod
+    def atualizaTarefas():
+        startdate = datetime.date.today()
+        enddate = startdate + datetime.timedelta(days=1, hours=6)
+        tarefas = Tarefa.objects.filter(deadline__range=[startdate, enddate], notificado = False)
+        for tarefa in tarefas:
+            tarefa: Tarefa
+            tarefa.turma.comunicar_noti('tarefa_proxima', "Uma tarefa está proxima de sua data de completação.", f"A tarefa {tarefa.titulo} está proxima de sua data final. Verifique se você já a completou. A data máxima é dia {tarefa.deadline.strftime('%d/%m/%Y')}")
+            tarefa.notificado = True
+            tarefa.save()
 
 
 class CargoTurma(models.Model):
@@ -153,13 +374,14 @@ class Professor(models.Model):
         permissions = (('can_add_professor', 'Pode adicionar um novo Professor'),
                        ('can_edit_professor', 'Pode editar um professor'),
                        ('can_delete_professor', 'Pode deletar um professor'),)
+        ordering = ['nome']
 
 
 class Conteudo(MPTTModel):
     """Conteudo que pode ser o filho de outro."""
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-    descricao = models.TextField()
+    descricao = MarkdownxField()
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     def get_absolute_url(self):
@@ -201,7 +423,7 @@ class LinkConteudo(models.Model):
     titulo = models.CharField(max_length=50)
     link = models.URLField()
     categoria = models.ForeignKey(CategoriaConteudo, on_delete=models.CASCADE)
-    descricao = models.TextField(null=True, blank=True)
+    descricao = MarkdownxField(null=True, blank=True)
     conteudo = models.ForeignKey(Conteudo, on_delete=models.CASCADE)
     tags = TaggableManager()
 
@@ -297,7 +519,7 @@ class Aluno(models.Model):
 class Tarefa(models.Model):
     """Tarefa para com prazo, como um tema, ou pesquisa"""
     titulo = models.CharField(max_length=60)
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    turma: Turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
     materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE)
     TIPOS = (
         (1, 'Tema'),
@@ -306,9 +528,13 @@ class Tarefa(models.Model):
         (4, 'Redação'),
     )
     tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
-    descricao = models.TextField()
+    descricao = MarkdownxField()
     deadline = models.DateField(verbose_name='Data limite')
-    manager_seguidor = models.OneToOneField(SeguidorManager, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_comentario = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    notificado = models.BooleanField(default=False)
+
+    def get_absolute_url(self):
+        return reverse('escola:detalhes-tarefa', args=(self.pk, ))
 
     def get_completacao(self, aluno: Aluno):
         """Retorna se já foi completado."""
@@ -320,16 +546,32 @@ class Tarefa(models.Model):
             completo.save()
             return completo
 
+    @classmethod
+    def create(cls, titulo, turma: Turma, materia, tipo, descricao, deadline):
+        tarefa = cls()
+        tarefa.titulo = titulo
+        tarefa.turma = turma
+        tarefa.materia = materia
+        tarefa.tipo = tipo
+        tarefa.descricao = descricao
+        tarefa.deadline = deadline
+        tarefa.save()
+        turma.comunicar_noti('nova_tarefa',
+                             "Há uma nova tarefa em sua turma",
+                             f"A Tarefa \"{titulo}\" foi criada com data final em {deadline}. Para ver mais detalhes siga o link.", 
+                             tarefa.get_absolute_url())
+        return tarefa
+
     def get_seguidor_manager(self):
         """Retorna o SeguidorManager dessa tarefa."""
-        if self.manager_seguidor:
-            return self.manager_seguidor
+        if self.noti_comentario:
+            return self.noti_comentario
         else:
-            m = SeguidorManager(link=reverse('escola:detalhes-tarefa', args=[self.pk, ]))
+            m = Notificador()
             m.save()
-            self.manager_seguidor = m
+            self.noti_comentario = m
             self.save()
-            return self.manager_seguidor
+            return self.noti_comentario
 
     class Meta:
         """Meta"""
@@ -348,19 +590,9 @@ class TarefaComentario(models.Model):
     """Comentario em uma tarefa por um usuario."""
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    texto = models.TextField()
+    texto = MarkdownxField()
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
-
-
-class Notificacao(models.Model):
-    """Notificação para os usuarios, campos obrigatorios: user, title, msg; Campos Livres: link"""
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    visualizado = models.BooleanField(default=False)
-    dataCriado = models.DateTimeField(auto_now_add=True)
-    title = models.CharField(max_length=160)
-    msg = models.TextField()
-    link = models.URLField(blank=True, null=True)
 
 
 class Horario(models.Model):
@@ -522,7 +754,7 @@ class Evento(models.Model):
     """Uma data especial que aparecerá em um calendario"""
     nome = models.CharField(max_length=70)
     data = models.DateTimeField()
-    descricao = models.TextField()
+    descricao = MarkdownxField()
 
     owner = models.ForeignKey(User, models.CASCADE, null=True, blank=True)
 
@@ -625,10 +857,18 @@ class ProvaMarcada(models.Model):
     """Uma prova"""
     conteudos = models.ManyToManyField(Conteudo, blank=True)
     evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
+    notificado = models.BooleanField(default=False)
 
     def delete(self, using=None, keep_parents=False):
         self.evento.delete(using, keep_parents)
         super(ProvaMarcada, self).delete(using, keep_parents)
+
+    def set_notificado(self, value: bool):
+        self.notificado = value
+        self.save()
+
+    def get_notificado(self) -> bool:
+        return self.notificado
 
     def get_uper(self):
         if hasattr(self, 'p_area'):
@@ -714,6 +954,12 @@ class ProvaMateriaMarcada(models.Model):
     def __str__(self):
         return self.get_nome()
 
+    def set_notificado(self, value):
+        self._prova.set_notificado(value)
+
+    def get_notificado(self):
+        return self._prova.get_notificado()
+
     def get_apresentacao(self):
         return f"{self.materia.nome}"
 
@@ -771,9 +1017,11 @@ class ProvaMateriaMarcada(models.Model):
     @staticmethod
     def create(materia: MateriaDaTurma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMateriaMarcada()
-        a._prova = ProvaMarcada.create(materia.turma, nome, data, descricao, owner, conteudos)
+        turma: Turma = materia.turma
+        a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
         a.materia = materia
         a.save()
+        turma.comunicar_noti('nova_prova', f"Uma prova foi marcada para dia {data.strftime('%d/%m/%y')} ", f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da materia {materia}. Estude até lá!", a.get_absolute_url())
         return a
 
 
@@ -790,6 +1038,12 @@ class ProvaAreaMarcada(models.Model):
     def get_materias(self) -> List[MateriaDaTurma]:
         """Retorna lista de materias dessa prova"""
         return self.area.get_materias()
+
+    def set_notificado(self, value):
+        self._prova.set_notificado(value)
+
+    def get_notificado(self):
+        return self._prova.get_notificado()
 
     def __str__(self):
         return self.get_nome()
@@ -839,12 +1093,47 @@ class ProvaAreaMarcada(models.Model):
         return f"Area: {self.area}({self.area.get_materias_str()})"
 
     @staticmethod
-    def create(area, nome, data, descricao, owner, conteudos=None):
+    def create(area: AreaConhecimento, nome, data, descricao, owner, conteudos=None):
         a = ProvaAreaMarcada()
-        a._prova = ProvaMarcada.create(area.turma, nome, data, descricao, owner, conteudos)
+        turma = area.turma
+        a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
         a.area = area
         a.save()
+        turma.comunicar_noti('nova_prova', f"Uma prova de área foi marcada para dia {data.strftime('%d/%m/%y')}", f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da área {area}. Estude até lá!", a.get_absolute_url())
         return a
 
     def get_absolute_url(self):
         return reverse('escola:prova-detail', kwargs={'pk': self._prova.pk})
+
+
+class AvisoGeral(models.Model):
+    titulo = models.CharField(max_length=170)
+    msg = MarkdownxField()
+    owner = models.ForeignKey(User, models.DO_NOTHING, related_name="avisos_publicados", null=True, blank=True)
+    destinatarios = models.ManyToManyField(User, related_name="avisos_recebidos")
+
+    def gerar_notis():
+        raise NotImplementedError  # TODO Finish
+
+    def get_absolute_url(self):
+        # return reverse
+        return reverse('escola:aviso-detail', args=(self.pk, ))
+
+    @staticmethod
+    def create(titulo, msg, owner, destinatarios, gerar_notis=True):
+        aviso = AvisoGeral()
+        aviso.titulo = titulo
+        aviso.msg = msg
+        aviso.owner = owner
+        aviso.save()
+        aviso.destinatarios.add(*destinatarios)
+
+        if gerar_notis:
+            aviso.gerar_notis()
+        
+        return aviso
+
+    @staticmethod
+    def create_for_turma(titulo, msg, owner, turma: Turma):
+        a = AvisoGeral.create(titulo, msg, owner, turma.get_list_alunos(), gerar_notis=False)
+        turma.comunicar_noti('aviso_geral_turma', f"AVISO DA TURMA: {titulo}", f"Aviso enviado por {owner}.", a.get_absolute_url())

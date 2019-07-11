@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'rolepermissions',
     'polymorphic',
     'maintenance_mode',  # Sistema de manutenção
+    'markdownx',  # Para adicionar MarkDown
 ]
 
 MIDDLEWARE = [
@@ -90,6 +91,18 @@ ROLEPERMISSIONS_REDIRECT_TO_LOGIN = True
 ROLEPERMISSIONS_REGISTER_ADMIN = True
 
 ROOT_URLCONF = 'MedusaII.urls'
+
+MARKDOWNX_MARKDOWNIFY_FUNCTION = 'escola.misaka.to_html'
+
+MARKDOWNX_MARKDOWN_EXTENSIONS = (
+    'tables',
+    'fenced-code',
+    'footnotes',
+    'quote',
+    'strikethrough',
+    'autolink',
+    'math',
+)
 
 TEMPLATES = [
     {
@@ -250,3 +263,4 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 FEEDBACK_FROM_EMAIL = config('EMAIL_FEEDACK_FROM')
+NOTIFICACAO_EMAIL = config('NOTIFICACAO_EMAIL', config('EMAIL_HOST', None))

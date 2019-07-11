@@ -17,12 +17,14 @@ from django.forms import ModelForm
 from django.template import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
+from markdownx.fields import MarkdownxFormField
 from mptt.forms import TreeNodeMultipleChoiceField
 from rolepermissions.checkers import has_permission
 
-from escola.models import (AreaConhecimento, CargoTurma, Conteudo,
+from escola.models import (AreaConhecimento, AvisoGeral, CargoTurma, Conteudo,
                            MateriaDaTurma, Periodo, ProvaAreaMarcada,
-                           ProvaMateriaMarcada, Tarefa, TarefaComentario)
+                           ProvaMateriaMarcada, Tarefa, TarefaComentario,
+                           Turma)
 from escola.verificacao_forms import (VerificarDataFutura, VerificarMinimo,
                                       VerificarNomeUsuario, VerificarPositivo,
                                       VerificarSenha, verificar)
@@ -184,7 +186,7 @@ class MateriaForm(ModelForm):
 class TarefaForm(ModelForm):
     class Meta:
         model = Tarefa
-        exclude = ('turma', 'manager_seguidor')
+        exclude = ('turma', 'noti_comentario', 'notificado')
 
     def __init__(self, turma, *args, **kwargs):
         super(TarefaForm, self).__init__(*args, **kwargs)
@@ -278,13 +280,15 @@ class SelectConteudosForm(forms.Form):
             # TODO: 06/04/2019 por wwwvi: Adicionar forma de retirar conteudos
             self.add_conteudo_na_materia(conteudo)
 
-    def add_conteudo_na_materia(self, conteudo):
+    def add_conteudo_na_materia(self, conteudo: Conteudo):
 
         if conteudo not in self.materia.conteudos.all():
             if conteudo.parent:
                 if conteudo.parent not in self.materia.conteudos.all():
                     self.add_conteudo_na_materia(conteudo.parent)
             self.materia.conteudos.add(conteudo)
+            self.materia.turma.comunicar_noti('novo_conteudo', f"Um novo conteudo foi postado na materia {self.materia}", f"A materia {self.materia} recebeu um novo conteudo, " \
+                                                               f"ele se chama {conteudo.nome}, para ver mais detalhes acesse o conteudo.", conteudo.get_absolute_url())
 
 
 class EmailChangeForm(forms.Form):
@@ -353,7 +357,7 @@ class MarcarProvaMateriaProfessorForm(forms.Form):
 
     titulo = forms.CharField(max_length=70)
     data = forms.DateTimeField(widget=AdminDateWidget)
-    descricao = forms.CharField(widget=forms.Textarea())
+    descricao = MarkdownxFormField(widget=forms.Textarea())
     materia = forms.ModelChoiceField(queryset=None)
 
     def __init__(self, *args, instance, professor, **kwargs):
@@ -386,7 +390,7 @@ class MarcarProvaAreaProfessorForm(forms.Form):
 
     titulo = forms.CharField(max_length=70)
     data = forms.DateTimeField()
-    descricao = forms.CharField(widget=forms.Textarea())
+    descricao = MarkdownxFormField(widget=forms.Textarea())
     area = forms.ModelChoiceField(queryset=None)
 
     def __init__(self, *args, instance, professor, **kwargs):
@@ -457,3 +461,19 @@ class FeedbackForm(forms.Form):
         logger.info("Enviando o email de feedback...")
         msg.send()
         logger.info("Enviado o email de feedback!!")
+
+
+class AvisoTurmaForm(forms.Form):
+    titulo = forms.CharField(max_length=170)
+    msg = MarkdownxFormField(max_length=5000)
+    turma = forms.ModelChoiceField(queryset=None)
+
+    def __init__(self, owner, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['turma'].queryset = Turma.objects.all()
+        self.owner = owner
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
+
+    def save(self):
+        AvisoGeral.create_for_turma(self.cleaned_data['titulo'], self.cleaned_data['msg'], self.owner, self.cleaned_data['turma'])

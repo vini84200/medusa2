@@ -1,18 +1,4 @@
-{% extends "escola/base.html" %}
-
-{%load dict_key %}
-{% load crispy_forms_tags %}
+{% extends "escola/base_form.html" %}
 
 
 {% block title %} Adicionar link {% endblock %}
-
-
-{% block conteudo %}
-
-<div class="container">
-
-  {% crispy form %}
-
-</div>
-
-{% endblock %}
