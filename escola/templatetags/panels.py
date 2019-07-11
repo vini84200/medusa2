@@ -4,6 +4,7 @@
 import datetime
 import logging
 import random
+import re
 
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import register
@@ -12,7 +13,8 @@ from django.utils.safestring import mark_safe
 from escola.controller_provas_marcadas import (get_materias_professor_for_day,
                                                get_provas_professor_futuras,
                                                get_provas_turma_futuras)
-from escola.models import Professor, Tarefa, Turma, Turno, TurnoAula
+from escola.models import (LinkConteudo, Professor, Tarefa, Turma, Turno,
+                           TurnoAula)
 from escola.quotes.quotes_conf import QUOTES
 
 logger = logging.getLogger(__name__)
@@ -127,3 +129,24 @@ def panel_all_quotes():
         ids.append(QUOTES.index(quote))
     context.update({'quotes_ids': ids})
     return context
+
+
+@register.inclusion_tag('escola\panels\link_conteudo.html')
+def link_conteudo(conteudo_link: LinkConteudo):
+    """Mostra um link com conteudo"""
+    url = conteudo_link.link
+    conteudo = {'link': conteudo_link}
+    # Verificação YouTube
+    regex = re.compile(r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})')
+
+    match = regex.match(url)
+
+    if match:
+        conteudo.update({'youtube': True,
+                         'default': False,
+                         'y_id': match.group('id')})
+        return conteudo
+
+    # Default
+    conteudo.update({'youtube': False, 'default': True, })
+    return conteudo

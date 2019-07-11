@@ -374,6 +374,7 @@ class Professor(models.Model):
         permissions = (('can_add_professor', 'Pode adicionar um novo Professor'),
                        ('can_edit_professor', 'Pode editar um professor'),
                        ('can_delete_professor', 'Pode deletar um professor'),)
+        ordering = ['nome']
 
 
 class Conteudo(MPTTModel):
