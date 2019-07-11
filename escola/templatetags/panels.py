@@ -131,7 +131,7 @@ def panel_all_quotes():
     return context
 
 
-@register.inclusion_tag('escola\panels\link_conteudo.html')
+@register.inclusion_tag('escola/panels/link_conteudo.html')
 def link_conteudo(conteudo_link: LinkConteudo):
     """Mostra um link com conteudo"""
     url = conteudo_link.link
