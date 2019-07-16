@@ -18,7 +18,7 @@ from rolepermissions.checkers import has_object_permission
 from escola.decorators import is_professor, is_user_escola
 from escola.forms import ConteudoForm, SelectConteudosForm
 from escola.models import CategoriaConteudo, Conteudo, LinkConteudo, MateriaDaTurma
-
+from escola.user_check_mixin import UserCheckHasObjectPermissionGet, UserCheckReturnForbbiden
 logger = logging.getLogger(__name__)
 
 
@@ -176,10 +176,10 @@ class MeusConteudosListView(ListView):
 # TODO: 06/04/2019 por wwwvi: Test
 
 
-class RemoveLinkFromConteudoView(DeleteView):
+class RemoveLinkFromConteudoView(UserCheckHasObjectPermissionGet, UserCheckReturnForbbiden, DeleteView):
     """Remove o link de algum conteudo"""
-    pass  # TODO: 10/04/2019 por wwwvi: Terminar
-    # SOBRESCREVER CODIGO QUE REALIZA EXCLUSÂO PARA RETIRAR DA LISTA.
+    model = LinkConteudo
+    user_check_obj_permission = 'can_remove_link_conteudo'
 
 
 class RemoveConteudoFromMateriaView(DeleteView):

@@ -210,3 +210,10 @@ def can_edit_conteudo(role, user, conteudo):
     if conteudo.professor.user == user:
         return True
     return False
+
+
+@register_object_checker()
+def can_remove_link_conteudo(role, user, conteudo_link):
+    if conteudo_link.conteudo.professor.user == user:
+        return True
+    return False
