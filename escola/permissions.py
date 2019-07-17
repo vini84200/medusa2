@@ -1,10 +1,14 @@
 #  Developed by Vinicius José Fritzen
 #  Last Modified 26/04/19 23:30.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import logging
+
 from rolepermissions.checkers import has_role, has_permission
 from rolepermissions.permissions import register_object_checker
 
 from escola.models import MateriaDaTurma
+
+logger = logging.getLogger(__name__)
 
 
 @register_object_checker()
@@ -214,6 +218,10 @@ def can_edit_conteudo(role, user, conteudo):
 
 @register_object_checker()
 def can_remove_link_conteudo(role, user, conteudo_link):
+    logger.info("Testando can_remove_link_conteudo")
+    logger.debug(f"Usuario: {user}")
+    logger.debug(f"Role: {role}")
+    logger.debug(f"conteudo_link.conteudo.professor.user: {conteudo_link.conteudo.professor.user}")
     if conteudo_link.conteudo.professor.user == user:
         return True
     return False

@@ -9,6 +9,7 @@ import re
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import register
 from django.utils.safestring import mark_safe
+from rolepermissions.checkers import has_object_permission, has_permission
 
 from escola.controller_provas_marcadas import (get_materias_professor_for_day,
                                                get_provas_professor_futuras,
@@ -131,11 +132,14 @@ def panel_all_quotes():
     return context
 
 
-@register.inclusion_tag('escola/panels/link_conteudo.html')
-def link_conteudo(conteudo_link: LinkConteudo):
+@register.inclusion_tag('escola/panels/link_conteudo.html', takes_context=True)
+def link_conteudo(context, conteudo_link: LinkConteudo):
     """Mostra um link com conteudo"""
     url = conteudo_link.link
     conteudo = {'link': conteudo_link}
+    # Verifica se pode ser apagado pelo usuario
+    can_remove = has_object_permission('can_remove_link_conteudo', context['user'], conteudo_link)
+
     # Verificação YouTube
     regex = re.compile(r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})')
 
@@ -148,5 +152,5 @@ def link_conteudo(conteudo_link: LinkConteudo):
         return conteudo
 
     # Default
-    conteudo.update({'youtube': False, 'default': True, })
+    conteudo.update({'youtube': False, 'default': True, 'can_remove': can_remove})
     return conteudo

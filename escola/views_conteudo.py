@@ -9,7 +9,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import (
     CreateView, DeleteView, DetailView, FormView, ListView, UpdateView)
@@ -17,8 +17,11 @@ from rolepermissions.checkers import has_object_permission
 
 from escola.decorators import is_professor, is_user_escola
 from escola.forms import ConteudoForm, SelectConteudosForm
-from escola.models import CategoriaConteudo, Conteudo, LinkConteudo, MateriaDaTurma
-from escola.user_check_mixin import UserCheckHasObjectPermissionGet, UserCheckReturnForbbiden
+from escola.models import (CategoriaConteudo, Conteudo, LinkConteudo,
+                           MateriaDaTurma)
+from escola.user_check_mixin import (UserCheckHasObjectPermissionGet,
+                                     UserCheckReturnForbbiden)
+
 logger = logging.getLogger(__name__)
 
 
@@ -180,6 +183,15 @@ class RemoveLinkFromConteudoView(UserCheckHasObjectPermissionGet, UserCheckRetur
     """Remove o link de algum conteudo"""
     model = LinkConteudo
     user_check_obj_permission = 'can_remove_link_conteudo'
+    template_name = 'escola/base_delete.html'
+
+    def get_success_url(self):
+        return reverse('escola:delete-link-conteudo', self.obj_conteuto_pk)
+
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset=queryset)
+        self.obj_conteuto_pk = obj.conteudo.pk
+        return obj
 
 
 class RemoveConteudoFromMateriaView(DeleteView):
