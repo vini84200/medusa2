@@ -37,3 +37,21 @@
         {%endfor%}
     </tbody>
         </table></div>
+        <script>
+                $('.notificacao-item').on('closed.bs.alert', function () {
+                    var id_noti = $(this).attr('data-noti_id')
+                    var url = "{% url 'escola:notificacao-set-as-read' 1234561234%}".replace("1234561234", id_noti)
+                    console.log(id_noti)
+                    console.log(url)
+                    $.ajax({
+                        headers:{  
+                            "Accept":"application/json",//depends on your api
+                            "Content-type":"application/x-www-form-urlencoded"//depends on your api
+                        },   url:url,
+                        success:function(response){
+                          var r=JSON.parse(response);
+                        }
+                      });
+                    console.log(r)
+                  })
+                </script>
