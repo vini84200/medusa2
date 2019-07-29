@@ -26,11 +26,11 @@
                 <td>{{tarefa.0.descricao|truncatechars:30}}</td>
                 <td>{{tarefa.0.deadline}}</td>
                 <td>{{tarefa.1.completo|yesno:"Sim,Não,Hmmm:("}}</td>
-                <td><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}">CONCLUIR</a></td>
-                {%if perms.escola.can_edit_cargo%}
+                <td><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}" class="btn btn-primary tarefa-item-concluir-btn" data-id-tarefa="{tarefa.id}">Concluir</a></td>
+                {%if perms.escola.can_edit_cargo%}  <!--FIXME Permisões incoretas--> 
                 <td><a href="{% url 'escola:edit-tarefa' tarefa.0.pk %}">EDIT</a></td>
                 {%endif%}
-                {%if perms.escola.can_delete_cargo%}
+                {%if perms.escola.can_delete_cargo%} <!--FIXME Permisões incoretas--> 
                 <td><a href="{% url 'escola:delete-tarefa' tarefa.0.pk %}">DELETE</a></td>
                 {%endif%}
             </tr>
@@ -38,10 +38,10 @@
     </tbody>
         </table></div>
         <script>
-                $('.notificacao-item').on('closed.bs.alert', function () {
-                    var id_noti = $(this).attr('data-noti_id')
-                    var url = "{% url 'escola:notificacao-set-as-read' 1234561234%}".replace("1234561234", id_noti)
-                    console.log(id_noti)
+                $('.tarefa-item-concluir-btn').on('click', function () {
+                    var id_tarefa = $(this).attr('data-id-tarefa')
+                    var url = "{% url 'escola:tarefa-set-as-finished' 1234561234%}".replace("1234561234", id_tarefa)
+                    console.log(id_tarefa)
                     console.log(url)
                     $.ajax({
                         headers:{  
