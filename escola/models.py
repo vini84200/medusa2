@@ -48,7 +48,7 @@ class Profile(models.Model):
 
     def get_unread_notifications(self):
         """Retorna lista de todas as notificações não lidas desse usuario."""
-        return self.user.notificacao_set.filter(visualizado=False).order_by('dataCriado')
+        return self.user.notificacao_set.filter(visualizado=False).order_by('-dataCriado')
 
     def read_all_notifications(self):
         """Marca como lida todas as notificações"""
