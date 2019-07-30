@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'polymorphic',
     'maintenance_mode',  # Sistema de manutenção
     'markdownx',  # Para adicionar MarkDown
+    'sekizai',  # Permite a adição de javascript de dentro
 ]
 
 MIDDLEWARE = [
@@ -117,7 +118,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'escola.context_processors.google_analytics',
                 'escola.context_processors.warnings',
-                'maintenance_mode.context_processors.maintenance_mode'  # Sis. Pagina de manutenção
+                'maintenance_mode.context_processors.maintenance_mode',  # Sis. Pagina de manutenção
+                'sekizai.context_processors.sekizai',  # Permite que sejam adicionadas js de tags
             ],
         },
     },

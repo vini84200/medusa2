@@ -53,6 +53,7 @@
                     "Content-type":"application/x-www-form-urlencoded"//depends on your api
                 },   url:url,
                 success:function(response){
+                  console.log(response);
                   var r=JSON.parse(response);
                 }
               });

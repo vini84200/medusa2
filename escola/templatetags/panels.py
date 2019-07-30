@@ -56,8 +56,8 @@ def panel_mostra_horario(turma, user):
     return context
 
 
-@register.inclusion_tag('escola/panels/listaTarefas.html')
-def panel_tarefas_aluno(user, qnt=0):
+@register.inclusion_tag('escola/panels/listaTarefas.html', takes_context=True)
+def panel_tarefas_aluno(context, user, qnt=0):
     """Esse painel mostra as tarefas do usuario, se a qnt for 0, mostra todas"""
     turma_pk = user.aluno.turma.pk
     logger.info('views:index; user_id: %s é aluno.', user.pk)
@@ -66,7 +66,8 @@ def panel_tarefas_aluno(user, qnt=0):
     for tarefa in tarefas:
         tarefas_c.append((tarefa, tarefa.get_completacao(user.aluno)))
     logger.debug(f'Encontrei {len(tarefas_c)} tarefas.')
-    return {'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)}
+    context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+    return context
 
 
 @register.inclusion_tag('escola/panels/resumoHojeProfessor.html')

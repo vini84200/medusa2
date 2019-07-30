@@ -99,14 +99,17 @@ class TarefaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TarefaSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
 
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=['post'],
+            permission_classes=[permissions.IsAuthenticated])
     def set_as_finished(self, request, pk=None):
         """Conclui a tarefa do aluno"""
         logger.info('set_as_finished: Iniciando')
-        if request.user.profile_escola.is_aluno:
-            user = request.user
+        user = request.user
+        if user.profile_escola.is_aluno:
             aluno = user.aluno
         else:
+            logger.info("O usuario não é um aluno, por tanto"
+                        "não pode concluir tarefas")
             raise PermissionDenied("O usuario não é um aluno, por tanto"
                                    "não pode concluir tarefas")
         tarefa: models.Tarefa = self.get_object()
