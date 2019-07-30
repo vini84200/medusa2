@@ -85,6 +85,16 @@ class ConteudoDetail(DetailView):
                                'links': LinkConteudo.objects.filter(conteudo=context['object'], categoria=cat)
                                })
         context['categorias'] = categorias
+        if (hasattr(self.request.user, 'professor')
+                and self.request.user.professor == self.object.professor):
+            materias = self.object.materias.all()
+            context.update({
+                'is_owner': True,
+                'materias': materias,
+                'materias__len': len(materias),
+                })
+        else:
+            context.update({'is_owner': False})
         return context
 
 
