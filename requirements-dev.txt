@@ -37,3 +37,4 @@ django-maintenance-mode==0.13.1
 # Para adicionar markdown
 django-markdownx==2.0.28
 misaka==2.1.1 # Python fast-renderer de Markdown
+django-sekizai==1.0.0 # Permite que javascript seja adicionado de dentro de uma tag

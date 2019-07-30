@@ -10,6 +10,7 @@
 {% load permission_tags %}
 {% load pwa %}
 {% load i18n %}
+{% load sekizai_tags %}
 <head>
   {% if GA_TRACKING_ID %}
       <!-- Etiqueta global do site (gtag.js) - Google Analytics -->
@@ -42,10 +43,11 @@
   <!--Fontawesome - go get icons in https://fontawesome.com -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
         integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-
+  
 
   <!-- Bloco de Estilos -->
   {% block styles %}{% endblock %}
+  {% render_block "css" %} <!--Bloco usando sekizai para exibir css-->
   <!--Progresive Web App-->
   {% progressive_web_app_meta %}
 
@@ -74,12 +76,14 @@
         crossorigin="anonymous"></script>
 
 
+
 <!--Bootstrap Modal-->
 <!--<script src="{% static 'js/jquery.bootstrap.modal.forms.js' %}"></script>-->
 <!-- Bloco de scripts -->
 
 {% block scripts %}{% endblock %}
 {% block feed_scripts %}{% endblock %}
+{% render_block "js" %} <!--Usando o sekizai para renderizar os scripts de fora do contexto-->
 </body>
 
 </html>

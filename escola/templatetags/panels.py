@@ -9,6 +9,7 @@ import re
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import register
 from django.utils.safestring import mark_safe
+from rolepermissions.checkers import has_object_permission, has_permission
 
 from escola.controller_provas_marcadas import (get_materias_professor_for_day,
                                                get_provas_professor_futuras,
@@ -55,17 +56,31 @@ def panel_mostra_horario(turma, user):
     return context
 
 
-@register.inclusion_tag('escola/panels/listaTarefas.html')
-def panel_tarefas_aluno(user, qnt=0):
+@register.inclusion_tag('escola/panels/listaTarefas.html', takes_context=True)
+def panel_tarefas_aluno(context, user, qnt=0):
     """Esse painel mostra as tarefas do usuario, se a qnt for 0, mostra todas"""
     turma_pk = user.aluno.turma.pk
     logger.info('views:index; user_id: %s é aluno.', user.pk)
-    tarefas = Tarefa.objects.filter(turma__pk=turma_pk, deadline__gte=datetime.date.today()).order_by('deadline')
+    tarefas = Tarefa.objects.filter(
+        turma__pk=turma_pk,
+        deadline__gte=datetime.date.today()) \
+        .order_by('deadline')
     tarefas_c = []
     for tarefa in tarefas:
         tarefas_c.append((tarefa, tarefa.get_completacao(user.aluno)))
     logger.debug(f'Encontrei {len(tarefas_c)} tarefas.')
-    return {'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)}
+    context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+    return context
+
+
+@register.inclusion_tag('escola/panels/listaTarefas.html', takes_context=True)
+def panel_list_tarefas(context, tarefas, comp=True, aluno=True):
+    """Renderiza uma lista de tarefas apartir de um Lista de tarefas"""
+    tarefas_c = []
+    for tarefa in tarefas:
+        tarefas_c.append((tarefa, None))
+    context.update({'tarefas': tarefas_c, 'comp': comp})
+    return context
 
 
 @register.inclusion_tag('escola/panels/resumoHojeProfessor.html')
@@ -131,11 +146,14 @@ def panel_all_quotes():
     return context
 
 
-@register.inclusion_tag('escola/panels/link_conteudo.html')
-def link_conteudo(conteudo_link: LinkConteudo):
+@register.inclusion_tag('escola/panels/link_conteudo.html', takes_context=True)
+def link_conteudo(context, conteudo_link: LinkConteudo):
     """Mostra um link com conteudo"""
     url = conteudo_link.link
     conteudo = {'link': conteudo_link}
+    # Verifica se pode ser apagado pelo usuario
+    can_remove = has_object_permission('can_remove_link_conteudo', context['user'], conteudo_link)
+
     # Verificação YouTube
     regex = re.compile(r'(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/(watch\?v=|embed/|v/|.+\?v=)?(?P<id>[A-Za-z0-9\-=_]{11})')
 
@@ -148,5 +166,5 @@ def link_conteudo(conteudo_link: LinkConteudo):
         return conteudo
 
     # Default
-    conteudo.update({'youtube': False, 'default': True, })
+    conteudo.update({'youtube': False, 'default': True, 'can_remove': can_remove})
     return conteudo

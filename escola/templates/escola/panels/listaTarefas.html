@@ -1,3 +1,4 @@
+{% load sekizai_tags %}
 <div class="table-responsive">
 <table class="table table-striped">
     <thead class="thead-dark">
@@ -19,21 +20,68 @@
     </thead>
     <tbody>
         {%for tarefa in tarefas%}
-            <tr>
+            <tr class="tarefa-item" id="tarefa-{{tarefa.0.pk}}">
                 <td><a href="{% url 'escola:detalhes-tarefa' tarefa.0.pk %}">{{tarefa.0.titulo}}</a></td>
                 <td>{{tarefa.0.materia}}</td>
                 <td>{{tarefa.0.get_tipo_display}}</td>
                 <td>{{tarefa.0.descricao|truncatechars:30}}</td>
                 <td>{{tarefa.0.deadline}}</td>
-                <td>{{tarefa.1.completo|yesno:"Sim,Não,Hmmm:("}}</td>
-                <td><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}">CONCLUIR</a></td>
-                {%if perms.escola.can_edit_cargo%}
+                <td class="tarefa-completo">{{tarefa.1.completo|yesno:"Sim,Não,Hmmm:("}}</td>
+                <td><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}" class="btn btn-primary tarefa-item-concluir-btn" data-id-tarefa="{{tarefa.0.id}}">Concluir</a></td>
+                {%if perms.escola.can_edit_cargo%}  <!--FIXME Permisões incoretas--> 
                 <td><a href="{% url 'escola:edit-tarefa' tarefa.0.pk %}">EDIT</a></td>
                 {%endif%}
-                {%if perms.escola.can_delete_cargo%}
+                {%if perms.escola.can_delete_cargo%} <!--FIXME Permisões incoretas--> 
                 <td><a href="{% url 'escola:delete-tarefa' tarefa.0.pk %}">DELETE</a></td>
                 {%endif%}
             </tr>
         {%endfor%}
     </tbody>
         </table></div>
+{% addtoblock "js" %}
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+{% endaddtoblock %}
+{% addtoblock "js" %}
+        <script>
+                function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+                function bool_to_str(bool){
+                    if(bool){
+                        return 'Sim'
+                    } else {
+                        return 'Não'
+                    }
+                }
+                function set_completacao_html(id, status){
+                    $('#tarefa-'+id).find('.tarefa-completo').text(bool_to_str(status))
+                }
+                $('.tarefa-item-concluir-btn').on('click', function (event) {
+                    event.preventDefault()
+                    var csrftoken = Cookies.get('csrftoken');
+                    var id_tarefa = $(this).attr('data-id-tarefa')
+                    var url = "{% url 'escola:tarefa-set-as-finished' 1234561234%}".replace("1234561234", id_tarefa)
+                    console.log(id_tarefa)
+                    console.log(url)
+                    $.ajax({
+                        type: "POST",
+                        headers:{  
+                            "Accept":"application/json",//depends on your api
+                            "Content-type":"application/x-www-form-urlencoded"//depends on your api
+                        },
+                        url: url,
+                        beforeSend: function(xhr, settings) {
+                            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
+                        },
+                        success:function(response){
+                            console.log(response);
+                            r = response;
+                            set_completacao_html(id_tarefa, r.concluido);
+                        }
+                      });
+                  })
+                </script>
+{% endaddtoblock %}

@@ -45,11 +45,8 @@ def add_tarefa(request, turma_pk):
 def list_tarefa(request, turma_pk):
     tarefas = Tarefa.objects.filter(turma__pk=turma_pk)
     if request.user.is_authenticated and request.user.profile_escola.is_aluno:
-        tarefas_c = []
-        for tarefa in tarefas:
-            tarefas_c.append((tarefa, tarefa.get_completacao(request.user.aluno)))
         return render(request, 'escola/tarefas/listTarefasParaAluno.html',
-                      context={'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+                      context={'tarefas': tarefas, 'turma': get_object_or_404(Turma, pk=turma_pk)})
     else:
         return render(request, 'escola/tarefas/listTarefas.html', context={'tarefas': tarefas, 'turma': get_object_or_404(Turma, pk=turma_pk)})
 

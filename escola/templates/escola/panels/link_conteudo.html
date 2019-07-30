@@ -1,23 +1,35 @@
 {%load markdown %}
 {%if default%}
-<a href="{{link.link}}" class="list-group-item list-group-item-action">
+<li  class="list-group-item list-group-item-action">
     <div class="d-flex justify-content-between">
+        <a href="{{link.link}}">
       <h5 class="mb-1">{{link.titulo}}
         {%for tag in link.tags.names%}
         <span class="badge badge-secondary">{{tag}}</span>
-        {%endfor%}</h5>
+        {%endfor%}</h5></a>
+        {% if can_remove%}
+        <a href="{%url 'escola:delete-link-conteudo' link.pk%}" class="btn btn-danger" aria-label="Remover">
+            <span aria-hidden="true">&times;</span>
+        </a>
+        {%endif%}
     </div>
     <p class="mb-1">{{link.descricao|md}}</p>
     <small>{{link.link}}</small>
 </a>
 {%endif%}
+
 {%if youtube%}
-<li href="{{link.link}}" class="list-group-item list-group-item-action">
+<li class="list-group-item list-group-item-action">
     <div class="d-flex justify-content-between">
       <h5 class="mb-1">{{link.titulo}}
         {%for tag in link.tags.names%}
         <span class="badge badge-secondary">{{tag}}</span>
         {%endfor%}</h5>
+        {% if can_remove%}
+        <a href="{%url 'escola:delete-link-conteudo' link.pk%}" class="btn btn-danger" aria-label="Remover">
+            <span aria-hidden="true">&times;</span>
+        </a>
+        {%endif%}
     </div>
     <style>
             .video-container {
