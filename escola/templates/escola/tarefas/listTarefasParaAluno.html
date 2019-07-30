@@ -1,47 +1,12 @@
 {% extends "../base.html" %}
-
+{%load panels%}
 {%block conteudo%}
 <div class="container">
 <!--FIXME Implementar permissões melhoradas-->
 <h1>Listagem de tarefas da turma {{turma.numero}}</h1>
-{%if perms.escola.can_add_tarefa%}
+{%if perms.escola.can_add_tarefa%} <!--Essa permissão não está nos novos padrões-->
     <a href="{% url 'escola:add-tarefa' turma.pk %}" class="btn btn-primary">Adicionar Tarefa</a><br><br>
 {%endif%}
-<div class="table-responsive">
-<table class="table table-striped">
-<tr>
-    <th>Título</th>
-    <th>Matéria</th>
-    <th>Tipo</th>
-    <th>Descrição</th>
-    <th>Data de Entrega</th>
-    <th>Concluído</th>
-    <th>Marcar como concluído</th>
-    {%if perms.escola.can_edit_cargo%}
-    <th></th>
-    {%endif%}
-    {%if perms.escola.can_delete_cargo%}
-    <th></th>
-    {%endif%}
-</tr>
-{%for tarefa in tarefas%}
-<tr>
-    <th><a href="{% url 'escola:detalhes-tarefa' tarefa.0.pk %}">{{tarefa.0.titulo}}</a> </th>
-    <th>{{tarefa.0.materia}}</th>
-    <th>{{tarefa.0.get_tipo_display}}</th>
-    <th>{{tarefa.0.descricao|truncatechars:15}}</th>
-    <th>{{tarefa.0.deadline}}</th>
-    <th>{{tarefa.1.completo|yesno:"Sim,Não,Hmmm:("}}</th>
-    <th><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}" class="btn btn-primary">Concluir</a></th>
-    {%if perms.escola.can_edit_cargo%}
-    <th><a href="{% url 'escola:edit-tarefa' tarefa.0.pk %}" class="btn btn-info">Editar</a></th>
-    {%endif%}
-    {%if perms.escola.can_delete_cargo%}
-    <th><a href="{% url 'escola:delete-tarefa' tarefa.0.pk %}" class="btn btn-danger">Apagar</a></th>
-    {%endif%}
-</tr>
-{%endfor%}
-</table>
-    </div>
+{%panel_list_tarefas tarefas False%}
     </div>
 {%endblock%}
