@@ -25,6 +25,7 @@ from escola.utils import genarate_password, generate_username
 
 logger = logging.getLogger(__name__)
 
+
 class AlunosFormSetHelper(FormHelper):
     def __init__(self, *args, **kwargs):
         super(AlunosFormSetHelper, self).__init__(*args, **kwargs)
@@ -44,14 +45,16 @@ def populate_alunos(request):
                 if 'nome' in form.cleaned_data:
                     senha, username = generate_aluno(form)
                     usuarios.append((username, senha,))
-            response = render(request, 'escola/alunos/alunosList.html', context={'usuarios': usuarios})
+            response = render(request, 'escola/alunos/alunosList.html',
+                              context={'usuarios': usuarios})
             return response
 
     context = {
         'formset': formset,
         'helper': helper
     }
-    return render(request, 'escola/alunos/formPopulateAlunos.html', context)
+    return render(request, 'escola/alunos/formPopulateAlunos.html',
+                  context)
 
 
 def generate_aluno(form):
@@ -73,10 +76,12 @@ def generate_aluno(form):
     # aluno.chamada = form.cleaned_data['num_chamada']
     # aluno.nome = nome
     # aluno.user = user
-    turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
+    turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'],
+                              ano=datetime.date.today().year)
     # aluno.turma = turma
     # aluno.save()
-    user_utils.create_aluno_user(username, senha, turma, nome, form.cleaned_data['num_chamada'])
+    user_utils.create_aluno_user(username, senha, turma, nome,
+                                 form.cleaned_data['num_chamada'])
     return senha, username
 
 
@@ -84,22 +89,26 @@ def generate_aluno(form):
 def add_aluno(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
     if not has_object_permission('add_aluno', request.user, turma):
-        logger.debug(f"Usuario não utorizado, tem, o regente da turma é {turma.regente},"
-                     f" e o usuario entrando é {request.user}")
+        logger.debug(f"Usuario não utorizado, tem, o regente da turma é"
+                     f"{turma.regente}, e o usuario entrando é "
+                     f" {request.user}")
         return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
-        # FORM TUTORIAL: https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
+        # FORM TUTORIAL: 
+        # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
         form = AlunoCreateForm(request.POST)
 
         # Check if the form is valid:
         if form.is_valid():
-            turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'], ano=datetime.date.today().year)
+            turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'],
+                                      ano=datetime.date.today().year)
             if has_object_permission('add_aluno', request.user, turma):
                 senha, username = generate_aluno(form)
                 # redirect to a new URL:
                 if form.cleaned_data['senha']:
-                    return HttpResponseRedirect(reverse('escola:list-alunos', args=[turma.pk]))
+                    return HttpResponseRedirect(reverse('escola:list-alunos',
+                                                args=[turma.pk]))
                 else:
                     return render(request, 'escola/alunos/alunosList.html',
                                   context={'usuarios': [(username, senha,), ]})
@@ -122,4 +131,5 @@ def add_aluno(request, turma_pk):
 def list_alunos(request, turma_pk):
     turma = get_object_or_404(Turma, pk=turma_pk)
     alunos = Aluno.objects.filter(turma=turma).order_by('chamada')
-    return render(request, 'escola/alunos/listAlunosPerTurma.html', context={'alunos': alunos, 'turma': turma})
+    return render(request, 'escola/alunos/listAlunosPerTurma.html',
+                  context={'alunos': alunos, 'turma': turma})

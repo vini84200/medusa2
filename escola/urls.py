@@ -98,6 +98,7 @@ urlpatterns += \
         path('conteudo/add/', escola.views_conteudo.ConteudoCreate.as_view(), name='conteudo_add'),  # TODO TAMBEM
         path('materia/<int:materia>/addConteudos', escola.views_conteudo.addConteudosAMateria.as_view(), name='add-conteudo-materia'),
         path('conteudo/<int:pk>/add', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
+        path('link-conteudo/<int:pk>/remove', escola.views_conteudo.RemoveLinkFromConteudoView.as_view(), name='delete-link-conteudo'),
         path('conteudo/<int:pk>/add/<int:cat>', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
         path('conteudo/<int:pk>/edit', escola.views_conteudo.ConteudoUpdateView.as_view(), name='update-conteudo'),
     ]

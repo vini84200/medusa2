@@ -267,3 +267,4 @@ staticfiles/rest_framework/js/jquery-3.3.1.min.js
 staticfiles/rest_framework/js/prettify-min.js
 staticfiles/taggit_labels/css/taggit_labels.css
 staticfiles/taggit_labels/js/taggit_labels.js
+escola/html_testplates/*

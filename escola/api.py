@@ -2,8 +2,10 @@
 #  Developed by Vinicius José Fritzen
 #  Last Modified 12/04/19 13:19.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
+import logging
 
 from django.contrib.auth.models import Group, User
+from django.core.exceptions import PermissionDenied
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -11,6 +13,9 @@ from rest_framework.response import Response
 from escola import api_permissions
 
 from . import models, serializers
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -94,6 +99,27 @@ class TarefaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TarefaSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
 
+    @action(detail=True, methods=['post'],
+            permission_classes=[permissions.IsAuthenticated])
+    def set_as_finished(self, request, pk=None):
+        """Conclui a tarefa do aluno"""
+        logger.info('set_as_finished: Iniciando')
+        user = request.user
+        if user.profile_escola.is_aluno:
+            aluno = user.aluno
+        else:
+            logger.info("O usuario não é um aluno, por tanto"
+                        "não pode concluir tarefas")
+            raise PermissionDenied("O usuario não é um aluno, por tanto"
+                                   "não pode concluir tarefas")
+        tarefa: models.Tarefa = self.get_object()
+        conc = tarefa.get_completacao(aluno)
+        conc.completo = not conc.completo
+        conc.save()
+        logger.info('set_as_finished: Finalizando')
+        return Response({'status': 'success',
+                        'concluido': conc.completo})
+
 
 class TarefaCompletacaoViewSet(viewsets.ModelViewSet):
     """ViewSet for the TarefaCompletacao class"""
@@ -118,7 +144,8 @@ class NotificacaoViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NotificacaoSerializer
     permission_classes = [permissions.DjangoObjectPermissions]
 
-    @action(detail=True, methods=['get','post'], permission_classes=[api_permissions.IsAdminOrIsTheUser])
+    @action(detail=True, methods=['get', 'post'],
+            permission_classes=[api_permissions.IsAdminOrIsTheUser])
     def set_as_read(self, request, pk=None):
         """Define o campo de visualizado de uma notificação."""
         noti: models.Notificacao = self.get_object()

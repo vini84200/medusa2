@@ -4,11 +4,12 @@
 {% load panels %}
 
 {% block conteudo %}
-
-<div class="container">
-
+  <div class="row">
+  <div class='col'>
   <h1>{{turma}}</h1>
-
+  </div></div>
+  <div class="row">
+  <div class='col'>
   {% can 'marcar_prova_m_turma' turma as can_marcar_prova_materia%}
   <div class="btn-group" role="group" aria-label="Ações">
   {%if can_marcar_prova_materia%}
@@ -18,15 +19,17 @@
     <a href="{%url 'escola:marcar-prova-area' %}" class="btn btn-primary">Marcar Prova Area</a>
   {%endif%}
     <a href="{%url 'escola:turma-provas-calendario' turma.id%}" class="btn btn-primary">Ver calendario</a>
-
-  </div>
+  </div></div></div>
+  <div class="row">
+  <div class='col'>
   <h3>Provas</h3>
   {%panel_lista_provas_marcadas_turma turma 4%}
+  
   <a href="{%url 'escola:provas-turma-list' turma.id%}" class="btn btn-secondary">Ver mais...</a>
-
+  </div>
+  <div class='col'>
   <h3>Tarefas</h3>
-  {# TODO #}
-  WIP
-</div>
+    {%panel_list_tarefas_turma turma%}
+  </div></div>
 
 {% endblock conteudo %}

@@ -7,8 +7,10 @@ from datetime import date
 from typing import List
 
 from django.utils import timezone
+from django.utils.html import escape
 
-from escola.models import Turma, Professor, MateriaDaTurma, ProvaMateriaMarcada, ProvaAreaMarcada, EventoTurma
+from escola.models import (EventoTurma, MateriaDaTurma, Professor,
+                           ProvaAreaMarcada, ProvaMateriaMarcada, Turma)
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +71,7 @@ class CalendarioDatasLivresTurma(HTMLCalendar):
         d = ''
         background_color = self.DEFAULT_COLOR
         for event in events_per_day:
-            d += f'<li> {event.get_nome()} </li>'
+            d += f'<li> {escape(event.get_nome())} </li>'
             if event.block_prova:
                 background_color = self.OCUPADO_COLOR
 
