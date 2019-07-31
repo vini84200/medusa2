@@ -75,7 +75,7 @@
                         $('#tarefa-'+ id +'-concluir-btn').addClass("btn-success")
                         $('#tarefa-'+ id +'-concluir-btn').removeClass("btn-primary")
                         $('#tarefa-'+ id +'-concluir-btn-check').show()
-                        $('#tarefa-8-concluir-btn-text').text('Concluido')
+                        $('#tarefa-'+ id +'-concluir-btn-text').text('Concluido')
                     } else {
                         $('#tarefa-'+ id +'-materia').removeClass("text-success")
                         $('#tarefa-'+ id +'-titulo').removeClass("text-success")
@@ -84,7 +84,7 @@
                         $('#tarefa-'+ id +'-concluir-btn').removeClass("btn-success")
                         $('#tarefa-'+ id +'-concluir-btn').addClass("btn-primary")
                         $('#tarefa-'+ id +'-concluir-btn-check').hide()
-                        $('#tarefa-8-concluir-btn-text').text('Concluir')
+                        $('#tarefa-'+ id +'-concluir-btn-text').text('Concluir')
                     }
                 }
                 $('.tarefa-item-concluir-btn').on('click', function (event) {
