@@ -77,7 +77,7 @@ def test_loggin_in_as_admin_and_ading_a_turma_and_alunos_with_both_populate_alun
     username_input.type(pedrinho[1])
     senha_input = browser.find_by_css('#id_password')
     senha_input.type(pedrinho[2])
-    button = browser.find_by_text('Logar')
+    button = browser.find_by_text('Logar')[0]
     button.click()
     # Ele é redirecionado a pagina inicial do site,
     # Pedro Verifica que a pagina possui o titulo de 'Pagina Inicial'
