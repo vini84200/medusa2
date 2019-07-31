@@ -15,7 +15,7 @@
 </div> <br/>
 
 <div class="row">
-    <div class="col">
+    <div class="col-md">
         <h2>Tarefas</h2>
         {%if perms.escola.can_add_tarefa%}
         <!-- TODO ageitar permissões e mover isso para outro lugar. -->
@@ -23,9 +23,7 @@
         {%endif%}
         {%panel_tarefas_aluno user%}
     </div>
-</div> <br/>
-<div  class="row">
-    <div class="col">
+    <div class="col-md">
         <h2>Provas marcadas</h2>
         {% panel_lista_provas_marcadas_turma user.aluno.turma 6%}
         <a href="{%url 'escola:provas-turma-list' turma.id%}" class="btn btn-secondary">Ver mais...</a>
