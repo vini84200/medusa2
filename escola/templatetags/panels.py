@@ -85,6 +85,23 @@ def panel_list_tarefas(context, tarefas, comp=True, aluno=True):
     return context
 
 
+@register.inclusion_tag('escola/panels/listaTarefas.html', takes_context=True)
+def panel_list_tarefas_turma(context, turma):
+    """Renderiza uma lista de tarefas apartir de um Lista de tarefas"""
+    tarefas_c = []
+    tarefas = Tarefa.objects.filter(
+        turma=turma,
+        deadline__gte=datetime.date.today()).order_by('deadline')
+    comp = context['user'] in turma.get_list_alunos()
+    for tarefa in tarefas:
+        if comp:
+            tarefas_c.append((tarefa, tarefa.get_completacao(context['user'].aluno)))
+        else:
+            tarefas_c.append((tarefa, None))
+    context.update({'tarefas': tarefas_c, 'comp': comp})
+    return context
+
+
 @register.inclusion_tag('escola/panels/resumoHojeProfessor.html')
 def panel_resumo_do_dia_prof(user):
     """O resumo diario para um professor"""
