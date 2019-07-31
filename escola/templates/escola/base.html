@@ -38,6 +38,9 @@
       <li class="nav-item">
         <a class="nav-item nav-link" href="{% url 'escola:list-tarefa' user.aluno.turma.id %}">Tarefas</a>
       </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'escola:detail-turma' user.aluno.turma.id %}">Minha Turma</a>
+      </li>
       {%endif%}
       {% if user.profile_escola.is_professor%}
       <li class="nav-item dropdown">

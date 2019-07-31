@@ -321,7 +321,7 @@ class Turma(models.Model):
             prova: ProvaAreaMarcada
             prova.get_turma().comunicar_noti('prova_proxima', f'A prova de area {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, das materias {prova.get_apresentacao()}', prova.get_absolute_url())
             prova.set_notificado(True)
-    
+
     @staticmethod
     def atualizaTarefas():
         startdate = datetime.date.today()
@@ -481,7 +481,7 @@ class MateriaDaTurma(models.Model):
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='materias')
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='materias')
     abreviacao = models.CharField(max_length=5)
-    conteudos = models.ManyToManyField(Conteudo, blank=True)
+    conteudos = models.ManyToManyField(Conteudo, blank=True, related_name='materias')
     area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='materias', null=True, blank=True)
 
     objects = models.Manager()

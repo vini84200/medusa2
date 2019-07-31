@@ -69,7 +69,9 @@ def panel_tarefas_aluno(context, user, qnt=0):
     for tarefa in tarefas:
         tarefas_c.append((tarefa, tarefa.get_completacao(user.aluno)))
     logger.debug(f'Encontrei {len(tarefas_c)} tarefas.')
-    context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+    context.update({'tarefas': tarefas_c,
+                    'turma': get_object_or_404(Turma, pk=turma_pk),
+                    'comp': True})
     return context
 
 
@@ -79,6 +81,23 @@ def panel_list_tarefas(context, tarefas, comp=True, aluno=True):
     tarefas_c = []
     for tarefa in tarefas:
         tarefas_c.append((tarefa, None))
+    context.update({'tarefas': tarefas_c, 'comp': comp})
+    return context
+
+
+@register.inclusion_tag('escola/panels/listaTarefas.html', takes_context=True)
+def panel_list_tarefas_turma(context, turma):
+    """Renderiza uma lista de tarefas apartir de um Lista de tarefas"""
+    tarefas_c = []
+    tarefas = Tarefa.objects.filter(
+        turma=turma,
+        deadline__gte=datetime.date.today()).order_by('deadline')
+    comp = context['user'] in turma.get_list_alunos()
+    for tarefa in tarefas:
+        if comp:
+            tarefas_c.append((tarefa, tarefa.get_completacao(context['user'].aluno)))
+        else:
+            tarefas_c.append((tarefa, None))
     context.update({'tarefas': tarefas_c, 'comp': comp})
     return context
 

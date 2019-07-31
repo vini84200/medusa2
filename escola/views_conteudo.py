@@ -48,7 +48,6 @@ class ConteudoCreate(CreateView):
         initial = super(ConteudoCreate, self).get_initial()
         print(kwargs)
         if hasattr(self, 'parent'):
-            logger.debug('ConteudoCreate:get_initial():in if loop.')
             initial['parent'] = self.parent
         return initial
 
@@ -86,6 +85,16 @@ class ConteudoDetail(DetailView):
                                'links': LinkConteudo.objects.filter(conteudo=context['object'], categoria=cat)
                                })
         context['categorias'] = categorias
+        if (hasattr(self.request.user, 'professor')
+                and self.request.user.professor == self.object.professor):
+            materias = self.object.materias.all()
+            context.update({
+                'is_owner': True,
+                'materias': materias,
+                'materias__len': len(materias),
+                })
+        else:
+            context.update({'is_owner': False})
         return context
 
 
@@ -99,9 +108,11 @@ class LinkConteudoCreateView(CreateView):
     """
     model = LinkConteudo
     fields = ['titulo', 'link', 'categoria', 'descricao', 'tags']
-    success_url = reverse_lazy('escola:conteudos-professor')
 
     # TODO: 06/04/2019 por wwwvi: Test
+
+    def get_success_url(self):
+        return reverse('escola:conteudo-detail', args=(self.kwargs['pk'], ))
 
     @method_decorator(is_professor)
     def dispatch(self, request, *args, **kwargs):

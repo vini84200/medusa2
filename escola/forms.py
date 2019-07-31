@@ -233,6 +233,11 @@ class LoginForm(AuthenticationForm):
                                                                  'placeholder': 'ex.: *********'}),
                                label='Senha', label_suffix=''
                                )
+    
+    def __init__(self, request=None, *args, **kwargs):
+        super().__init__(request=request, *args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Logar"))
 
 
 class MyPasswordResetForm(PasswordResetForm):
