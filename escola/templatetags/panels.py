@@ -69,7 +69,9 @@ def panel_tarefas_aluno(context, user, qnt=0):
     for tarefa in tarefas:
         tarefas_c.append((tarefa, tarefa.get_completacao(user.aluno)))
     logger.debug(f'Encontrei {len(tarefas_c)} tarefas.')
-    context.update({'tarefas': tarefas_c, 'turma': get_object_or_404(Turma, pk=turma_pk)})
+    context.update({'tarefas': tarefas_c,
+                    'turma': get_object_or_404(Turma, pk=turma_pk),
+                    'comp': True})
     return context
 
 

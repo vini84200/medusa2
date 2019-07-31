@@ -1,43 +1,55 @@
 {% load sekizai_tags %}
-<div class="table-responsive">
-<table class="table table-striped">
-    <thead class="thead-dark">
-        <tr>
-            <th>Título</th>
-            <th>Matéria</th>
-            <th>Tipo</th>
-            <th>Descrição</th>
-            <th>Data de Entrega</th>
-            <th>Concluído</th>
-            <th>Marcar como concluído</th>
-            {%if perms.escola.can_edit_tarefa%}
-            <th></th>
-            {%endif%}
-            {%if perms.escola.can_delete_tarefa%}
-            <th></th>
-            {%endif%}
-        </tr>
-    </thead>
-    <tbody>
-        {%for tarefa in tarefas%}
-            <tr class="tarefa-item" id="tarefa-{{tarefa.0.pk}}">
-                <td><a href="{% url 'escola:detalhes-tarefa' tarefa.0.pk %}">{{tarefa.0.titulo}}</a></td>
-                <td>{{tarefa.0.materia}}</td>
-                <td>{{tarefa.0.get_tipo_display}}</td>
-                <td>{{tarefa.0.descricao|truncatechars:30}}</td>
-                <td>{{tarefa.0.deadline}}</td>
-                <td class="tarefa-completo">{{tarefa.1.completo|yesno:"Sim,Não,Hmmm:("}}</td>
-                <td><a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}" class="btn btn-primary tarefa-item-concluir-btn" data-id-tarefa="{{tarefa.0.id}}">Concluir</a></td>
-                {%if perms.escola.can_edit_cargo%}  <!--FIXME Permisões incoretas--> 
-                <td><a href="{% url 'escola:edit-tarefa' tarefa.0.pk %}">EDIT</a></td>
-                {%endif%}
-                {%if perms.escola.can_delete_cargo%} <!--FIXME Permisões incoretas--> 
-                <td><a href="{% url 'escola:delete-tarefa' tarefa.0.pk %}">DELETE</a></td>
-                {%endif%}
-            </tr>
-        {%endfor%}
-    </tbody>
-        </table></div>
+
+{% for tarefa in tarefas %}
+
+{% if comp and tarefa.1.completo %}
+ <div class="tarefa-item card text-white bg-dark" id="tarefa-{{tarefa.0.pk}}"> <!--Dark-->
+    <h5 class="card-header tarefa-materia text-success" id="tarefa-{{tarefa.0.pk}}-materia">{{tarefa.0.materia|title}}</h5>
+    <div class="card-body">
+        <h5 class="tarefa-titulo text-success" id="tarefa-{{tarefa.0.pk}}-titulo">
+                <i class="fas fa-check" id="tarefa-{{tarefa.0.pk}}-titulo-check"></i>
+                <i class="fas fa-exclamation-triangle" id="tarefa-{{tarefa.0.pk}}-titulo-warn" style="display: none"></i>
+                {{tarefa.0.titulo|title}}</h5>
+                <p>{{tarefa.0.descricao|truncatechars:236}}</p>
+        <!--236 caracteres-->
+        <div class="btn-group">
+            <a href="{% url 'escola:detalhes-tarefa' tarefa.0.pk %}" class="btn btn-primary">Ver...</a>
+            <a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}" class="btn btn-success tarefa-item-concluir-btn" id="tarefa-{{tarefa.0.pk}}-concluir-btn" data-id-tarefa="{{tarefa.0.id}}">
+                <i class="fas fa-check" id="tarefa-{{tarefa.0.pk}}-concluir-btn-check"></i>
+                <span  id="tarefa-{{tarefa.0.pk}}-concluir-btn-text">Concluido</span></a>
+        </div>
+    </div>
+    <div class="card-footer text-muted">
+        Até {{tarefa.0.deadline}}
+    </div>
+</div>
+<br />
+{% else %}
+<div class="tarefa-item card text-white bg-dark" id="tarefa-{{tarefa.0.pk}}"> <!--Dark-->
+<h5 class="card-header tarefa-materia" id="tarefa-{{tarefa.0.pk}}-materia">{{tarefa.0.materia|title}}</h5>
+<div class="card-body">
+    <h5 class="tarefa-titulo" id="tarefa-{{tarefa.0.pk}}-titulo">
+            <i class="fas fa-check" id="tarefa-{{tarefa.0.pk}}-titulo-check" style="display: none"></i>
+            <i class="fas fa-exclamation-triangle" id="tarefa-{{tarefa.0.pk}}-titulo-warn" style="display: none"></i>
+            {{tarefa.0.titulo|title}}</h5>
+    <p>{{tarefa.0.descricao|truncatechars:236}}</p>
+    <!--236 caracteres-->
+    <div class="btn-group">
+        <a href="{% url 'escola:detalhes-tarefa' tarefa.0.pk %}" class="btn btn-primary">Ver...</a>
+        {% if comp %}
+        <a href="{% url 'escola:concluir-tarefa' tarefa.0.pk %}" class="btn btn-primary tarefa-item-concluir-btn" id="tarefa-{{tarefa.0.pk}}-concluir-btn" data-id-tarefa="{{tarefa.0.id}}">
+            <i class="fas fa-check" style="display: none" id="tarefa-{{tarefa.0.pk}}-concluir-btn-check"></i>
+            <span  id="tarefa-{{tarefa.0.pk}}-concluir-btn-text">Concluir</span></a>
+        {% endif %}
+    </div>
+</div>
+<div class="card-footer text-muted">
+    Até {{tarefa.0.deadline}}
+</div>
+</div>
+<br />
+{% endif %}
+{% endfor %}
 {% addtoblock "js" %}
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 {% endaddtoblock %}
@@ -55,7 +67,25 @@
                     }
                 }
                 function set_completacao_html(id, status){
-                    $('#tarefa-'+id).find('.tarefa-completo').text(bool_to_str(status))
+                    if(status){
+                        $('#tarefa-'+ id +'-materia').addClass("text-success")
+                        $('#tarefa-'+ id +'-titulo').addClass("text-success")
+                        $('#tarefa-'+ id +'-titulo-check').show()
+                        $('#tarefa-'+ id +'-titulo-warn').hide()
+                        $('#tarefa-'+ id +'-concluir-btn').addClass("btn-success")
+                        $('#tarefa-'+ id +'-concluir-btn').removeClass("btn-primary")
+                        $('#tarefa-'+ id +'-concluir-btn-check').show()
+                        $('#tarefa-8-concluir-btn-text').text('Concluido')
+                    } else {
+                        $('#tarefa-'+ id +'-materia').removeClass("text-success")
+                        $('#tarefa-'+ id +'-titulo').removeClass("text-success")
+                        $('#tarefa-'+ id +'-titulo-check').hide()
+
+                        $('#tarefa-'+ id +'-concluir-btn').removeClass("btn-success")
+                        $('#tarefa-'+ id +'-concluir-btn').addClass("btn-primary")
+                        $('#tarefa-'+ id +'-concluir-btn-check').hide()
+                        $('#tarefa-8-concluir-btn-text').text('Concluir')
+                    }
                 }
                 $('.tarefa-item-concluir-btn').on('click', function (event) {
                     event.preventDefault()
