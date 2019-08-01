@@ -485,12 +485,13 @@ class AvisoTurmaForm(forms.Form):
 
 
 class AdicionarMateriaConteudoForm(forms.Form):
-    materias = forms.ModelChoiceField(queryset=MateriaDaTurma.objects.all())
+    materias = forms.ModelMultipleChoiceField(
+        queryset=MateriaDaTurma.objects.none())
 
     def __init__(self, materias, conteudo, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['materias'].queryset = materias  # Define o campo com
-        #                                                    materias já definidas
+        #                                              materias já definidas
         self.conteudo = conteudo  # Obtem o conteudo a ser lidado
         # Helper
         self.helper = FormHelper()

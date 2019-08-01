@@ -21,6 +21,7 @@ from escola.forms import (AdicionarMateriaConteudoForm, ConteudoForm,
 from escola.models import (CategoriaConteudo, Conteudo, LinkConteudo,
                            MateriaDaTurma)
 from escola.user_check_mixin import (UserCheckHasObjectPermission,
+                                     UserCheckHasObjectPermissionFromPk,
                                      UserCheckHasObjectPermissionGet,
                                      UserCheckReturnForbbiden)
 
@@ -235,6 +236,7 @@ class AdicionarAVariasMateriasView(UserCheckHasObjectPermissionFromPk, FormView)
     template_name = "escola/base_form.html"
     user_check_object_name = 'object'
     user_check_obj_permission = 'can_add_conteudo_to_materias'
+    checker_model = Conteudo
 
     def get_success_url(self):
         return self.object.get_absolute_url()
@@ -244,9 +246,9 @@ class AdicionarAVariasMateriasView(UserCheckHasObjectPermissionFromPk, FormView)
         return HttpResponseRedirect(self.get_success_url())
 
     def get_materias(self):
-        if self.materias is None:
+        if not hasattr(self, 'materias'):
             self.materias = MateriaDaTurma.objects.filter(
-                professor=self.kwargs['professor'])
+                professor=self.request.user.professor)
         return self.materias
 
     def get_form_kwargs(self):
