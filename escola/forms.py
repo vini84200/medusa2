@@ -14,7 +14,6 @@ from django.contrib.auth.forms import (AuthenticationForm, PasswordChangeForm,
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.forms import ModelForm
-from django.template import Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from markdownx.fields import MarkdownxFormField
@@ -233,7 +232,7 @@ class LoginForm(AuthenticationForm):
                                                                  'placeholder': 'ex.: *********'}),
                                label='Senha', label_suffix=''
                                )
-    
+
     def __init__(self, request=None, *args, **kwargs):
         super().__init__(request=request, *args, **kwargs)
         self.helper = FormHelper()
@@ -292,7 +291,7 @@ class SelectConteudosForm(forms.Form):
                 if conteudo.parent not in self.materia.conteudos.all():
                     self.add_conteudo_na_materia(conteudo.parent)
             self.materia.conteudos.add(conteudo)
-            self.materia.turma.comunicar_noti('novo_conteudo', f"Um novo conteudo foi postado na materia {self.materia}", f"A materia {self.materia} recebeu um novo conteudo, " \
+            self.materia.turma.comunicar_noti('novo_conteudo', f"Um novo conteudo foi postado na materia {self.materia}", f"A materia {self.materia} recebeu um novo conteudo, "
                                                                f"ele se chama {conteudo.nome}, para ver mais detalhes acesse o conteudo.", conteudo.get_absolute_url())
 
 
@@ -482,3 +481,39 @@ class AvisoTurmaForm(forms.Form):
 
     def save(self):
         AvisoGeral.create_for_turma(self.cleaned_data['titulo'], self.cleaned_data['msg'], self.owner, self.cleaned_data['turma'])
+
+
+class AdicionarMateriaConteudoForm(forms.Form):
+    materias = forms.ModelChoiceField(queryset=MateriaDaTurma.objects.all())
+
+    def __init__(self, materias, conteudo, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['materias'].queryset = materias  # Define o campo com
+        #                                                    materias já definidas
+        self.conteudo = conteudo  # Obtem o conteudo a ser lidado
+        # Helper
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Adicionar"))
+
+    def save(self):
+        self.add_materia()
+
+    def add_materia(self):
+        materias = self.cleaned_data['materias']
+        for materia in materias:
+            # TODO: 06/04/2019 por wwwvi: Adicionar forma de retirar conteudos
+            self.add_conteudo_na_materia(self.conteudo, materia)
+
+    def add_conteudo_na_materia(self, conteudo: Conteudo, materia: MateriaDaTurma):
+
+        if conteudo not in materia.conteudos.all():
+            if conteudo.parent:
+                if conteudo.parent not in materia.conteudos.all():
+                    self.add_conteudo_na_materia(conteudo.parent)
+            materia.conteudos.add(conteudo)
+            materia.turma.comunicar_noti(
+                'novo_conteudo',
+                f"Um novo conteudo foi postado na materia {materia}",
+                f"A materia {materia} recebeu um novo conteudo, "
+                f"ele se chama {conteudo.nome}, para ver mais detalhes acesse o "
+                f"conteudo.", conteudo.get_absolute_url())
