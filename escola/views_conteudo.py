@@ -16,10 +16,12 @@ from django.views.generic import (
 from rolepermissions.checkers import has_object_permission
 
 from escola.decorators import is_professor, is_user_escola
-from escola.forms import ConteudoForm, SelectConteudosForm
+from escola.forms import (AdicionarMateriaConteudoForm, ConteudoForm,
+                          SelectConteudosForm)
 from escola.models import (CategoriaConteudo, Conteudo, LinkConteudo,
                            MateriaDaTurma)
-from escola.user_check_mixin import (UserCheckHasObjectPermissionGet,
+from escola.user_check_mixin import (UserCheckHasObjectPermission,
+                                     UserCheckHasObjectPermissionGet,
                                      UserCheckReturnForbbiden)
 
 logger = logging.getLogger(__name__)
@@ -82,11 +84,12 @@ class ConteudoDetail(DetailView):
         categorias = []
         for cat in CategoriaConteudo.objects.all():
             categorias.append({'obj': cat,
-                               'links': LinkConteudo.objects.filter(conteudo=context['object'], categoria=cat)
+                               'links': LinkConteudo.objects.filter(
+                                   conteudo=context['object'], categoria=cat)
                                })
         context['categorias'] = categorias
-        if (hasattr(self.request.user, 'professor')
-                and self.request.user.professor == self.object.professor):
+        if (hasattr(self.request.user, 'professor') and
+                self.request.user.professor == self.object.professor):
             materias = self.object.materias.all()
             context.update({
                 'is_owner': True,
@@ -104,7 +107,8 @@ class LinkConteudoCreateView(CreateView):
 
     Dispatch args;
     pk : int - obrigatorio - PK do conteudo em que dee ser criado
-    cat : int - opicional - PK da categoria inicial. Se nao passado, o campo é iniciado em branco;
+    cat : int - opicional - PK da categoria inicial. Se nao passado,
+    o campo é iniciado em branco;
     """
     model = LinkConteudo
     fields = ['titulo', 'link', 'categoria', 'descricao', 'tags']
@@ -118,11 +122,16 @@ class LinkConteudoCreateView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         self.conteudo = Conteudo.objects.get(pk=kwargs.get('pk'))
         self.categoria = kwargs.get('cat')
-        if not has_object_permission('can_edit_conteudo', request.user, self.conteudo):  # request.user == self.conteudo.professor.user:
+        if not has_object_permission('can_edit_conteudo', request.user,
+                                     self.conteudo):
+                                    # request.user ==
+                                    #  self.conteudo.professor.user:
             logger.info(request.user)
             logger.info(self.conteudo)
-            raise PermissionDenied("Você não tem permissão para adicionar um link aqui.")
-        return super(LinkConteudoCreateView, self).dispatch(request, *args, **kwargs)
+            raise PermissionDenied("Você não tem permissão para adicionar "
+                                   "um link aqui.")
+        return super(LinkConteudoCreateView, self).dispatch(request, *args,
+                                                            **kwargs)
 
     def get_form_class(self):
         form_class = super(LinkConteudoCreateView, self).get_form_class()
@@ -149,12 +158,15 @@ class addConteudosAMateria(FormView):
     success_url = reverse_lazy('escola:materias_professor')
 
     # TODO: 06/04/2019 por wwwvi: Test
+    # FIXME: Lembre-se de adicionar permissões mais exatas do que apenas
+    # conferir se é um professor, usar can_add_conteudo_to_materia.
 
     @method_decorator(is_professor)
     def dispatch(self, request, *args, **kwargs):
         self.user = request.user
         self.materia = MateriaDaTurma.objects.get(pk=kwargs.get('materia'))
-        return super(addConteudosAMateria, self).dispatch(request, *args, **kwargs)
+        return super(addConteudosAMateria, self).dispatch(request, *args,
+                                                          **kwargs)
 
     def form_valid(self, form):
         form.add_materia()
@@ -162,7 +174,8 @@ class addConteudosAMateria(FormView):
 
     def get_form_kwargs(self):
         kwargs = super(addConteudosAMateria, self).get_form_kwargs()
-        kwargs.update({'professor': self.user.professor, 'materia': self.materia})
+        kwargs.update({'professor': self.user.professor,
+                       'materia': self.materia})
         return kwargs
 
 
@@ -182,7 +195,8 @@ class MeusConteudosListView(ListView):
     def dispatch(self, request, *args, **kwargs):
         """Regista o usuario."""
         self.user = request.user
-        return super(MeusConteudosListView, self).dispatch(request, *args, **kwargs)
+        return super(MeusConteudosListView, self).dispatch(request, *args,
+                                                           **kwargs)
 
     def get_queryset(self):
         return Conteudo.objects.filter(professor=self.user.professor).all()
@@ -190,7 +204,8 @@ class MeusConteudosListView(ListView):
 # TODO: 06/04/2019 por wwwvi: Test
 
 
-class RemoveLinkFromConteudoView(UserCheckHasObjectPermissionGet, UserCheckReturnForbbiden, DeleteView):
+class RemoveLinkFromConteudoView(UserCheckHasObjectPermissionGet,
+                                 UserCheckReturnForbbiden, DeleteView):
     """Remove o link de algum conteudo"""
     model = LinkConteudo
     user_check_obj_permission = 'can_remove_link_conteudo'
@@ -209,3 +224,33 @@ class RemoveConteudoFromMateriaView(DeleteView):
     """Remove o conteudo de uma materia"""
     pass  # TODO: 10/04/2019 por wwwvi: Terminar
     # SOBRESCREVER CODIGO QUE REALIZA EXCLUSÂO PARA RETIRAR DA LISTA.
+
+
+class AdicionarAVariasMateriasView(UserCheckHasObjectPermissionFromPk, FormView):
+    """
+    Adicionar um conteudo a diversas materias com apenas um form.
+    Deve receber um pk de um conteudo, com o nome de pk.
+    """
+    form_class = AdicionarMateriaConteudoForm
+    template_name = "escola/base_form.html"
+    user_check_object_name = 'object'
+    user_check_obj_permission = 'can_add_conteudo_to_materias'
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def form_valid(self, form):
+        form.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_materias(self):
+        if self.materias is None:
+            self.materias = MateriaDaTurma.objects.filter(
+                professor=self.kwargs['professor'])
+        return self.materias
+
+    def get_form_kwargs(self):
+        kwargs = super(AdicionarAVariasMateriasView, self).get_form_kwargs()
+        kwargs.update({'materias': self.get_materias(),
+                       'conteudo': self.object})
+        return kwargs

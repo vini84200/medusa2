@@ -273,7 +273,8 @@ class SelectConteudosForm(forms.Form):
 
     def __init__(self, professor, materia, *args, **kwargs):
         super(SelectConteudosForm, self).__init__(*args, **kwargs)
-        self.fields['conteudos'].queryset = Conteudo.objects.filter(professor=professor)
+        self.fields['conteudos'].queryset = Conteudo.objects.filter(
+            professor=professor)
         self.materia = materia
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', "Adicionar"))

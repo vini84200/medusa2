@@ -64,6 +64,7 @@ class UserCheckHasObjectPermissionFromPk(UserCheckHasObjectPermission):
                     pk=self.checker_object_pk))
         return super().dispatch(request, *args, **kwargs)
 
+
 class UserCheckHasObjectPermissionGet(UserCheckHasObjectPermission):
     def user_check_get_object(self):
         return self.get_object()
