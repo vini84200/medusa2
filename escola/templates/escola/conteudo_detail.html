@@ -17,7 +17,7 @@
           você permite aos seus alunos vê-la. Use o botão abaixo, e selecione a
           que turmas você quer adiciona-la.</p>
           <hr>
-          <a href="javascript:alert('Desculpe-me, mas essa função ainda não foi escrita')" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
+          <a href="{%url 'escola:adicionar-conteudo-a-varias-materias' conteudo.pk%}" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
         </div>
       {% else %}
         <div class="alert alert-success" role="alert">
@@ -35,7 +35,7 @@
               <li>{{materia}}</li>
             {% endfor %}
           </ul>
-          <a href="javascript:alert('Desculpe-me, mas essa função ainda não foi escrita')" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
+          <a href="{%url 'escola:adicionar-conteudo-a-varias-materias' conteudo.pk%}" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
         </div>
       {% endif %}
     
