@@ -1,6 +1,6 @@
-"""Testes Mixin"""
+"""Permissões Mixin"""
 
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from django.http import HttpResponseRedirect
 from rolepermissions.checkers import has_permission, has_object_permission
 
@@ -44,7 +44,25 @@ class UserCheckHasObjectPermission(UserCheckMixin):
         return getattr(self, self.user_check_object_name)
 
     def check_user(self, user):
-        return has_object_permission(self.user_check_obj_permission, user, self.user_check_get_object())
+        return has_object_permission(self.user_check_obj_permission,
+                                     user,
+                                     self.user_check_get_object())
+
+
+class UserCheckHasObjectPermissionFromPk(UserCheckHasObjectPermission):
+    object_pk_name = 'pk'
+    checker_model = None
+    user_check_object_name = 'checker_object'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.checker_object_pk = kwargs['pk']
+        if self.checker_model is None:
+            raise ImproperlyConfigured(
+                "Please, remember to add a model to transform the item")
+        setattr(self, self.user_check_object_name,
+                self.checker_model._default_manager.get(
+                    pk=self.checker_object_pk))
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UserCheckHasObjectPermissionGet(UserCheckHasObjectPermission):

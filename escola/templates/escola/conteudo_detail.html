@@ -11,13 +11,13 @@
   {% if materias__len == 0 %}
         <div class="alert alert-danger" role="alert">
           <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i>
-          Sem materias!</h4>
-          <p>Este conteúdo não foi registrado em nenhuma materia!
-          Lembre-se de sempre registrar conteúdos em materias, pois é assim que
-          você permite aos seus alunos vê-la. Use o botão abaixo, e selecione a
+          Sem matérias!</h4>
+          <p>Este conteúdo não foi registrado em nenhuma matéria!
+          Lembre-se de sempre registrar conteúdos em matérias, pois é assim que
+          seus alunos podem vê-la. Use o botão abaixo, e selecione a
           que turmas você quer adiciona-la.</p>
           <hr>
-          <a href="javascript:alert('Desculpe-me, mas essa função ainda não foi escrita')" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
+          <a href="{%url 'escola:adicionar-conteudo-a-varias-materias' conteudo.pk%}" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
         </div>
       {% else %}
         <div class="alert alert-success" role="alert">
@@ -27,7 +27,7 @@
           toda a certeza, estão aproveitando esta fonte de conhecimento
           (bem, talvez não, mas é sempre bom ter esperança, não é mesmo?). 
           Continue adicionando conteúdos, links, e outros; tudo para melhorar a
-          educação</p>
+          educação!</p>
           <hr>
           <strong>Veja as matérias e turmas que tem acesso:</strong>
           <ul>
@@ -35,7 +35,7 @@
               <li>{{materia}}</li>
             {% endfor %}
           </ul>
-          <a href="javascript:alert('Desculpe-me, mas essa função ainda não foi escrita')" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
+          <a href="{%url 'escola:adicionar-conteudo-a-varias-materias' conteudo.pk%}" class="btn btn-primary">Adicionar à materias</a> <!--FIXME Faça este botão funcionar-->
         </div>
       {% endif %}
     

@@ -218,10 +218,17 @@ def can_edit_conteudo(role, user, conteudo):
 
 @register_object_checker()
 def can_remove_link_conteudo(role, user, conteudo_link):
-    logger.info("Testando can_remove_link_conteudo")
-    logger.debug(f"Usuario: {user}")
-    logger.debug(f"Role: {role}")
-    logger.debug(f"conteudo_link.conteudo.professor.user: {conteudo_link.conteudo.professor.user}")
     if conteudo_link.conteudo.professor.user == user:
         return True
+    return False
+
+
+@register_object_checker()
+def can_add_conteudo_to_materias(role, user, conteudo):
+    if user == conteudo.professor.user:
+        return True
+
+    if has_role(user, 'admin'):
+        return True
+
     return False
