@@ -109,7 +109,7 @@ urlpatterns += \
         path('link-conteudo/<int:pk>/remove', escola.views_conteudo.RemoveLinkFromConteudoView.as_view(), name='delete-link-conteudo'),
         path('conteudo/<int:pk>/add/<int:cat>', escola.views_conteudo.LinkConteudoCreateView.as_view(), name='add-link-conteudo'),
         path('conteudo/<int:pk>/edit', escola.views_conteudo.ConteudoUpdateView.as_view(), name='update-conteudo'),
-        path('conteudo/<int:pk>/add-to-materias', escola.views_conteudo.AdicionarAVariasMateriasView.as_view(), name='adicionar-conteudo-a-varias-materias')
+        path('conteudo/<int:pk>/add-to-materias', escola.views_conteudo.AdicionarAVariasMateriasView.as_view(), name='adicionar-conteudo-a-varias-materias'),
     ]
 
 # Notificações

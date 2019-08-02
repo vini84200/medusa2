@@ -213,11 +213,11 @@ class RemoveLinkFromConteudoView(UserCheckHasObjectPermissionGet,
     template_name = 'escola/base_delete.html'
 
     def get_success_url(self):
-        return reverse('escola:delete-link-conteudo', self.obj_conteuto_pk)
+        return reverse('escola:conteudo-detail',args=(self.obj_conteudo_pk,))
 
     def get_object(self, queryset=None):
         obj = super().get_object(queryset=queryset)
-        self.obj_conteuto_pk = obj.conteudo.pk
+        self.obj_conteudo_pk = obj.conteudo.pk
         return obj
 
 
