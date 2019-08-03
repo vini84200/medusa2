@@ -61,11 +61,17 @@ class Profile(models.Model):
 
 
 class Notificador(models.Model):
-    """Mantem lista de usuarios que seguem alguma coisa, deve ser criado um para cada materia."""
+    """
+    Mantem lista de usuarios que seguem alguma coisa, deve ser criado um 
+    para cada materia.
+    """
     seguidores = models.ManyToManyField(User)
 
     def is_seguidor(self, user):
-        """Verifica se determinado ususario está na lista de seguidores desse conteudo."""
+        """
+        Verifica se determinado ususario está na lista de seguidores
+        desse conteudo.
+        """
         return user in self.seguidores.all()
 
     def adicionar_seguidor(self, user):
@@ -92,12 +98,17 @@ class Notificador(models.Model):
         """Cria uma notificação para cada usuario."""
         for seguidor in self.seguidores.all():
             # noti = Notificacao(user=seguidor, title=title, msg=msg)
-            # # TODO Adicionar uma função que trata a msg permitindo que partes sejam adicionadas a msg como nome do
+            # # TODO Adicionar uma função que trata a msg permitindo que 
+            # partes sejam adicionadas a msg como nome do
             # #  usuario.
             # if self.link:
             #     noti.link = self.link
             # noti.save()
-            Notificacao().create(seguidor, title, msg, deve_enviar=seguidor.profile_escola.receber_email_notificacao, link=link)  # FIXME: o Deve enviar deve seguir preferencia do usuario
+            Notificacao().create(
+                seguidor, title, msg,
+                deve_enviar=seguidor.profile_escola.receber_email_notificacao,
+                link=link)
+                # FIXME: o Deve enviar deve seguir preferencia do usuario
 
 
 class Notificacao(models.Model):
@@ -1109,11 +1120,21 @@ class ProvaAreaMarcada(models.Model):
 class AvisoGeral(models.Model):
     titulo = models.CharField(max_length=170)
     msg = MarkdownxField()
-    owner = models.ForeignKey(User, models.DO_NOTHING, related_name="avisos_publicados", null=True, blank=True)
-    destinatarios = models.ManyToManyField(User, related_name="avisos_recebidos")
+    owner = models.ForeignKey(User, models.DO_NOTHING,
+                              related_name="avisos_publicados", null=True,
+                              blank=True)
+    destinatarios = models.ManyToManyField(User,
+                                           related_name="avisos_recebidos")
 
-    def gerar_notis():
-        raise NotImplementedError  # TODO Finish
+    def gerar_notis(self):
+        for destino in self.destinatarios.all():
+            Notificacao().create(
+                destino,
+                f"AVISO:{self.titulo}",
+                f"Você recebeu um novo aviso, criado por {self.owner}, por"
+                f" favor, leia-o.",
+                deve_enviar=destino.profile_escola.receber_email_notificacao,
+                link=self.get_absolute_url())
 
     def get_absolute_url(self):
         # return reverse
@@ -1127,13 +1148,17 @@ class AvisoGeral(models.Model):
         aviso.owner = owner
         aviso.save()
         aviso.destinatarios.add(*destinatarios)
+        aviso.save()
 
         if gerar_notis:
             aviso.gerar_notis()
-        
+
         return aviso
 
     @staticmethod
     def create_for_turma(titulo, msg, owner, turma: Turma):
-        a = AvisoGeral.create(titulo, msg, owner, turma.get_list_alunos(), gerar_notis=False)
-        turma.comunicar_noti('aviso_geral_turma', f"AVISO DA TURMA: {titulo}", f"Aviso enviado por {owner}.", a.get_absolute_url())
+        a = AvisoGeral.create(titulo, msg, owner, turma.get_list_alunos(),
+                              gerar_notis=False)
+        turma.comunicar_noti('aviso_geral_turma', f"AVISO DA TURMA: {titulo}",
+                             f"Aviso enviado por {owner}.",
+                             a.get_absolute_url())

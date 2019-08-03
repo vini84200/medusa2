@@ -2,6 +2,7 @@
 #  Last Modified 12/04/19 13:19.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
+import re
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -19,6 +20,7 @@ from django.utils.safestring import mark_safe
 from markdownx.fields import MarkdownxFormField
 from mptt.forms import TreeNodeMultipleChoiceField
 from rolepermissions.checkers import has_permission
+from django_select2.forms import Select2MultipleWidget
 
 from escola.models import (AreaConhecimento, AvisoGeral, CargoTurma, Conteudo,
                            MateriaDaTurma, Periodo, ProvaAreaMarcada,
@@ -33,8 +35,10 @@ logger = logging.getLogger(__name__)
 
 class CriarTurmaForm(forms.Form):
     numero = forms.IntegerField(label="Numero da Turma:",
-                                help_text="Coloque o numero da turma. Exs. 101, 303, 203, 204")
-    ano = forms.IntegerField(label="Ano:", help_text="Ano de atividade dessa turma. Exs. 2018, 2019")
+                                help_text="Coloque o numero da turma."
+                                          "Exs. 101, 303, 203, 204")
+    ano = forms.IntegerField(label="Ano:", help_text="Ano de atividade dessa"
+                                                     " turma. Exs. 2018, 2019")
 
     def clean_numero(self):
         return verificar(self.cleaned_data['numero'], [
@@ -481,7 +485,124 @@ class AvisoTurmaForm(forms.Form):
         self.helper.add_input(Submit('submit', "Adicionar"))
 
     def save(self):
-        AvisoGeral.create_for_turma(self.cleaned_data['titulo'], self.cleaned_data['msg'], self.owner, self.cleaned_data['turma'])
+        AvisoGeral.create(
+            self.cleaned_data['titulo'],
+            self.cleaned_data['msg'],
+            self.owner,
+            self.cleaned_data['turma'])
+
+
+class AvisoMixedGeneratorBase:
+    """Gerador base usado nos Avisos Mixed, tem como objetivo gerar opções"""
+    def generate_list(self, gen_code):
+        """
+        Gera opções, todos suas opções devem estar identificadas com o
+        gen_code
+        """
+        pass
+
+    def get_own(self, gen_code, selected):
+        """Verifica quais itens são proprios deste"""
+        r = re.compile(str(gen_code)+r'_\w+')
+        return [x for x in selected if r.match(x)]
+
+    def parse_item(self, item):
+        raise NotImplementedError("Usando a classe basica, por favor "
+                                  "implemente uma versão do parse_item.")
+
+    def parse_list(self, gen_code, selected):
+        """
+        Usa o gen_code para separar as opções selecionadas desse gerador.
+        Usa as seleções para retornar uma lista de usuarios que devem receber
+        o aviso.
+        """
+        users = []
+        for a in self.get_own(gen_code, selected):
+            formated = a[a.find('_')+1:]  # Seleciona nomes após a underline
+            users.extend(self.parse_item(formated))
+        return users
+
+
+class TodosAvisoMixedGenerator(AvisoMixedGeneratorBase):
+    NOME_SECAO = "Todos"
+
+    NOME_OPCAO_TODOS = 'Todos'
+    CODIGO_OPCAO_TODOS = 'all'
+
+    NOME_OPCAO_TODOS_ALUNOS = 'Todos os Alunos'
+    CODIGO_OPCAO_TODOS_ALUNOS = 'all_alunos'
+
+    NOME_OPCAO_TODOS_PROFESSORES = 'Todos os Professores'
+    CODIGO_OPCAO_TODOS_PROFESSORES = 'all_professores'
+
+    def generate_list(self, gen_code):
+        choices = (self.NOME_SECAO, [
+            # Todos
+            ('{0}_{1}'.format(gen_code, self.CODIGO_OPCAO_TODOS),
+             self.NOME_OPCAO_TODOS),
+            # Todos Alunos
+            ('{0}_{1}'.format(gen_code, self.CODIGO_OPCAO_TODOS_ALUNOS),
+             self.NOME_OPCAO_TODOS_ALUNOS),
+            # Todos Professores
+            ('{0}_{1}'.format(gen_code, self.CODIGO_OPCAO_TODOS_PROFESSORES),
+             self.NOME_OPCAO_TODOS_PROFESSORES),
+            ])
+        return choices
+
+    def parse_item(self, item):
+        if item == self.CODIGO_OPCAO_TODOS:
+            return list(User.objects.all())
+        elif item == self.CODIGO_OPCAO_TODOS_ALUNOS:
+            return list(User.objects.filter(aluno__isnull=False))
+        elif item == self.CODIGO_OPCAO_TODOS_PROFESSORES:
+            return list(User.objects.filter(professor__isnull=False))
+        else:
+            logger.warning(
+                f"Não há tratamento para a opção {item}, mas ela"
+                f"foi gerada mesmo assim. EM TodosAvisoMixedGenerator")
+
+
+class CreateAvisoMixedForm(forms.Form):
+    destinatarios = forms.MultipleChoiceField(choices=(),
+                                              widget=Select2MultipleWidget)
+    titulo = forms.CharField(max_length=170)
+    msg = MarkdownxFormField(max_length=5000)
+
+    def __init__(self, owner, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.destinatariosGenerators = [
+            TodosAvisoMixedGenerator,
+        ]
+        self.fields['destinatarios'].choices = self.get_options()
+        self.owner = owner
+        self.helper = FormHelper()
+        self.helper.add_input(Submit('submit', "Enviar Aviso"))
+
+    def get_options(self):
+        choices = []
+        # Adiciona a opção de todos
+        # Usando classes e uma list para gerar todas as opções
+        # Cada classe recebe um numero para identificar suas opções,
+        # e depois usa uma função para fazer o parse de todas suas
+        # opções usando o numero
+        for index, generator in enumerate(self.destinatariosGenerators):
+            choices.append(generator().generate_list(index))
+        return choices
+
+    def get_user_list(self):
+        """Retorna a lista de todos os usuarios selecionados"""
+        users = []
+        selected = self.cleaned_data['destinatarios']
+        for index, generator in enumerate(self.destinatariosGenerators):
+            users.extend(generator().parse_list(index, selected=selected))
+        return users
+
+    def save(self):
+        AvisoGeral.create(
+            self.cleaned_data['titulo'],
+            self.cleaned_data['msg'],
+            self.owner,
+            self.get_user_list())
 
 
 class AdicionarMateriaConteudoForm(forms.Form):

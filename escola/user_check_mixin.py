@@ -25,6 +25,12 @@ class UserCheckMixin:
 
 
 class UserCheckHasPermission(UserCheckMixin):
+    """
+    Verifica se o usuario possui a permissão.
+
+    Para definir qual permissão deve ser usada, defina a variavel 
+    user_check_permission com o nome da permissão que deve ser verificada.
+    """
     user_check_permission = ''
 
     def check_user(self, user):
