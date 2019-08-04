@@ -72,6 +72,17 @@ caption {
   flex: 0 0 auto;
   align-self: flex-end;
 }
+#calendar .date-today {
+	text-align: center;
+	margin-bottom: 5px;
+	padding: 4px;
+	background: #007bff;
+	color: #fff;
+	width: 28px;
+	border-radius: 50%;
+  flex: 0 0 auto;
+  align-self: flex-end;
+}
 
 #calendar .event {
   flex: 0 0 auto;
@@ -129,5 +140,7 @@ caption {
 	}
 }
 </style>
+<a class="btn btn-primary" href="{% url 'escola:turma-provas-calendario' turma__pk %}?date={{prev}}">Anterior</a>
+<a class="btn btn-primary" href="{% url 'escola:turma-provas-calendario' turma__pk %}?date={{next}}">Proximo</a>
 {{ calendar }}
 {% endblock conteudo %}

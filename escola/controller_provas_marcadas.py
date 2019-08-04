@@ -143,6 +143,11 @@ class CalendarioDatasLivresTurma(HTMLCalendar):
             dia_date = date(self.year, self.month, day)
         else:
             dia_date = None
+        
+        if dia_date == date.today():
+            today_class = "date-today"
+        else:
+            today_class = "date"
         # Define o fundo para default ou weekend
         background_color = self.DEFAULT_COLOR
         if weekday == 6 or weekday == 5:
@@ -182,8 +187,8 @@ class CalendarioDatasLivresTurma(HTMLCalendar):
 
         # Gera HTML
         if day != 0:
-            return f"<td class='day' style='background-color:"\
-                   f"{background_color};'><div class='date'>{day}</div>{html_events}</td>"
+            return f"<td class='day overflow-auto' style='background-color:"\
+                   f"{background_color};'><div class='{today_class}'>{day}</div>{html_events}</td>"
         return f"<td class='day other-month' style='background-color: {self.INVALID_COLOR};'></td>"
 
     def formatweek(self, theweek, events=[]):
