@@ -14,9 +14,7 @@
 
 {%if user.profile_escola.template_data.notificacao_count > 0 %}
 
-<article class="container">
-
-        <h2>Notificações</h2>
+    <h2>Notificações</h2>
     <div class="row">
         {% for noti in user.profile_escola.template_data.notificacoes%}
             <div class="alert alert-secondary w-100 notificacao-item" role="alert" data-noti_id="{{noti.id}}">
@@ -35,7 +33,6 @@
               </div>
         {%endfor%}
     </div>
-</article> <br/>
 {%endif%}
 
 {% block especific_cargo %}{% endblock especific_cargo %}
