@@ -58,6 +58,7 @@ def get_provas_professor_futuras(professor, qnt=0):
 
 
 class CalendarioDatasLivresTurma(HTMLCalendar):
+    cssclass_month_head = "month"
     WEEKDAYSABREVIADO = ["Seg",
                          "Ter",
                          "Qua",
