@@ -17,9 +17,9 @@ from escola.models import Turma, Horario, AreaConhecimento
 
 DEFAULT_AREAS = [
     "Linguagens",
-    "Ciencias da Natureza",
-    "Ciencias Humanas",
-    "Matematica"
+    "Ciências da Natureza",
+    "Ciências Humanas",
+    "Matemática"
     ]
 
 

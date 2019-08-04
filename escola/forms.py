@@ -176,12 +176,18 @@ class ProfessorCreateForm(forms.Form):
 
 
 class MateriaForm(ModelForm):
+    area = forms.ModelChoiceField(AreaConhecimento.objects.none(),
+                                  required=False,
+                                  empty_label="Sem Área",
+                                  label="Área")
+
     class Meta:
         model = MateriaDaTurma
         fields = ['nome', 'professor', 'abreviacao']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, turma=None, **kwargs):
         super(MateriaForm, self).__init__(*args, **kwargs)
+        self.fields['area'].queryset = turma.Area
         self.helper = FormHelper()
         self.helper.add_input(Submit('submit', "Adicionar"))
 
