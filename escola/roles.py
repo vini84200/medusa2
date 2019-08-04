@@ -10,6 +10,7 @@ class Aluno(AbstractUserRole):
         # '': True
 
     }
+    permissions_role = []
 
 
 class Admin(AbstractUserRole):
@@ -26,6 +27,20 @@ class Admin(AbstractUserRole):
         'marcar_prova_area': True,
         'send_aviso': True,
     }
+    permissions_role = [
+        'add_turma',
+        'populate_alunos',
+        'add_aluno_g',
+        'edit_horario_g',
+        'add_professor',
+        'add_materia_g',
+        'add_cargo_g',
+        'marcar_prova_g',
+        'add_prova_area_geral',
+        'marcar_prova_area',
+        'send_aviso',
+        'send_avisos',
+        ]
 
 
 class Professor(AbstractUserRole):
@@ -34,3 +49,9 @@ class Professor(AbstractUserRole):
         'create_provas': True,
         'send_aviso': True,
     }
+    permissions_role = [
+        'marcar_prova_area',
+        'create_provas',
+        'send_aviso',
+        'send_avisos',
+        ]

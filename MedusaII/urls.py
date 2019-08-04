@@ -34,6 +34,7 @@ urlpatterns = \
         path('', include('pwa.urls')),
         path('maintenance-mode/', include('maintenance_mode.urls')),
         path('markdownx/', include('markdownx.urls')),
+        path('select2/', include('django_select2.urls')),
     ]
 if settings.DEBUG:
     urlpatterns.append(path('500', server_error))
