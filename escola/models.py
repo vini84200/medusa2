@@ -864,10 +864,64 @@ class EventoTurma(models.Model):
         self.save()
 
 
+class EventoEscola(models.Model):
+    """Uma data especial de uma turma"""
+    evento: Evento = models.ForeignKey(Evento, on_delete=models.CASCADE)
+
+    block_prova = models.BooleanField(default=True)
+
+    def delete(self, using=None, keep_parents=False):
+        self.evento.delete(using, keep_parents)
+        super(EventoTurma, self).delete(using, keep_parents)
+
+    def __str__(self):
+        return self.get_nome()
+
+    def get_participantes(self):
+        """Retorna lista de participante, todos da Escola"""
+        return User.objects.all()
+
+    def get_nome(self):
+        return self.evento.get_nome()
+
+    def get_data(self) -> datetime:
+        """Retorna data do evento"""
+        return self.evento.get_data()
+
+    def get_descricao(self):
+        """Retorna a descrição do evento"""
+        return self.evento.get_descricao()
+
+    def get_owner(self):
+        return self.evento.get_owner()
+
+    def has_permition_edit(self, user: User) -> bool:
+        """Retorna True se o usuario tem permissão para editar o evento"""
+        if user == self.get_owner():
+            return True
+        return False
+
+    def get_turma(self):
+        return self.turma
+
+    @staticmethod
+    def create(nome, data, descricao, owner, block_prova=True):
+        a = EventoEscola()
+        a.evento = Evento.create(nome, data, descricao, owner)
+        a.block_prova = block_prova
+        a.save()
+        return a
+
+    def update(self, *args, **kwargs):
+        for k in kwargs:
+            setattr(self, k, kwargs[k])
+        self.save()
+
+
 class ProvaMarcada(models.Model):
     """Uma prova"""
     conteudos = models.ManyToManyField(Conteudo, blank=True)
-    evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE)
+    evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE, related_name='prova')
     notificado = models.BooleanField(default=False)
 
     def delete(self, using=None, keep_parents=False):

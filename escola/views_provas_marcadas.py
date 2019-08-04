@@ -2,7 +2,8 @@
 #  Last Modified 20/05/19 15:02.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil import relativedelta
 
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
@@ -132,10 +133,17 @@ class CalendarioTurmaDatasLivresView(ListView):
         context = super().get_context_data(**kwargs)
 
         # use today's date for the calendar
-        d = get_date(self.request.GET.get('day', None))
+        date = get_date(self.request.GET.get('date', None))
 
         # Instantiate our calendar class with today's year and date
-        cal = CalendarioDatasLivresTurma(d.year, d.month)
+        cal = CalendarioDatasLivresTurma(date.year, date.month)
+        context['year'] = date.year
+        context['month'] = date.month
+        next_month = date+relativedelta.relativedelta(months=1)
+        prev_month = date-relativedelta.relativedelta(months=1)
+        context['next'] = "{0}-{1}".format(next_month.year, next_month.month)
+        context['prev'] = "{0}-{1}".format(prev_month.year, prev_month.month)
+        context['turma__pk'] = self.kwargs.get('pk')
 
         # Call the formatmonth method, which returns our calendar as a table
         html_cal = cal.formatmonth(get_object_or_404(Turma, pk=self.kwargs.get('pk')), withyear=True)
