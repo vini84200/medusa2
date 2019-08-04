@@ -42,7 +42,7 @@ class AvisoTurmaCreateView(FormView):
         return kwargs
 
 
-class AvisoMixedCreateView(UserCheckHasPermission, FormView):
+class AvisoMixedCreateView(UserCheckHasRolePermission, FormView):
     form_class = CreateAvisoMixedForm
     template_name = 'escola/base_form.html'
     user_check_permission = 'send_avisos'

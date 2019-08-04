@@ -3,6 +3,34 @@
 from django.core.exceptions import PermissionDenied, ImproperlyConfigured
 from django.http import HttpResponseRedirect
 from rolepermissions.checkers import has_permission, has_object_permission
+from rolepermissions.roles import get_user_roles
+
+# ROLE PERMISSIONS foram criadas pois as permissões oferecidas pelo 
+# rolepermissions não podem ser modificadas
+
+
+def get_user_role_permissions(user):
+    """Retorna um array com todas as permissões de role do usuario"""
+    roles = get_user_roles(user)
+    perm = []
+    for role in roles:
+        perm.extend(role.permissions_role)
+
+    return perm
+
+
+def has_role_permission(user, permission):
+    """
+    Verifica se um certo usario possui uma permissão de role,
+    e retorna bool
+    """
+    if user.is_superuser:
+        return True
+
+    if permission in get_user_role_permissions(user):
+        return True
+
+    return False
 
 
 def redirect(path):
@@ -35,6 +63,19 @@ class UserCheckHasPermission(UserCheckMixin):
 
     def check_user(self, user):
         return has_permission(user, self.user_check_permission)
+
+
+class UserCheckHasRolePermission(UserCheckMixin):
+    """
+    Verifica se o usuario possui a permissão form. Role.
+
+    Para definir qual permissão deve ser usada, defina a variavel 
+    user_check_permission com o nome da permissão que deve ser verificada.
+    """
+    user_check_permission = ''
+
+    def check_user(self, user):
+        return has_role_permission(user, self.user_check_permission)
 
 
 class UserCheckReturnForbbiden(UserCheckMixin):
