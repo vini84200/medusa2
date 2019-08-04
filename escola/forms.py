@@ -25,7 +25,7 @@ from django_select2.forms import Select2MultipleWidget
 from escola.models import (AreaConhecimento, AvisoGeral, CargoTurma, Conteudo,
                            MateriaDaTurma, Periodo, ProvaAreaMarcada,
                            ProvaMateriaMarcada, Tarefa, TarefaComentario,
-                           Turma)
+                           Turma, Aluno)
 from escola.verificacao_forms import (VerificarDataFutura, VerificarMinimo,
                                       VerificarNomeUsuario, VerificarPositivo,
                                       VerificarSenha, verificar)
@@ -503,12 +503,15 @@ class AvisoMixedGeneratorBase:
 
     def get_own(self, gen_code, selected):
         """Verifica quais itens são proprios deste"""
-        r = re.compile(str(gen_code)+r'_\w+')
+        r = re.compile(r'{0}_\w+'.format(gen_code))
         return [x for x in selected if r.match(x)]
 
     def parse_item(self, item):
         raise NotImplementedError("Usando a classe basica, por favor "
                                   "implemente uma versão do parse_item.")
+
+    def add_gen_code(self, gen_code, key, value):
+        return ('{0}_{1}'.format(gen_code, key), value)
 
     def parse_list(self, gen_code, selected):
         """
@@ -562,16 +565,51 @@ class TodosAvisoMixedGenerator(AvisoMixedGeneratorBase):
                 f"foi gerada mesmo assim. EM TodosAvisoMixedGenerator")
 
 
+class TurmaAvisoMixedGenerator(AvisoMixedGeneratorBase):
+    NOME_SESSAO = "Turmas"
+
+    def generate_list(self, gen_code):
+        turmas = Turma.objects.all()
+        turmas_choice = [self.add_gen_code(gen_code, x.pk, str(x)) for x in turmas]
+        choices = (self.NOME_SESSAO, turmas_choice)
+        return choices
+
+    def parse_item(self, item):
+        pk = int(item)
+        turma = Turma.objects.get(pk=pk)
+        users = turma.get_list_alunos
+        return users
+
+
+class AlunoAvisoMixedGenerator(AvisoMixedGeneratorBase):
+    NOME_SESSAO = "Alunos"
+
+    def generate_list(self, gen_code):
+        alunos = Aluno.objects.all()
+        alunos_choice = [self.add_gen_code(gen_code, x.pk, str(x)) for x in alunos]
+        choices = (self.NOME_SESSAO, alunos_choice)
+        return choices
+
+    def parse_item(self, item):
+        pk = int(item)
+        aluno = Aluno.objects.get(pk=pk)
+        users = [aluno.user]
+        logger.debug(users)
+        return users
+
+
 class CreateAvisoMixedForm(forms.Form):
     destinatarios = forms.MultipleChoiceField(choices=(),
                                               widget=Select2MultipleWidget)
     titulo = forms.CharField(max_length=170)
-    msg = MarkdownxFormField(max_length=5000)
+    msg = MarkdownxFormField(max_length=5000, label='Mensagem')
 
     def __init__(self, owner, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.destinatariosGenerators = [
             TodosAvisoMixedGenerator,
+            TurmaAvisoMixedGenerator,
+            AlunoAvisoMixedGenerator
         ]
         self.fields['destinatarios'].choices = self.get_options()
         self.owner = owner
@@ -594,7 +632,9 @@ class CreateAvisoMixedForm(forms.Form):
         users = []
         selected = self.cleaned_data['destinatarios']
         for index, generator in enumerate(self.destinatariosGenerators):
+            logger.info(f"Generator n{index}")
             users.extend(generator().parse_list(index, selected=selected))
+        logger.debug(f"{users} no get_user_list")
         return users
 
     def save(self):

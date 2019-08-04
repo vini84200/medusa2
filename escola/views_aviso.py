@@ -1,13 +1,14 @@
 import logging
 
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import reverse
-from django.views.generic import FormView, DetailView
+from django.views.generic import DetailView, FormView
+from rolepermissions.checkers import has_permission
 
 from escola.forms import AvisoTurmaForm, CreateAvisoMixedForm
-from django.core.exceptions import PermissionDenied
-from rolepermissions.checkers import has_permission
-from escola.user_check_mixin import UserCheckHasPermission
 from escola.models import AvisoGeral
+from escola.user_check_mixin import (UserCheckHasPermission,
+                                     UserCheckHasRolePermission)
 
 logger = logging.getLogger(__name__)
 
