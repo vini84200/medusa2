@@ -10,7 +10,8 @@ from django.utils import timezone
 from django.utils.html import escape
 
 from escola.models import (EventoTurma, MateriaDaTurma, Professor,
-                           ProvaAreaMarcada, ProvaMateriaMarcada, Turma)
+                           ProvaAreaMarcada, ProvaMateriaMarcada, Turma,
+                           Tarefa, EventoEscola)
 
 logger = logging.getLogger(__name__)
 
@@ -57,38 +58,144 @@ def get_provas_professor_futuras(professor, qnt=0):
 
 
 class CalendarioDatasLivresTurma(HTMLCalendar):
+    WEEKDAYSABREVIADO = ["Seg",
+                         "Ter",
+                         "Qua",
+                         "Qui",
+                         "Sex",
+                         "Sab",
+                         "Dom"]
+
+    WEEKDAYS = ["Segunda-feira",
+                         "Terça-feira",
+                         "Quarta-feira",
+                         "Quinta-feira",
+                         "Sexta-feira",
+                         "Sábado",
+                         "Domingo"]
+    MONTH_NAMES = [
+        "",
+        "Janeiro",
+        'Fevereiro',
+        'Março',
+        'Abril',
+        'Maio',
+        'Junho',
+        'Julho',
+        'Agosto',
+        'Setembro',
+        'Outubro',
+        'Novembro',
+        'Dezembro']
+
+    MONTH_ABBRNAMES = ["Jan",
+                       'Fev',
+                       'Mar',
+                       'Abr',
+                       'Mai',
+                       'Jun',
+                       'Jul',
+                       'Ago',
+                       'Set',
+                       'Out',
+                       'Nov',
+                       'Dez']
+
     DEFAULT_COLOR = '#ffffff'
     OCUPADO_COLOR = "#ff9e9e"
     INVALID_COLOR = "#a3a3a3"
+    WEEKEND_COLOR = "#c3dbdb"
 
     def __init__(self, year=None, month=None):
         self.year = year
         self.month = month
         super(CalendarioDatasLivresTurma, self).__init__(firstweekday=6)
 
-    def formatday(self, day, events):
-        events_per_day: List[EventoTurma] = events.filter(evento__data__day=day)
-        d = ''
+    def formatweekday(self, day):
+        """
+        Return a weekday name as a table header.
+        """
+        return '<th scope="col" class="%s">%s</th>' % (
+            self.cssclasses_weekday_head[day], self.WEEKDAYSABREVIADO[day])
+
+    def formatmonthname(self, theyear, themonth, withyear=True):
+        """
+        Return a month name as a table row.
+        """
+        if withyear:
+            s = '%s %s' % (self.MONTH_NAMES[themonth], theyear)
+        else:
+            s = '%s' % self.MONTH_NAMES[themonth]
+        return '<caption class="%s">%s</caption>' % (
+            self.cssclass_month_head, s)
+    
+    def formatweekheader(self):
+        """
+        Return a header for a week as a table row.
+        """
+        s = ''.join(self.formatweekday(i) for i in self.iterweekdays())
+        return '<tr class="weekdays">%s</tr>' % s
+
+    def formatday(self, day, events, weekday):
+        events_per_day = events.filter(evento__data__day=day)
+        # Pega o dia em formato de datetime.date
+        if day != 0:
+            dia_date = date(self.year, self.month, day)
+        else:
+            dia_date = None
+        # Define o fundo para default ou weekend
         background_color = self.DEFAULT_COLOR
-        for event in events_per_day:
-            d += f'<li> {escape(event.get_nome())} </li>'
+        if weekday == 6 or weekday == 5:
+            background_color = self.WEEKEND_COLOR
+
+        html_events = ''
+        # Separa os eventos em que são provas e que não são
+        eventos_nao_prova_da_turma = events_per_day.filter(prova__isnull=True)
+        provas = events_per_day.filter(prova__isnull=False)
+
+        eventos_escola = EventoEscola.objects.filter(evento__data__day=day,
+         evento__data__month=self.month,
+         evento__data__year=self.year)
+        # Adiciona eventos da turmas
+        for event in eventos_nao_prova_da_turma:
+            html_events += f'<div class="event"><span class="badge badge-pill badge-success">E</span> {escape(event.get_nome())} </div>'
+            if event.block_prova:
+                background_color = self.OCUPADO_COLOR
+        # Adiciona eventos da Escola
+        for event in eventos_escola:
+            html_events += f'<div class="event"><span class="badge badge-pill badge-success">E</span> {escape(event.get_nome())} </div>'
             if event.block_prova:
                 background_color = self.OCUPADO_COLOR
 
+        # Adicina Provas
+        for event in provas:
+            html_events += f'<div class="event"><span class="badge badge-pill badge-warning">P</span> {escape(event.get_nome())} </div>'
+            if event.block_prova:
+                background_color = self.OCUPADO_COLOR
+        # Adiciona Tarefas
         if day != 0:
-            return f"<td style='background-color: {background_color};'><span class='date'>{day}</span><ul> {d} </ul></td>"
-        return f"<td style='background-color: {self.INVALID_COLOR};'></td>"
+            tarefas = Tarefa.objects.filter(deadline=dia_date)
+        else:
+            tarefas = []
+        for tarefa in tarefas:
+            html_events += f'<div class="event"><span class="badge badge-pill badge-primary">T</span> {escape(tarefa.titulo)} </div>'
 
-    def formatweek(self, theweek, events):
+        # Gera HTML
+        if day != 0:
+            return f"<td class='day' style='background-color:"\
+                   f"{background_color};'><div class='date'>{day}</div>{html_events}</td>"
+        return f"<td class='day other-month' style='background-color: {self.INVALID_COLOR};'></td>"
+
+    def formatweek(self, theweek, events=[]):
         week = ''
         for d, weekday in theweek:
-            week += self.formatday(d, events)
-        return f'<tr> {week} </tr>'
+            week += self.formatday(d, events, weekday)
+        return f'<tr class="days"> {week} </tr>'
 
     def formatmonth(self, turma, withyear=True, ):
         events = EventoTurma.objects.filter(evento__data__year=self.year, evento__data__month=self.month, turma=turma)
 
-        cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
+        cal = f'<table border="0" cellpadding="0" cellspacing="0" id="calendar" class="table">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'
         for week in self.monthdays2calendar(self.year, self.month):
