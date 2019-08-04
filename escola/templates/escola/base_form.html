@@ -1,32 +1,32 @@
 {% extends "escola/base.html" %}
 
-<!--
-  ~ Developed by Vinicius José Fritzen
-  ~ Last Modified 26/04/19 23:09.
-  ~ Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
-  -->
-
 {% load crispy_forms_tags %}
+{% load sekizai_tags %}
 
 {%block title%}Medusa II{%endblock%}
 
 {% block conteudo %}
-<div class="container">
-{% block preform %}{% endblock preform %}
+  {% block preform %}{% endblock preform %}
 
-{% block form %}
-  {% crispy form %}
-{% endblock form %}
-{{ form.media }}
-<script>
-let element = document.getElementsByClassName('markdownx');
+  {% block form %}
+    {% crispy form %}
+  {% endblock form %}
+  {% addtoblock "js" %}
+  <script>
+  let element = document.getElementsByClassName('markdownx');
 
-Object.keys(element).map(key =>
+  Object.keys(element).map(key =>
 
-    element[key].addEventListener('markdownx.update', event => MathJax.Hub.Queue(["Typeset",MathJax.Hub]))
+      element[key].addEventListener('markdownx.update', event => MathJax.Hub.Queue(["Typeset",MathJax.Hub]))
 
-);
-</script>
-{% block posform %}{% endblock posform %}
-</div>
+  );
+  </script>
+  {% endaddtoblock %}
+  {% addtoblock "js" %}
+  {{ form.media.js }}
+  {% endaddtoblock %}
+  {% addtoblock "css" %}
+  {{ form.media.css }}
+  {% endaddtoblock %}
+  {% block posform %}{% endblock posform %}
 {% endblock %}

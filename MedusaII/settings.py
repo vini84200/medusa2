@@ -38,8 +38,10 @@ MAINTENANCE_MODE = config('MAINTENANCE_MODE', default=False, cast=bool)
 MAINTENANCE_MODE_IGNORE_SUPERUSER = True
 MAINTENANCE_MODE_IGNORE_STAFF = True
 
-ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101', '10.0.0.102', '10.0.0.103', '10.0.0.104',
-                 '10.0.0.105', '10.0.0.106', '127.0.0.1', 'medusa2-brancha.herokuapp.com', '*']
+ALLOWED_HOSTS = ['medusa2.herokuapp.com', 'localhost', '10.0.0.101',
+                 '10.0.0.102', '10.0.0.103', '10.0.0.104',
+                 '10.0.0.105', '10.0.0.106', '127.0.0.1',
+                 'medusa2-brancha.herokuapp.com', '*']
 
 # Application definition
 
@@ -68,6 +70,7 @@ INSTALLED_APPS = [
     'maintenance_mode',  # Sistema de manutenção
     'markdownx',  # Para adicionar MarkDown
     'sekizai',  # Permite a adição de javascript de dentro
+    'django_select2',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +81,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'maintenance_mode.middleware.MaintenanceModeMiddleware' # ULTIMO - Sistema da pagina de manutenção
+    'maintenance_mode.middleware.MaintenanceModeMiddleware'  # ULTIMO -
+    #  Sistema da pagina de manutenção
 ]
 
 AUTHENTICATION_BACKENDS = (

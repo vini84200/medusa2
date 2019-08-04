@@ -2,21 +2,23 @@
 #  Last Modified 20/04/19 08:59.
 #  Copyright (c) 2019  Vinicius José Fritzen and Albert Angel Lanzarini
 
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
 
 import escola.views_aluno
 import escola.views_cargo
+import escola.views_conteudo
 import escola.views_horario
 import escola.views_materia
 import escola.views_professor
 import escola.views_tarefa
 import escola.views_turma
-import escola.views_conteudo
-from escola.views_aviso import AvisoDetailView, AvisoTurmaCreateView
-from escola.views_feedback import FeedbackView
-from escola.quotes.quotes_views import AllQuotesView
 from escola import api, views_profile, views_provas_marcadas
+from escola.quotes.quotes_views import AllQuotesView
+from escola.views_aviso import (AvisoDetailView, AvisoMixedCreateView,
+                                AvisoTurmaCreateView)
+from escola.views_feedback import FeedbackView
+
 from . import views
 
 router = routers.DefaultRouter()
@@ -184,8 +186,17 @@ urlpatterns += \
 
 urlpatterns += \
     [
-        path('aviso/add-turma', AvisoTurmaCreateView.as_view(), name='aviso-add-turma'),
-        path('aviso/<int:pk>', AvisoDetailView.as_view(), name='aviso-detail'),
+        path('aviso/add-turma',
+             AvisoTurmaCreateView.as_view(),
+             name='aviso-add-turma'),
+             
+        path('aviso/<int:pk>',
+             AvisoDetailView.as_view(),
+             name='aviso-detail'),
+
+        path('aviso/add-mixed',
+             AvisoMixedCreateView.as_view(),
+             name='aviso-add-mixed')
     ]
 
 # Temporarias
