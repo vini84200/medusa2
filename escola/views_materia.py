@@ -23,18 +23,19 @@ def add_materia(request, turma_pk):
     if not has_object_permission('add_materia', request.user, turma):
         return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
-        form = MateriaForm(request.POST)
+        form = MateriaForm(request.POST, turma=turma)
         if form.is_valid():
             materia = MateriaDaTurma()
             materia.nome = form.cleaned_data['nome']
             materia.turma = get_object_or_404(Turma, pk=turma_pk)
             materia.professor = form.cleaned_data['professor']
             materia.abreviacao = form.cleaned_data['abreviacao']
+            materia.area = form.cleaned_data['area']
             materia.save()
             # TODO: 25/04/2019 por wwwvi: Dar permissão ao criador ou algo parecido.
             return HttpResponseRedirect(reverse('escola:list-materias', args=[turma_pk]))
     else:
-        form = MateriaForm()
+        form = MateriaForm(turma=turma)
 
     context = {
         'form': form,
@@ -55,7 +56,7 @@ def edit_materia(request, materia_pk):
     if not has_object_permission('edit_materia', request.user, materia):
         return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
-        form = MateriaForm(request.POST)
+        form = MateriaForm(request.POST, turma=turma)
         if form.is_valid():
             materia.nome = form.cleaned_data['nome']
             materia.turma = turma
@@ -64,7 +65,7 @@ def edit_materia(request, materia_pk):
             materia.save()
     else:
 
-        form = MateriaForm(instance=materia)
+        form = MateriaForm(instance=materia, turma=turma)
 
     context = {
         'form': form,

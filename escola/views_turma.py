@@ -13,7 +13,14 @@ from rolepermissions.decorators import has_permission_decorator
 
 from escola.decorators import is_user_escola
 from escola.forms import CriarTurmaForm
-from escola.models import Turma, Horario
+from escola.models import Turma, Horario, AreaConhecimento
+
+DEFAULT_AREAS = [
+    "Linguagens",
+    "Ciências da Natureza",
+    "Ciências Humanas",
+    "Matemática"
+    ]
 
 
 @has_permission_decorator('add_turma', redirect_to_login=True)
@@ -33,6 +40,12 @@ def add_turma(request):
             t.save()
             hor = Horario(turma=t)
             hor.save()
+            # Cria as Areas padrões
+            for area_nome in DEFAULT_AREAS:
+                area = AreaConhecimento()
+                area.nome = area_nome
+                area.turma = t
+                area.save()
 
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('escola:list-turmas'))
