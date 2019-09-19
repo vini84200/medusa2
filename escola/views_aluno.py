@@ -58,7 +58,7 @@ def populate_alunos(request):
 
 
 def generate_aluno(form):
-    nome: str = form.cleaned_data['nome']
+    nome = form.cleaned_data['nome']
     username = form.cleaned_data['username']
     # Gera username a partir do Nome
     if not username:
@@ -66,20 +66,8 @@ def generate_aluno(form):
     senha = form.cleaned_data['senha']
     if not senha:
         senha = genarate_password()
-    # user = User.objects.create_user(username, password=senha)
-    # user.first_name = nome.split(" ")[0]
-    # user.last_name = nome.split(" ")[-1]
-    # user.save()
-    # profile = Profile(user=user, is_aluno=True, is_professor=False)
-    # profile.save()
-    # aluno = Aluno()
-    # aluno.chamada = form.cleaned_data['num_chamada']
-    # aluno.nome = nome
-    # aluno.user = user
     turma = get_object_or_404(Turma, numero=form.cleaned_data['turma'],
                               ano=datetime.date.today().year)
-    # aluno.turma = turma
-    # aluno.save()
     user_utils.create_aluno_user(username, senha, turma, nome,
                                  form.cleaned_data['num_chamada'])
     return senha, username
