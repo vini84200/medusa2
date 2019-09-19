@@ -18,6 +18,7 @@ from escola.models import (Horario, Notificacao, Notificador, Turma, Turno,
 from .decorators import *
 from .forms import *
 from .models import *
+from users.models import Aluno
 
 logger = logging.getLogger(__name__)
 

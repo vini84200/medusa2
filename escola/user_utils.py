@@ -7,8 +7,7 @@ import logging
 from django.contrib.auth.models import User, Group
 from rolepermissions.roles import assign_role
 
-from escola.models import Aluno, Professor
-from users.models import Profile
+from users.models import Profile, Aluno, Professor
 
 logger = logging.getLogger(__name__)
 

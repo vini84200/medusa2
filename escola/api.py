@@ -76,14 +76,6 @@ class MateriaDaTurmaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.DjangoObjectPermissions]
 
 
-class AlunoViewSet(viewsets.ModelViewSet):
-    """ViewSet for the Aluno class"""
-
-    queryset = models.Aluno.objects.all()
-    serializer_class = serializers.AlunoSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
-
-
 class TarefaViewSet(viewsets.ModelViewSet):
     """ViewSet for the Tarefa class"""
 
@@ -110,7 +102,7 @@ class TarefaViewSet(viewsets.ModelViewSet):
         conc.save()
         logger.info('set_as_finished: Finalizando')
         return Response({'status': 'success',
-                        'concluido': conc.completo})
+                         'concluido': conc.completo})
 
 
 class TarefaCompletacaoViewSet(viewsets.ModelViewSet):

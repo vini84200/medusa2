@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 from django.utils.datetime_safe import datetime
 from mixer.backend.django import mixer
 
-from escola.models import (Aluno, CargoTurma, Horario, MateriaDaTurma,
-                           Professor, Turma)
+from escola.models import (CargoTurma, Horario, MateriaDaTurma,
+                           Turma)
 from escola.utils import dar_permissao_user
-from users.models import Profile
+from users.models import Profile, Aluno, Professor
 
 pytestmark = pytest.mark.django_db
 

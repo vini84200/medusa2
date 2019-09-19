@@ -7,8 +7,8 @@ from mixer.backend.django import mixer
 from rolepermissions.checkers import has_role
 
 from escola import user_utils
-from escola.models import Turma, Aluno, Professor
-from users.models import Profile
+from escola.models import Turma
+from users.models import Profile, Aluno, Professor
 
 pytestmark = pytest.mark.django_db
 
@@ -61,13 +61,16 @@ class TestGetAdminGroup:
 class TestCreateAdminUser:
 
     def test_if_user_is_created(self):
-        assert isinstance(user_utils.create_admin_user('pedrozinho', '12345678'), User)
+        assert isinstance(user_utils.create_admin_user(
+            'pedrozinho', '12345678'), User)
 
     def test_if_user_is_in_admin_group(self):
-        assert user_utils.get_admin_group() in user_utils.create_admin_user('pedrozinho2', '12345678').groups.all()
+        assert user_utils.get_admin_group() in user_utils.create_admin_user(
+            'pedrozinho2', '12345678').groups.all()
 
     def test_if_user_is_created_with_email(self):
-        assert isinstance(user_utils.create_admin_user('pedrozinho3', '12345678', email='superpetrus@gmail.com'), User)
+        assert isinstance(user_utils.create_admin_user(
+            'pedrozinho3', '12345678', email='superpetrus@gmail.com'), User)
 
 
 class TestCreateAlunoUser:
@@ -108,28 +111,33 @@ class TestGetTurmaAlunosGroup:
         return mixer.blend(Turma)
 
     def test_all_alunos_is_consistent(self, turma):
-        assert user_utils.get_turma_alunos_group(turma.pk) == user_utils.get_turma_alunos_group(turma.pk)
+        assert user_utils.get_turma_alunos_group(
+            turma.pk) == user_utils.get_turma_alunos_group(turma.pk)
 
     def test_is_instance(self, turma):
         assert isinstance(user_utils.get_turma_alunos_group(turma.pk), Group)
 
     def test_name_its_right(self, turma):
-        assert user_utils.get_turma_alunos_group(turma.pk).name == f"Alunos_{turma.pk}"
+        assert user_utils.get_turma_alunos_group(
+            turma.pk).name == f"Alunos_{turma.pk}"
 
 
 class TestCreateUser:
     def test_is_instance_of(self):
-        assert isinstance(user_utils.create_user('asidadovij', '123456789'), User)
+        assert isinstance(user_utils.create_user(
+            'asidadovij', '123456789'), User)
 
     def test_has_profile(self):
-        assert isinstance(user_utils.create_user('dfsdvfdf', '12345678').profile_escola, Profile)
+        assert isinstance(user_utils.create_user(
+            'dfsdvfdf', '12345678').profile_escola, Profile)
 
     def test_with_email_has_profile(self):
         assert isinstance(user_utils.create_user('dfsdvfdf', '12345678', email='pefmvsv@hotmail.com').profile_escola,
                           Profile)
 
     def test_is_instance_of_with_email(self):
-        assert isinstance(user_utils.create_user('asidadovij', '123456789', email='dkmvksnb@gmail.com'), User)
+        assert isinstance(user_utils.create_user(
+            'asidadovij', '123456789', email='dkmvksnb@gmail.com'), User)
 
     def test_is_email_set(self):
         assert user_utils.create_user('asidadosaavij', '123456789',

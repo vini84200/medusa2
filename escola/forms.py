@@ -25,7 +25,8 @@ from django_select2.forms import Select2MultipleWidget
 from escola.models import (AreaConhecimento, AvisoGeral, CargoTurma, Conteudo,
                            MateriaDaTurma, Periodo, ProvaAreaMarcada,
                            ProvaMateriaMarcada, Tarefa, TarefaComentario,
-                           Turma, Aluno)
+                           Turma)
+from users.models import Aluno
 from escola.verificacao_forms import (VerificarDataFutura, VerificarMinimo,
                                       VerificarNomeUsuario, VerificarPositivo,
                                       VerificarSenha, verificar)

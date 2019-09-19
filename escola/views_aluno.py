@@ -20,8 +20,9 @@ from rolepermissions.decorators import has_permission_decorator
 from escola import user_utils
 from escola.decorators import is_user_escola
 from escola.forms import AlunoCreateFormOutLabel, AlunoCreateForm
-from escola.models import Aluno, Turma
+from escola.models import Turma
 from escola.utils import genarate_password, generate_username
+from users.models import Aluno
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +83,7 @@ def add_aluno(request, turma_pk):
                      f" {request.user}")
         return redirect_to_login(request.get_full_path())
     if request.method == 'POST':
-        # FORM TUTORIAL: 
+        # FORM TUTORIAL:
         # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Forms
         # Create a form instance and populate it with data from the request (binding):
         form = AlunoCreateForm(request.POST)
@@ -96,7 +97,7 @@ def add_aluno(request, turma_pk):
                 # redirect to a new URL:
                 if form.cleaned_data['senha']:
                     return HttpResponseRedirect(reverse('escola:list-alunos',
-                                                args=[turma.pk]))
+                                                        args=[turma.pk]))
                 else:
                     return render(request, 'escola/alunos/alunosList.html',
                                   context={'usuarios': [(username, senha,), ]})

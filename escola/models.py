@@ -23,6 +23,7 @@ import escola
 from escola.customFields import ColorField
 from markdownx.models import MarkdownxField
 from escola.misaka import to_space_safe_html
+from users.models import Aluno
 
 logger = logging.getLogger(__name__)
 
@@ -577,7 +578,7 @@ class Tarefa(models.Model):
     def get_absolute_url(self):
         return reverse('escola:detalhes-tarefa', args=(self.pk, ))
 
-    def get_completacao(self, aluno: Aluno):
+    def get_completacao(self, aluno):
         """Retorna se já foi completado."""
         completo = self.tarefacompletacao_set.filter(aluno=aluno)
         if len(completo) > 0:

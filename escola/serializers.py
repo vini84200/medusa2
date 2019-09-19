@@ -23,7 +23,6 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('pk', 'name',)
 
 
-
 class TurmaSerializer(serializers.ModelSerializer):
     lider = GroupSerializer(required=True)
     vicelider = GroupSerializer(required=True)
@@ -92,21 +91,6 @@ class MateriaDaTurmaSerializer(serializers.ModelSerializer):
             'abreviacao',
             'professor',
             'conteudos',
-        )
-
-
-class AlunoSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-    turma = TurmaSerializer()
-
-    class Meta:
-        model = models.Aluno
-        fields = (
-            'pk',
-            'chamada',
-            'nome',
-            'user',
-            'turma',
         )
 
 
@@ -243,6 +227,7 @@ class AreaConhecimentoSerializer(serializers.ModelSerializer):
         view_name='turma-detail',
         read_only=True,
     )
+
     class Meta:
         model = models.AreaConhecimento
         fields = (
@@ -323,6 +308,7 @@ class ProvaMarcadaMateriaSerializer(serializers.ModelSerializer):
         view_name='item_avaliativo-detail',
         read_only=True
     )
+
     class Meta:
         model = models.ProvaMarcada
         fields = (
