@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\wwwvi\\AppData\\Local\\Programs\\Python\\Python36\\python.exe",
+    "python.pythonPath": "C:\\Users\\wwwvi\\.virtualenvs\\medusa2-se6EiFio\\Scripts\\python.exe",
     "python.linting.maxNumberOfProblems": 150,
     "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
