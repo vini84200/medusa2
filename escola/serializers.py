@@ -68,16 +68,6 @@ class CargoTurmaSerializer(serializers.ModelSerializer):
         )
 
 
-class ProfessorSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
-    class Meta:
-        model = models.Professor
-        fields = (
-            'pk',
-            'nome',
-            'user',
-        )
 
 
 class MateriaDaTurmaSerializer(serializers.ModelSerializer):

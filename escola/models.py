@@ -16,14 +16,14 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.template.loader import get_template
 from django.urls import reverse
+from markdownx.models import MarkdownxField
 from mptt.models import MPTTModel, TreeForeignKey
 from taggit.managers import TaggableManager
 
 import escola
 from escola.customFields import ColorField
-from markdownx.models import MarkdownxField
 from escola.misaka import to_space_safe_html
-from users.models import Aluno
+from users.models import Aluno, Professor
 
 logger = logging.getLogger(__name__)
 
@@ -504,7 +504,7 @@ class MateriaManager(models.Manager):
     def filter_from_professor(self, professor):
         return super().filter(professor=professor).all()
 
-    def filter_from_professor_for_day(self, professor: Professor, day):
+    def filter_from_professor_for_day(self, professor, day):
         # return [a for a in self.filter_from_professor(professor).all() if a.has_aula_in_day(day)]
         return {p.materia for p in Periodo.objects.filter(turnoAula__diaDaSemana=day, materia__professor=professor)}
 

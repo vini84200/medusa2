@@ -60,14 +60,6 @@ class CargoTurmaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.DjangoObjectPermissions]
 
 
-class ProfessorViewSet(viewsets.ModelViewSet):
-    """ViewSet for the Professor class"""
-
-    queryset = models.Professor.objects.all()
-    serializer_class = serializers.ProfessorSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
-
-
 class MateriaDaTurmaViewSet(viewsets.ModelViewSet):
     """ViewSet for the MateriaDaTurma class"""
 

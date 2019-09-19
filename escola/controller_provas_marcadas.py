@@ -9,9 +9,10 @@ from typing import List
 from django.utils import timezone
 from django.utils.html import escape
 
-from escola.models import (EventoTurma, MateriaDaTurma, Professor,
+from escola.models import (EventoTurma, MateriaDaTurma,
                            ProvaAreaMarcada, ProvaMateriaMarcada, Turma,
                            Tarefa, EventoEscola)
+from users.models import Professor
 
 logger = logging.getLogger(__name__)
 

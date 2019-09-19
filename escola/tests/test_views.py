@@ -14,7 +14,7 @@ from helpers.utils import create_admin, create_aluno, create_professor, create_t
 from mixer.backend.django import mixer
 
 from escola.models import *
-from users.models import Profile
+from users.models import Profile, Professor
 from escola.utils import dar_permissao_user
 
 pytestmark = pytest.mark.django_db

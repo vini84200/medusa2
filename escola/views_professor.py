@@ -15,7 +15,7 @@ from escola.decorators import is_user_escola, is_professor
 from escola.forms import ProfessorCreateForm
 from escola.models import Professor, MateriaDaTurma
 from escola.utils import generate_username, genarate_password
-
+from users.models import Professor
 
 @has_permission_decorator('add_professor')
 def add_professor(request):

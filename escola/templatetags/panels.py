@@ -14,10 +14,10 @@ from rolepermissions.checkers import has_object_permission, has_permission
 from escola.controller_provas_marcadas import (get_materias_professor_for_day,
                                                get_provas_professor_futuras,
                                                get_provas_turma_futuras)
-from escola.models import (LinkConteudo, Professor, Tarefa, Turma, Turno,
+from escola.models import (LinkConteudo, Tarefa, Turma, Turno,
                            TurnoAula)
 from escola.quotes.quotes_conf import QUOTES
-
+from users.models import Professor
 logger = logging.getLogger(__name__)
 
 
@@ -123,7 +123,7 @@ def panel_lista_provas_marcadas_turma(turma: Turma, qnt=0):
 
 # panel_lista_provas_marcadas_professor
 @register.inclusion_tag('escola/panels/listaProvasMarcadas.html')
-def panel_lista_provas_marcadas_professor(professor: Professor, qnt=0):
+def panel_lista_provas_marcadas_professor(professor, qnt=0):
     """Retorna uma lista de provas de uma turma em especifico"""
     context = {}
     provas = get_provas_professor_futuras(professor, qnt)
