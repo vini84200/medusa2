@@ -7,7 +7,8 @@ import logging
 from django.contrib.auth.models import User, Group
 from rolepermissions.roles import assign_role
 
-from escola.models import Profile, Aluno, Professor
+from escola.models import Aluno, Professor
+from users.models import Profile
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +24,8 @@ def create_user(username, password, **kwargs) -> User:
     :return: Usuario Criado
     :rtype User
     """
-    u = User.objects.create_user(username, password=password, email=kwargs.get('email'))
+    u = User.objects.create_user(
+        username, password=password, email=kwargs.get('email'))
     p = Profile(user=u)
     p.is_professor = False
     p.is_aluno = False
@@ -52,7 +54,8 @@ def create_admin_user(username: str, password: str, *args, **kwargs) -> User:
     :return: Usuario criado
     :rtype: User
     """
-    user = User.objects.create_user(username, password=password, email=kwargs.get('email'))
+    user = User.objects.create_user(
+        username, password=password, email=kwargs.get('email'))
     give_admin(user)
     return user
 

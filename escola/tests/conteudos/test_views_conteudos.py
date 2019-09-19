@@ -6,7 +6,8 @@ import pytest
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from escola.models import Conteudo, Profile
+from escola.models import Conteudo
+from users.models import Profile
 
 logger = logging.getLogger(__name__)
 

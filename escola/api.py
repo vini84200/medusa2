@@ -36,14 +36,6 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
 
-class ProfileViewSet(viewsets.ModelViewSet):
-    """ViewSet for the Profile class"""
-
-    queryset = models.Profile.objects.all()
-    serializer_class = serializers.ProfileSerializer
-    permission_classes = [permissions.DjangoObjectPermissions]
-
-
 class TurmaViewSet(viewsets.ModelViewSet):
     """ViewSet for the Turma class"""
 

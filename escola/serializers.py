@@ -23,20 +23,6 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('pk', 'name',)
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer(required=True)
-
-    class Meta:
-        model = models.Profile
-        fields = (
-            'pk',
-            'user',
-            'is_aluno',
-            'is_professor',
-            'bio',
-            'cor',
-        )
-
 
 class TurmaSerializer(serializers.ModelSerializer):
     lider = GroupSerializer(required=True)

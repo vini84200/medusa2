@@ -8,7 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 
-from escola.models import Profile
+from users.models import Profile
 
 
 def get_login_redirect(request):

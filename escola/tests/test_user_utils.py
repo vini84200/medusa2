@@ -7,7 +7,8 @@ from mixer.backend.django import mixer
 from rolepermissions.checkers import has_role
 
 from escola import user_utils
-from escola.models import Turma, Profile, Aluno, Professor
+from escola.models import Turma, Aluno, Professor
+from users.models import Profile
 
 pytestmark = pytest.mark.django_db
 
