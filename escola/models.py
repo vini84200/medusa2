@@ -29,7 +29,8 @@ logger = logging.getLogger(__name__)
 
 class Profile(models.Model):
     """Perfil basico, todos os usuarios do sistema tem um."""
-    user = models.OneToOneField(User, related_name='profile_escola', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, related_name='profile_escola', on_delete=models.CASCADE)
     is_aluno = models.BooleanField('student status', default=False)
     is_professor = models.BooleanField('teacher status', default=False)
     bio = MarkdownxField(blank=True, null=True)
@@ -98,7 +99,7 @@ class Notificador(models.Model):
         """Cria uma notificação para cada usuario."""
         for seguidor in self.seguidores.all():
             # noti = Notificacao(user=seguidor, title=title, msg=msg)
-            # # TODO Adicionar uma função que trata a msg permitindo que 
+            # # TODO Adicionar uma função que trata a msg permitindo que
             # partes sejam adicionadas a msg como nome do
             # #  usuario.
             # if self.link:
@@ -108,7 +109,7 @@ class Notificador(models.Model):
                 seguidor, title, msg,
                 deve_enviar=seguidor.profile_escola.receber_email_notificacao,
                 link=link)
-                # FIXME: o Deve enviar deve seguir preferencia do usuario
+            # FIXME: o Deve enviar deve seguir preferencia do usuario
 
 
 class Notificacao(models.Model):
@@ -135,7 +136,8 @@ class Notificacao(models.Model):
 
     def get_email_message(self):
         logger.info(f"Preparando para enviar email de notificação {self.pk}")
-        plaintext = get_template('escola/email/notificacao/nova_notificacao.txt')
+        plaintext = get_template(
+            'escola/email/notificacao/nova_notificacao.txt')
         htmly = get_template('escola/email/notificacao/nova_notificacao.html')
 
         c = {'user': self.user,
@@ -145,7 +147,8 @@ class Notificacao(models.Model):
              'link': self.link or None,
              }
 
-        subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [self.user.email, ]
+        subject, from_email, to = f'Nova notificação do Medusa II - {self.title}', settings.NOTIFICACAO_EMAIL, [
+            self.user.email, ]
 
         text_content = plaintext.render(c)
         html_content = htmly.render(c)
@@ -163,13 +166,15 @@ class Notificacao(models.Model):
                 try:
                     msg.send()  # TODO Enviar assicrono
                 except SMTPException as e:
-                    logger.error(f"Um email não foi enviado por causa de um error. {e}")
+                    logger.error(
+                        f"Um email não foi enviado por causa de um error. {e}")
                 else:
                     logger.info("Enviado o email de notificação!!")
                     self.email_criado = True
                     self.save()
             else:
-                logger.info(f'O usuario {self.user} não possui email, e portanto não pode receber notificações.')
+                logger.info(
+                    f'O usuario {self.user} não possui email, e portanto não pode receber notificações.')
 
     @classmethod
     def send_all_emails(cls):
@@ -218,10 +223,12 @@ class Turma(models.Model):
     numero = models.IntegerField()
     ano = models.IntegerField()
 
-    lider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_lider')
+    lider = models.ForeignKey(User, on_delete=models.DO_NOTHING,
+                              null=True, blank=True, related_name='turma_lider')
     vicelider = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True,
                                   related_name='turma_vicelider')
-    regente = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
+    regente = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='turma_regente')
 
     poss_noti = (
         ("nova_tarefa", "Há uma nova tarefa", True),
@@ -232,12 +239,18 @@ class Turma(models.Model):
         ("aviso_geral_turma", "Um professor postou um novo conteudo", True),
     )
 
-    noti_nova_tarefa = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_nova_prova = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_prova_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_tarefa_proxima = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_novo_conteudo = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
-    noti_aviso_geral_turma = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_nova_tarefa = models.OneToOneField(
+        Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_nova_prova = models.OneToOneField(
+        Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_prova_proxima = models.OneToOneField(
+        Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_tarefa_proxima = models.OneToOneField(
+        Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_novo_conteudo = models.OneToOneField(
+        Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
+    noti_aviso_geral_turma = models.OneToOneField(
+        Notificador, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='+')
 
     def get_poss_notis(self):
         """Retorna lista de possiveis notificadores"""
@@ -322,25 +335,31 @@ class Turma(models.Model):
     def atualizaProvas():
         startdate = datetime.date.today()
         enddate = startdate + datetime.timedelta(days=1, hours=6)
-        provas_ma = ProvaMateriaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
+        provas_ma = ProvaMateriaMarcada.objects.filter(_prova__evento__evento__data__range=[
+                                                       startdate, enddate], _prova__notificado=False)
         for prova in provas_ma:
             prova: ProvaMateriaMarcada
-            prova.get_turma().comunicar_noti('prova_proxima', f'A prova {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, da materia {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova {prova.get_nome()} está se aproximando',
+                                             f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, da materia {prova.get_apresentacao()}', prova.get_absolute_url())
             prova.set_notificado(True)
-        provas_a = ProvaAreaMarcada.objects.filter(_prova__evento__evento__data__range=[startdate, enddate], _prova__notificado=False)
+        provas_a = ProvaAreaMarcada.objects.filter(_prova__evento__evento__data__range=[
+                                                   startdate, enddate], _prova__notificado=False)
         for prova in provas_a:
             prova: ProvaAreaMarcada
-            prova.get_turma().comunicar_noti('prova_proxima', f'A prova de area {prova.get_nome()} está se aproximando', f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, das materias {prova.get_apresentacao()}', prova.get_absolute_url())
+            prova.get_turma().comunicar_noti('prova_proxima', f'A prova de area {prova.get_nome()} está se aproximando',
+                                             f'Ela ocorrerá dia {prova.get_data().strftime("%d/%m/%y")}, das materias {prova.get_apresentacao()}', prova.get_absolute_url())
             prova.set_notificado(True)
 
     @staticmethod
     def atualizaTarefas():
         startdate = datetime.date.today()
         enddate = startdate + datetime.timedelta(days=1, hours=6)
-        tarefas = Tarefa.objects.filter(deadline__range=[startdate, enddate], notificado = False)
+        tarefas = Tarefa.objects.filter(
+            deadline__range=[startdate, enddate], notificado=False)
         for tarefa in tarefas:
             tarefa: Tarefa
-            tarefa.turma.comunicar_noti('tarefa_proxima', "Uma tarefa está proxima de sua data de completação.", f"A tarefa {tarefa.titulo} está proxima de sua data final. Verifique se você já a completou. A data máxima é dia {tarefa.deadline.strftime('%d/%m/%Y')}")
+            tarefa.turma.comunicar_noti('tarefa_proxima', "Uma tarefa está proxima de sua data de completação.",
+                                        f"A tarefa {tarefa.titulo} está proxima de sua data final. Verifique se você já a completou. A data máxima é dia {tarefa.deadline.strftime('%d/%m/%Y')}")
             tarefa.notificado = True
             tarefa.save()
 
@@ -374,7 +393,8 @@ class CargoTurma(models.Model):
 
 class Professor(models.Model):
     """Um professor, não esecifico para uma turma."""
-    user = models.OneToOneField(User, related_name='professor', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, related_name='professor', on_delete=models.CASCADE)
     nome = models.CharField(max_length=70)
 
     def __str__(self):
@@ -393,7 +413,8 @@ class Conteudo(MPTTModel):
     nome = models.CharField(max_length=50)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
     descricao = MarkdownxField()
-    parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    parent = TreeForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True)
 
     def get_absolute_url(self):
         """Retorna Url do conteudo."""
@@ -404,7 +425,8 @@ class Conteudo(MPTTModel):
         verbose_name = "Conteudo"
         verbose_name_plural = "Conteudos"
 
-        permissions = (('can_add_in_materia', 'Pode adicionar esse conteudo à uma materia.'),)
+        permissions = (
+            ('can_add_in_materia', 'Pode adicionar esse conteudo à uma materia.'),)
 
     def __str__(self):
         return self.nome
@@ -489,11 +511,15 @@ class MateriaManager(models.Manager):
 class MateriaDaTurma(models.Model):
     """Materia de uma turma, possui um professor e é dedicada a uma turma."""
     nome = models.CharField(max_length=50)
-    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='materias')
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='materias')
+    professor = models.ForeignKey(
+        Professor, on_delete=models.CASCADE, related_name='materias')
+    turma = models.ForeignKey(
+        Turma, on_delete=models.CASCADE, related_name='materias')
     abreviacao = models.CharField(max_length=5)
-    conteudos = models.ManyToManyField(Conteudo, blank=True, related_name='materias')
-    area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='materias', null=True, blank=True)
+    conteudos = models.ManyToManyField(
+        Conteudo, blank=True, related_name='materias')
+    area = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE,
+                             related_name='materias', null=True, blank=True)
 
     objects = models.Manager()
     helper = MateriaManager()
@@ -513,9 +539,11 @@ class MateriaDaTurma(models.Model):
 
 class Aluno(models.Model):
     """Aluno de uma turma."""
-    chamada = models.PositiveSmallIntegerField(null=True, blank=True, default=0)
+    chamada = models.PositiveSmallIntegerField(
+        null=True, blank=True, default=0)
     nome = models.CharField(max_length=70)
-    user = models.OneToOneField(User, related_name='aluno', on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, related_name='aluno', on_delete=models.CASCADE)
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -538,10 +566,12 @@ class Tarefa(models.Model):
         (3, 'Pesquisa'),
         (4, 'Redação'),
     )
-    tipo = models.PositiveSmallIntegerField(choices=TIPOS, blank=True, null=True)
+    tipo = models.PositiveSmallIntegerField(
+        choices=TIPOS, blank=True, null=True)
     descricao = MarkdownxField()
     deadline = models.DateField(verbose_name='Data limite')
-    noti_comentario = models.OneToOneField(Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
+    noti_comentario = models.OneToOneField(
+        Notificador, on_delete=models.DO_NOTHING, null=True, blank=True)
     notificado = models.BooleanField(default=False)
 
     def get_absolute_url(self):
@@ -569,7 +599,7 @@ class Tarefa(models.Model):
         tarefa.save()
         turma.comunicar_noti('nova_tarefa',
                              "Há uma nova tarefa em sua turma",
-                             f"A Tarefa \"{titulo}\" foi criada com data final em {deadline}. Para ver mais detalhes siga o link.", 
+                             f"A Tarefa \"{titulo}\" foi criada com data final em {deadline}. Para ver mais detalhes siga o link.",
                              tarefa.get_absolute_url())
         return tarefa
 
@@ -602,27 +632,32 @@ class TarefaComentario(models.Model):
     tarefa = models.ForeignKey(Tarefa, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     texto = MarkdownxField()
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
 
 
 class Horario(models.Model):
     """O horario de uma turma."""
-    turma = models.OneToOneField(Turma, related_name='horario', on_delete=models.CASCADE)
+    turma = models.OneToOneField(
+        Turma, related_name='horario', on_delete=models.CASCADE)
 
     def get_turno_aula_or_create(self, dia, turno_a):
         """Retorna um turno ou o cria"""
-        turno = TurnoAula.objects.filter(diaDaSemana=dia, turno=turno_a, turma=self.turma)
+        turno = TurnoAula.objects.filter(
+            diaDaSemana=dia, turno=turno_a, turma=self.turma)
         if turno:
             return turno[0]
         else:
-            turno = TurnoAula(turma=self.turma, horario=self, diaDaSemana=dia, turno=turno_a)
+            turno = TurnoAula(turma=self.turma, horario=self,
+                              diaDaSemana=dia, turno=turno_a)
             turno.save()
             return turno
 
     def get_periodo_or_create(self, dia, turno: int, num):
         """Retorna um periodo ou cria um novo"""
-        turno_aula = self.get_turno_aula_or_create(dia, Turno.get_turno_by_cod(turno))
+        turno_aula = self.get_turno_aula_or_create(
+            dia, Turno.get_turno_by_cod(turno))
         per = turno_aula.periodo_set.filter(num=num)
         if per:
             return per[0]
@@ -644,7 +679,8 @@ class Horario(models.Model):
             # Passa todos os dias da semana
             for dia in DIAS_DA_SEMANA_N:
                 # Pega Turnos de Aula em que o turno, dia e horario seja certo;
-                a = TurnoAula.objects.filter(turno=turno, diaDaSemana=dia, horario=self)
+                a = TurnoAula.objects.filter(
+                    turno=turno, diaDaSemana=dia, horario=self)
                 # Se houver um turno
                 if len(a) > 0:
                     # Se esse dia não estiver na lista de horario que sai adiciona
@@ -705,7 +741,8 @@ class Periodo(models.Model):
     """Um periodo de aula"""
     num = models.PositiveSmallIntegerField()
     turnoAula = models.ForeignKey(TurnoAula, on_delete=models.CASCADE)
-    materia = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
+    materia = models.ForeignKey(
+        MateriaDaTurma, on_delete=models.CASCADE, null=True, blank=True)
 
     @property
     def dia(self):
@@ -921,7 +958,8 @@ class EventoEscola(models.Model):
 class ProvaMarcada(models.Model):
     """Uma prova"""
     conteudos = models.ManyToManyField(Conteudo, blank=True)
-    evento: EventoTurma = models.ForeignKey(EventoTurma, on_delete=models.CASCADE, related_name='prova')
+    evento: EventoTurma = models.ForeignKey(
+        EventoTurma, on_delete=models.CASCADE, related_name='prova')
     notificado = models.BooleanField(default=False)
 
     def delete(self, using=None, keep_parents=False):
@@ -999,7 +1037,8 @@ class ProvaMarcada(models.Model):
     @staticmethod
     def create(turma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMarcada()
-        a.evento = EventoTurma.create(turma, nome, data, descricao, owner, True)
+        a.evento = EventoTurma.create(
+            turma, nome, data, descricao, owner, True)
         a.save()
         if conteudos:
             a.add_conteudos(conteudos)
@@ -1008,9 +1047,11 @@ class ProvaMarcada(models.Model):
 
 class ProvaMateriaMarcada(models.Model):
     """Prova de uma materia"""
-    materia: MateriaDaTurma = models.ForeignKey(MateriaDaTurma, on_delete=models.CASCADE, related_name='provas_materia')
+    materia: MateriaDaTurma = models.ForeignKey(
+        MateriaDaTurma, on_delete=models.CASCADE, related_name='provas_materia')
     # item_avaliativo = models.ForeignKey(ItemAvaliativoMateria, on_delete=models.CASCADE)
-    _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_materia')
+    _prova: ProvaMarcada = models.OneToOneField(
+        ProvaMarcada, on_delete=models.CASCADE, related_name='p_materia')
 
     def delete(self, using=None, keep_parents=False):
         self._prova.delete(using, keep_parents)
@@ -1083,18 +1124,22 @@ class ProvaMateriaMarcada(models.Model):
     def create(materia: MateriaDaTurma, nome, data, descricao, owner, conteudos=None):
         a = ProvaMateriaMarcada()
         turma: Turma = materia.turma
-        a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
+        a._prova = ProvaMarcada.create(
+            turma, nome, data, descricao, owner, conteudos)
         a.materia = materia
         a.save()
-        turma.comunicar_noti('nova_prova', f"Uma prova foi marcada para dia {data.strftime('%d/%m/%y')} ", f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da materia {materia}. Estude até lá!", a.get_absolute_url())
+        turma.comunicar_noti('nova_prova', f"Uma prova foi marcada para dia {data.strftime('%d/%m/%y')} ",
+                             f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da materia {materia}. Estude até lá!", a.get_absolute_url())
         return a
 
 
 class ProvaAreaMarcada(models.Model):
     """Prova de Area"""
-    area: AreaConhecimento = models.ForeignKey(AreaConhecimento, on_delete=models.CASCADE, related_name='provas_area')
+    area: AreaConhecimento = models.ForeignKey(
+        AreaConhecimento, on_delete=models.CASCADE, related_name='provas_area')
     # item_avaliativo = models.ForeignKey(ItemAvaliativoArea, on_delete=models.CASCADE)
-    _prova: ProvaMarcada = models.OneToOneField(ProvaMarcada, on_delete=models.CASCADE, related_name='p_area')
+    _prova: ProvaMarcada = models.OneToOneField(
+        ProvaMarcada, on_delete=models.CASCADE, related_name='p_area')
 
     def delete(self, using=None, keep_parents=False):
         self._prova.delete(using, keep_parents)
@@ -1161,10 +1206,12 @@ class ProvaAreaMarcada(models.Model):
     def create(area: AreaConhecimento, nome, data, descricao, owner, conteudos=None):
         a = ProvaAreaMarcada()
         turma = area.turma
-        a._prova = ProvaMarcada.create(turma, nome, data, descricao, owner, conteudos)
+        a._prova = ProvaMarcada.create(
+            turma, nome, data, descricao, owner, conteudos)
         a.area = area
         a.save()
-        turma.comunicar_noti('nova_prova', f"Uma prova de área foi marcada para dia {data.strftime('%d/%m/%y')}", f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da área {area}. Estude até lá!", a.get_absolute_url())
+        turma.comunicar_noti('nova_prova', f"Uma prova de área foi marcada para dia {data.strftime('%d/%m/%y')}",
+                             f"A prova {nome}, foi marcada para dia {data.strftime('%d/%m/%y')}, da área {area}. Estude até lá!", a.get_absolute_url())
         return a
 
     def get_absolute_url(self):
